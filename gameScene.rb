@@ -11,12 +11,14 @@ class GameScene < Scene
     @player.goto(50, 50)
 
     @enemies = []
+    @obstacles = []
   end
 
   def unload
   end
   
   def update
+    #can we handle all of this in maybe a player update method?
     if Gosu.button_down? Gosu::KB_LEFT or Gosu::button_down? Gosu::GP_LEFT
         @player.go_left
       end
@@ -33,6 +35,9 @@ class GameScene < Scene
       for enemy in @enemies do 
         enemy.update(@player.x, @player.y, @player.vel_x, @player.vel_y)
       end
+      for obstacle in @obstacles do
+        obstacle.update
+      end
       @player.move
   end
   
@@ -41,6 +46,9 @@ class GameScene < Scene
     @player.draw
     for enemy in @enemies do 
       enemy.draw
+    end
+    for obstacle in @obstacles do
+      obstacle.draw
     end
   end
 end

@@ -10,7 +10,7 @@ class Rectangle
     attr_accessor :clear
 
     def initialize(x=0,y=0,width=30,height=30,color = Gosu::Color::WHITE, z = 0, clear = false)
-        @clear = clear;
+        @clear = clear
         @x = x
         @y = y
         @width = width
@@ -18,7 +18,10 @@ class Rectangle
         @color = color
         @z = z
     end
-
+    #a way to find collisions using vertices
+    def vertices
+        [Vector[@x,@y],Vector[@x+@width,@y],Vector[@x+@width,@y+@height],Vector[@x,@y+@height]]
+    end
     def draw(x=@x,y=@y,z=@z)
         if (clear) 
             Gosu.draw_line(x,y,@color,x+@width,y,@color,z)

@@ -1,7 +1,7 @@
 require 'matrix'
 require_relative './rectangle.rb'
 require_relative './constants'
-
+#enemy constants
 ENEMY_MAX_SPEED = 1.5
 ENEMY_MAX_SPEED_PURSUIT = 3.0
 MASS = 20.0
@@ -11,14 +11,21 @@ PURSUIT_CONST = 25
 IDLE_TIME = 50
 
 class Enemy
+    #make the image readible so we can access its vertices
+    attr_reader :image
+    #start with a path the enemy should follow
     def initialize(path = [Vector[0,0], Vector[100,0]])
+      #starting position is the first point in the path
       @x = path[0][0]
       @y = path[0][1]
+      #we'll do textures later,
+      #they're just rectangles for now
       @image = Rectangle.new(@x, @y, 30, 30, Gosu::Color::BLUE)
       @vel_x = @vel_y = 0.0
       @path = path
       @currNode = 1 # which node on path
       @state = 1 # 0 for idle, 1 for moving, 2 for pursuit
+      #assign various constants
       @timer = 100
       @enemy_speed = ENEMY_MAX_SPEED
     end

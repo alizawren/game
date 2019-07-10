@@ -14,7 +14,13 @@ class Player
       @image = Rectangle.new
       @x = @y = @vel_x = @vel_y = @angle = 0.0
     end
-  
+    def position
+      Vector[@x,@y]
+    end
+    def force(forceVector)
+      @x += forceVector[0]
+      @y += forceVector[1]
+    end
     def goto(x, y)
       @x, @y = x, y
     end
