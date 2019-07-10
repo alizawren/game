@@ -4,14 +4,11 @@ require_relative './scene.rb'
 
 class Scene1 < Scene
   attr_accessor :background_image
-  def initialize
+  def load
     @background_image = Gosu::Image.new("img/space.png", :tileable => true)
 
     @player = Player.new
     @player.goto(320, 240)
-  end
-
-  def load
   end
 
   def unload

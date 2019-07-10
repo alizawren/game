@@ -16,6 +16,12 @@ class SceneManager
             @currScene.draw
         end
     end
+    
+    def self.button_down(id)
+        if (!@currScene.nil?)
+            @currScene.button_down(id)
+        end
+    end
 
     def self.changeScene(newScene)
         if (!@currScene.nil?) 

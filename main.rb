@@ -8,9 +8,9 @@ class Main < Gosu::Window
         super 640, 480
         self.caption = "Game?"
 
-        scene1 = Scene1.new
-        menu = MainMenu.new
-        SceneManager.changeScene(scene1)
+        @scene1 = Scene1.new
+        @menu = MainMenu.new
+        SceneManager.changeScene(@menu)
     end
 
     def update
@@ -19,6 +19,16 @@ class Main < Gosu::Window
 
     def draw
         SceneManager.draw
+    end
+
+    def button_down(id)
+        SceneManager.button_down(id)
+
+        if id == Gosu::KB_ESCAPE
+          SceneManager.changeScene(@menu)
+        else
+          super
+        end
     end
 end
 

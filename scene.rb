@@ -1,7 +1,5 @@
 # when making scenes, implement each of the below methods
 class Scene 
-    def initialize
-    end
 
     # necessary methods
     def update
@@ -15,6 +13,9 @@ class Scene
     end
     def unload
         # unload everything that the garbage collector won’t unload, itself, including graphics
+    end
+
+    def button_down(id)
     end
 
     # optional methods
