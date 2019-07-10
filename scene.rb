@@ -15,7 +15,7 @@ class Scene
         # unload everything that the garbage collector won’t unload, itself, including graphics
     end
 
-    def button_down(id)
+    def button_down(id,close_callback)
     end
 
     # optional methods

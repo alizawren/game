@@ -17,9 +17,9 @@ class SceneManager
         end
     end
     
-    def self.button_down(id)
+    def self.button_down(id, close_callback)
         if (!@currScene.nil?)
-            @currScene.button_down(id)
+            @currScene.button_down(id, close_callback)
         end
     end
 

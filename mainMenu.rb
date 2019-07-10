@@ -15,7 +15,7 @@ class MainMenu < Scene
   def load
     @background_image = Gosu::Image.new("img/space.png", :tileable => true)
     @title = Gosu::Image.from_text("A Game? Perhaps?", FONT_HEIGHT * 2)
-    @choices = ["Play", "About", "What", "Exit (doesn't work rn lol)"];
+    @choices = ["Play", "About", "What", "Exit"];
     @font = Gosu::Font.new(FONT_HEIGHT)
     @selector = Rectangle.new(0,0,40,30,Gosu::Color::WHITE,0,true)
     @select = 0;
@@ -32,7 +32,7 @@ class MainMenu < Scene
     
   end
 
-    def button_down(id) 
+    def button_down(id,close_callback) 
       case id
       when Gosu::KB_UP
         @select = (@select + @choices.length - 1) % @choices.length
@@ -44,6 +44,7 @@ class MainMenu < Scene
             SceneManager.changeScene(Scene1.new)
         when 1
         when 3
+            close_callback.call
             # close
         else
         end

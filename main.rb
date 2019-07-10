@@ -22,7 +22,7 @@ class Main < Gosu::Window
     end
 
     def button_down(id)
-        SceneManager.button_down(id)
+        SceneManager.button_down(id, method(:close))
 
         if id == Gosu::KB_ESCAPE
           SceneManager.changeScene(@menu)
