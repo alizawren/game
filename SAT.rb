@@ -22,7 +22,7 @@ class Polygon
     def axes
         @axes
     end
-    def project(axis)
+    def project(    )
         min = axis.dot(@vertices[0])
         max = min
         for i in 0..@vertices.length-1 do
