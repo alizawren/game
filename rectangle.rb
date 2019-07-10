@@ -9,7 +9,7 @@ class Rectangle
     attr_accessor :z
     attr_accessor :clear
 
-    def initialize(x,y,width,height,color = Gosu::Color::WHITE, z = 0, clear = true)
+    def initialize(x=0,y=0,width=30,height=30,color = Gosu::Color::WHITE, z = 0, clear = false)
         @clear = clear;
         @x = x
         @y = y
@@ -19,14 +19,14 @@ class Rectangle
         @z = z
     end
 
-    def draw 
+    def draw(x=@x,y=@y,z=@z)
         if (clear) 
-            Gosu.draw_line(@x,@y,@color,@x+@width,@y,@color,@z)
-            Gosu.draw_line(@x,@y,@color,@x,@y+height,@color,@z)
-            Gosu.draw_line(@x+width,@y,@color,@x+@width,@y+height,@color,@z)
-            Gosu.draw_line(@x,@y+height,@color,@x+@width,@y+height,@color,@z)
+            Gosu.draw_line(x,y,@color,x+@width,y,@color,z)
+            Gosu.draw_line(x,y,@color,x,y+height,@color,z)
+            Gosu.draw_line(x+width,y,@color,x+@width,y+height,@color,z)
+            Gosu.draw_line(x,y+height,@color,x+@width,y+height,@color,z)
         else
-            Gosu.draw_rect(@x,@y,@width,@height,@color,@z);
+            Gosu.draw_rect(x,y,@width,@height,@color,z);
         end
     end
 

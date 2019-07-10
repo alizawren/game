@@ -5,7 +5,7 @@ require_relative './scene1.rb'
 
 class Main < Gosu::Window 
     def initialize
-        super 640, 480
+        super 1280, 720 
         self.caption = "Game?"
 
         @scene1 = Scene1.new

@@ -1,6 +1,7 @@
 require 'gosu'
 require_relative './player.rb'
 require_relative './scene.rb'
+require_relative './enemy.rb'
 
 class Scene1 < Scene
   attr_accessor :background_image
@@ -8,7 +9,12 @@ class Scene1 < Scene
     @background_image = Gosu::Image.new("img/space.png", :tileable => true)
 
     @player = Player.new
-    @player.goto(320, 240)
+    @player.goto(50, 50)
+
+    @enemies = []
+    @enemies.push(Enemy.new([Vector[660,50], Vector[450,50]]))
+    @enemies.push(Enemy.new([Vector[700,300], Vector[500,300]]))
+    @enemies.push(Enemy.new([Vector[180,300], Vector[100,300]]))
   end
 
   def unload
@@ -16,13 +22,20 @@ class Scene1 < Scene
   
   def update
     if Gosu.button_down? Gosu::KB_LEFT or Gosu::button_down? Gosu::GP_LEFT
-        @player.turn_left
+        @player.go_left
       end
       if Gosu.button_down? Gosu::KB_RIGHT or Gosu::button_down? Gosu::GP_RIGHT
-        @player.turn_right
+        @player.go_right
       end
-      if Gosu.button_down? Gosu::KB_UP or Gosu::button_down? Gosu::GP_BUTTON_0
-        @player.accelerate
+      if Gosu.button_down? Gosu::KB_UP
+        @player.go_up
+      end
+      if Gosu.button_down? Gosu::KB_DOWN
+        @player.go_down
+      end
+
+      for enemy in @enemies do 
+        enemy.update(@player.x, @player.y, @player.vel_x, @player.vel_y)
       end
       @player.move
   end
@@ -30,6 +43,9 @@ class Scene1 < Scene
   def draw
     @background_image.draw(0, 0, 0)
     @player.draw
+    for enemy in @enemies do 
+      enemy.draw
+    end
   end
 end
 
