@@ -33,15 +33,21 @@ class GameScene < Scene
     #can we handle all of this in maybe a player update method?
     if Gosu.button_down? Gosu::KB_LEFT or Gosu::button_down? Gosu::GP_LEFT
       @player.go_left
+      # @player.state = 1
+      @player.flip = 1
     end
     if Gosu.button_down? Gosu::KB_RIGHT or Gosu::button_down? Gosu::GP_RIGHT
       @player.go_right
+      # @player.state = 1
+      @player.flip = 0
     end
     if Gosu.button_down? Gosu::KB_UP
       @player.go_up
+      # @player.state = 1
     end
     if Gosu.button_down? Gosu::KB_DOWN
       @player.go_down
+      # @player.state = 1
     end
 
     for enemy in @enemies
@@ -60,21 +66,38 @@ class GameScene < Scene
       end
     end
 
-    returnObjects = []
+    # returnObjects = []
+    # for i in 0..@allObjects.length - 1
+    #   returnObjects = @quadtree.retrieve(@allObjects[i])
+
+    #   for x in 0..returnObjects.length - 1
+    #     # run collision detection algorithm between @allObjects[i] and returnObjects[x]
+    #     obj1 = @allObjects[i]
+    #     obj2 = returnObjects[x]
+    #     if obj1 == obj2
+    #       break
+    #     end
+    #     if (overlap(obj1, obj2))
+    #       @allObjects[i].color = Gosu::Color::RED
+    #       returnObjects[x].color = Gosu::Color::RED
+    #     end
+    #   end
+    # end
+
+    # NOTE: there is an issue with quadtree, it seems particularly when objects are in between two quadrants
+    # so, this method simply loops through all objects regardless of quadrant
     for i in 0..@allObjects.length - 1
       if (!@allObjects[i].nil?)
-        returnObjects = @quadtree.retrieve(@allObjects[i])
-
-        for x in 0..returnObjects.length - 1
+        for x in 0..@allObjects.length - 1
           # run collision detection algorithm between @allObjects[i] and returnObjects[x]
           obj1 = @allObjects[i]
-          obj2 = returnObjects[x]
+          obj2 = @allObjects[x]
           if obj1 == obj2
             break
           end
           if (overlap(obj1, obj2))
             @allObjects[i].color = Gosu::Color::RED
-            returnObjects[x].color = Gosu::Color::RED
+            @allObjects[x].color = Gosu::Color::RED
           end
         end
       end
@@ -96,10 +119,16 @@ end
 def overlap(obj1, obj2)
   overlap = Vector[0, 0]
 
+  obj1centerx = obj1.x + (obj1.width / 2.0)
+  obj1centery = obj1.y + (obj1.height / 2.0)
+  obj2centerx = obj2.x + (obj2.width / 2.0)
+  obj2centery = obj2.y + (obj2.height / 2.0)
+
+  puts obj1.height, obj2.height
   # algorithm for collision of normal rectangles
   if (obj1.width / 2.0 == 0 || obj1.height / 2.0 == 0 || obj2.width / 2.0 == 0 || obj2.height / 2.0 == 0 \
-    || (obj1.x + obj1.width / 2.0 - (obj2.x + obj2.width / 2.0)).abs > obj1.width / 2.0 + obj2.width / 2.0 \
-    || (obj1.y + obj1.height / 2.0 - (obj2.y + obj2.height / 2.0)).abs > obj1.height / 2.0 + obj2.height / 2.0)
+    || (obj1centerx - obj2centerx).abs > obj1.width / 2.0 + obj2.width / 2.0 \
+    || (obj1centery - obj2centery).abs > obj1.height / 2.0 + obj2.height / 2.0)
     return false
   end
 

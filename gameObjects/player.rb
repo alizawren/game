@@ -1,13 +1,27 @@
 require_relative "../rectangle.rb"
 require_relative "../constants"
 require_relative "./gameObject.rb"
+require_relative "../animation.rb"
 
 MAX_SPEED = 5
 
 class Player < GameObject
+  attr_accessor :state
+  attr_accessor :flip
+
   def initialize
     super
     @color = Gosu::Color::WHITE
+    @width = 128 * 0.8
+    @height = 128 * 0.8
+    @boundingRect = Rectangle.new(@x, @y, @width, @height)
+
+    @idle_anim = Animation.new("img/scia/idle.png", @x, @y, @width, @height)
+    @walking_anim = Animation.new("img/scia/walking.png", @x, @y, @width, @height)
+
+    @state = 0 # 0 for idle, 1 for walking
+    @flip = 0 # 0 for facing right, 1 for facing left
+    @curr_anim = @idle_anim
   end
 
   def go_up
@@ -36,16 +50,33 @@ class Player < GameObject
 
   def update
     super
+    if (@vel_x.abs < 1.0 && @vel_y.abs < 1.0)
+      @state = 0
+    else
+      @state = 1
+    end
+
+    case @state
+    when 0
+      @curr_anim = @idle_anim
+    when 1
+      @curr_anim = @walking_anim
+    else
+      @curr_anim = @idle_anim
+    end
+    @curr_anim.flip = @flip
+
+    @curr_anim.update
   end
 
   def move
     super
-
     @vel_x *= 0.8
     @vel_y *= 0.8
   end
 
   def draw
-    super
+    # super
+    @curr_anim.draw(@x, @y)
   end
 end

@@ -6,7 +6,7 @@ class GameObject
   attr_reader :y
   attr_reader :vel_x
   attr_reader :vel_y
-  attr_reader :image
+  attr_reader :boundingRect
   attr_reader :width
   attr_reader :height
   attr_accessor :color
@@ -17,7 +17,7 @@ class GameObject
     @vel_x = @vel_y = @angle = 0.0
     @width = width
     @height = width
-    @image = Rectangle.new(@x, @y, @width, @height)
+    @boundingRect = Rectangle.new(@x, @y, @width, @height)
 
     @allCollidingObjects = []
   end
@@ -44,7 +44,7 @@ class GameObject
   end
 
   def update
-    @image.color = @color
+    @boundingRect.color = @color
     move
   end
 
@@ -56,7 +56,7 @@ class GameObject
   end
 
   def draw
-    # @image.draw_rot(@x, @y, 1, @angle)
-    @image.draw(@x, @y, 1)
+    # @boundingRect.draw_rot(@x, @y, 1, @angle)
+    @boundingRect.draw(@x, @y, 1)
   end
 end
