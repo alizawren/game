@@ -25,4 +25,5 @@ class Obstacle
         for vertex in @vertices do
             draw_circle(vertex[0],vertex[1],15,Gosu::Color::WHITE)
         end
+    end
 end

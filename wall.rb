@@ -1,4 +1,5 @@
 require 'gosu'
+require_relative './obstacle.rb'
 
 class Wall < Obstacle
     #walls are just rectangle shaped obstacles
