@@ -13,7 +13,7 @@ class MainMenu < Scene
   attr_accessor :background_image
 
   def load
-    @background_image = Gosu::Image.new("img/space.png", :tileable => true)
+    # @background_image = Gosu::Image.new("img/space.png", :tileable => true)
     @title = Gosu::Image.from_text("A Game? Perhaps?", FONT_HEIGHT * 2)
     @choices = ["Play", "About", "What", "Exit"];
     @font = Gosu::Font.new(FONT_HEIGHT)
@@ -52,7 +52,7 @@ class MainMenu < Scene
     end
   
   def draw
-    @background_image.draw(0, 0, 0)
+    # @background_image.draw(0, 0, 0)
     @title.draw(0,0,0)
     for i in 0..@choices.length-1 do 
         @font.draw_text(@choices[i], CANVAS_WIDTH / 2 - @font.text_width(@choices[i])/2, TEXT_Y+i*(FONT_HEIGHT+MARGIN), 2)

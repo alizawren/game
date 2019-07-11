@@ -2,11 +2,12 @@ require 'gosu'
 require_relative './player.rb'
 require_relative './gameScene.rb'
 require_relative './enemy.rb'
+require_relative './obstacle.rb'
 
 class Scene1 < GameScene
   attr_accessor :background_image
   def load
-    @background_image = Gosu::Image.new("img/space.png", :tileable => true)
+    # @background_image = Gosu::Image.new("img/space.png", :tileable => true)
 
     @player = Player.new
     @player.goto(50, 50)

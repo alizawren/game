@@ -1,6 +1,8 @@
 require 'matrix'
 require_relative './rectangle.rb'
-require_relative './constants'
+require_relative './constants.rb'
+require_relative './collision.rb'
+
 #enemy constants
 ENEMY_MAX_SPEED = 1.5
 ENEMY_MAX_SPEED_PURSUIT = 3.0
@@ -11,16 +13,19 @@ PURSUIT_CONST = 25
 IDLE_TIME = 50
 
 class Enemy
-    #make the image readible so we can access its vertices
-    attr_reader :image
+    attr_reader :polygon
+    # attr_reader :image
     #start with a path the enemy should follow
     def initialize(path = [Vector[0,0], Vector[100,0]])
       #starting position is the first point in the path
       @x = path[0][0]
       @y = path[0][1]
+      @width = 30
+      @height = 30
       #we'll do textures later,
       #they're just rectangles for now
-      @image = Rectangle.new(@x, @y, 30, 30, Gosu::Color::BLUE)
+      @image = Rectangle.new(@x, @y, @width, @height, Gosu::Color::BLUE)
+      @polygon = Polygon.new(@image.vertices,Vector[@x,@y])
       @vel_x = @vel_y = 0.0
       @path = path
       @currNode = 1 # which node on path
@@ -100,15 +105,17 @@ class Enemy
       @y += @vel_y
       @x %= CANVAS_WIDTH
       @y %= CANVAS_HEIGHT
-      
-    #   @vel_x *= 0.8
-    #   @vel_y *= 0.8
+      @polygon.update(@x,@y)
+      #   @vel_x *= 0.8
+      #   @vel_y *= 0.8
     end
   
     def draw
       # @image.draw_rot(@x, @y, 1, @angle)
       @image.draw(@x,@y,1)
+      @polygon.draw
     end
+
 end
 
 def truncate (vec, max_const) 
