@@ -1,6 +1,8 @@
 require "matrix"
-require_relative "./rectangle.rb"
-require_relative "./constants"
+require_relative "../rectangle.rb"
+require_relative "../constants"
+require_relative "./gameObject.rb"
+
 #enemy constants
 ENEMY_MAX_SPEED = 1.5
 ENEMY_MAX_SPEED_PURSUIT = 3.0
@@ -10,45 +12,23 @@ SLOWING_RADIUS = 50.0
 PURSUIT_CONST = 25
 IDLE_TIME = 50
 
-class Enemy
-  #make the image readible so we can access its vertices
-  attr_reader :image
-  attr_reader :x
-  attr_reader :y
-  attr_reader :width
-  attr_reader :height
-  attr_accessor :color
+class Enemy < GameObject
   #start with a path the enemy should follow
   def initialize(path = [Vector[0, 0], Vector[100, 0]])
+    super()
     #starting position is the first point in the path
     @x = path[0][0]
     @y = path[0][1]
     #we'll do textures later,
     #they're just rectangles for now
-    @image = Rectangle.new(@x, @y, 30, 30, Gosu::Color::BLUE)
     @color = Gosu::Color::BLUE
-    @width = @height = 30
-    @vel_x = @vel_y = 0.0
+    @image = Rectangle.new(@x, @y, @width, @height, @color)
     @path = path
     @currNode = 1 # which node on path
     @state = 1 # 0 for idle, 1 for moving, 2 for pursuit
     #assign various constants
     @timer = 100
     @enemy_speed = ENEMY_MAX_SPEED
-
-    @allCollidingObjects = []
-  end
-
-  def goto(x, y)
-    @x, @y = x, y
-  end
-
-  def turn_left
-    @angle -= 4.5
-  end
-
-  def turn_right
-    @angle += 4.5
   end
 
   def update(playerX = 0, playerY = 0, playerVelX = 0, playerVelY = 0)
@@ -100,24 +80,17 @@ class Enemy
     @vel_x = newvel[0]
     @vel_y = newvel[1]
 
-    move
-
-    @image.color = @color
+    # @image.color = @color
+    # move
+    super()
   end
 
   def move
-    @x += @vel_x
-    @y += @vel_y
-    @x %= CANVAS_WIDTH
-    @y %= CANVAS_HEIGHT
-
-    #   @vel_x *= 0.8
-    #   @vel_y *= 0.8
+    super
   end
 
   def draw
-    # @image.draw_rot(@x, @y, 1, @angle)
-    @image.draw(@x, @y, 1)
+    super
   end
 end
 

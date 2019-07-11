@@ -1,7 +1,10 @@
 require "gosu"
-require_relative "./player.rb"
+require_relative "../gameObjects/player.rb"
+require_relative "../gameObjects/enemy.rb"
+require_relative "../gameObjects/obstacles/wall.rb"
+require_relative "../quadtree.rb"
 require_relative "./scene.rb"
-require_relative "./constants.rb"
+require_relative "../constants.rb"
 
 CollisionData = Struct.new(:other, :overlap, :speed1, :speed2, :oldpos1, :oldpos2, :pos1, :pos2) do
 end
@@ -52,7 +55,6 @@ class GameScene < Scene
     # collision detection
     @quadtree.clear
     for i in 0..@allObjects.length - 1
-      # puts @allObjects[i].image
       if (!@allObjects[i].nil?)
         @quadtree.insert(@allObjects[i])
       end
@@ -95,9 +97,9 @@ def overlap(obj1, obj2)
   overlap = Vector[0, 0]
 
   # algorithm for collision of normal rectangles
-  if (obj1.width / 2 == 0 || obj1.height / 2 == 0 || obj2.width / 2 == 0 || obj2.height / 2 == 0 \
-    || (obj1.x + obj1.width / 2 - (obj2.x + obj2.width / 2)).abs > obj1.width / 2 + obj2.width / 2 \
-    || (obj1.y + obj1.height / 2 - (obj2.y + obj2.height / 2)).abs > obj1.height / 2 + obj2.height / 2)
+  if (obj1.width / 2.0 == 0 || obj1.height / 2.0 == 0 || obj2.width / 2.0 == 0 || obj2.height / 2.0 == 0 \
+    || (obj1.x + obj1.width / 2.0 - (obj2.x + obj2.width / 2.0)).abs > obj1.width / 2.0 + obj2.width / 2.0 \
+    || (obj1.y + obj1.height / 2.0 - (obj2.y + obj2.height / 2.0)).abs > obj1.height / 2.0 + obj2.height / 2.0)
     return false
   end
 

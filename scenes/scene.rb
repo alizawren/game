@@ -1,5 +1,4 @@
-require_relative "./constants.rb"
-require_relative "./quadtree.rb"
+require_relative "../constants.rb"
 
 # when making scenes, implement each of the below methods
 class Scene

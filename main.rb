@@ -1,8 +1,8 @@
 require "gosu"
 require_relative "./sceneManager.rb"
-require_relative "./mainMenu.rb"
-require_relative "./scene1.rb"
-require_relative "./scene2.rb"
+require_relative "./scenes/mainMenu.rb"
+require_relative "./scenes/scene1.rb"
+require_relative "./scenes/scene2.rb"
 
 class Main < Gosu::Window
   def initialize

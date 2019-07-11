@@ -1,9 +1,9 @@
 require "gosu"
-require_relative "./sceneManager.rb"
+require_relative "../sceneManager.rb"
 require_relative "./scene.rb"
 require_relative "./scene1.rb"
-require_relative "./rectangle.rb"
-require_relative "./constants.rb"
+require_relative "../rectangle.rb"
+require_relative "../constants.rb"
 
 TEXT_Y = 400
 FONT_HEIGHT = 24

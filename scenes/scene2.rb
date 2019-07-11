@@ -1,8 +1,5 @@
 require "gosu"
-require_relative "./player.rb"
 require_relative "./gameScene.rb"
-require_relative "./enemy.rb"
-require_relative "./wall.rb"
 
 class Scene2 < GameScene
   attr_accessor :background_image

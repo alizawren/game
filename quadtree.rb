@@ -19,8 +19,8 @@ class Quadtree
   end
 
   def split
-    subWidth = @bounds.width / 2
-    subHeight = @bounds.height / 2
+    subWidth = @bounds.width / 2.0
+    subHeight = @bounds.height / 2.0
     x = @bounds.x
     y = @bounds.y
 
@@ -31,25 +31,25 @@ class Quadtree
   end
 
   # helper function
-  def getIndex(pRect)
+  def getIndex(gameObject)
     index = -1
-    verticalMidpoint = @bounds.x + (@bounds.width / 2)
-    horizontalMidpoint = @bounds.y + (@bounds.height / 2)
+    verticalMidpoint = @bounds.x + (@bounds.width / 2.0)
+    horizontalMidpoint = @bounds.y + (@bounds.height / 2.0)
 
     # Object can completely fit within the top quadrants
-    topQuadrant = (pRect.y < horizontalMidpoint && pRect.y + pRect.height < horizontalMidpoint)
+    topQuadrant = (gameObject.y < horizontalMidpoint && gameObject.y + gameObject.height < horizontalMidpoint)
     # Object can completely fit within the bottom quadrants
-    bottomQuadrant = (pRect.y > horizontalMidpoint)
+    bottomQuadrant = (gameObject.y > horizontalMidpoint)
 
     # Object can completely fit within the left quadrants
-    if (pRect.x < verticalMidpoint && pRect.x + pRect.width < verticalMidpoint)
+    if (gameObject.x < verticalMidpoint && gameObject.x + gameObject.width < verticalMidpoint)
       if (topQuadrant)
         index = 1
       elsif (bottomQuadrant)
         index = 2
       end
       # Object can completely fit within the right quadrants
-    elsif (pRect.x > verticalMidpoint)
+    elsif (gameObject.x > verticalMidpoint)
       if (topQuadrant)
         index = 0
       elsif (bottomQuadrant)
@@ -57,24 +57,23 @@ class Quadtree
       end
     end
 
-    puts pRect.to_s + " index: " + index.to_s
     return index
   end
 
-  def insert(pRect)
+  def insert(gameObject)
     # if we've already split, insert it anywhere
     if (@nodes.length > 0)
-      index = getIndex(pRect)
+      index = getIndex(gameObject)
 
       # it goes into the objects of a further node
       if (index != -1)
-        @nodes[index].insert(pRect)
+        @nodes[index].insert(gameObject)
         return
       end
     end
 
     # otherwise it goes here
-    @objects.push(pRect)
+    @objects.push(gameObject)
 
     # if we've hit max objects, split this into new nodes
     if (@objects.size() > MAX_OBJECTS && @level < MAX_LEVELS)
@@ -96,11 +95,11 @@ class Quadtree
   end
 
   # Return all objects that could collide with the given object
-  def retrieve(pRect)
+  def retrieve(gameObject)
     returnObjects = []
-    index = getIndex(pRect)
+    index = getIndex(gameObject)
     if (index != -1 && @nodes.length > 0)
-      newobjects = @nodes[index].retrieve(pRect)
+      newobjects = @nodes[index].retrieve(gameObject)
       for obj in newobjects
         returnObjects.push(obj)
       end
