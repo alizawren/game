@@ -124,7 +124,6 @@ def overlap(obj1, obj2)
   obj2centerx = obj2.x + (obj2.width / 2.0)
   obj2centery = obj2.y + (obj2.height / 2.0)
 
-  puts obj1.height, obj2.height
   # algorithm for collision of normal rectangles
   if (obj1.width / 2.0 == 0 || obj1.height / 2.0 == 0 || obj2.width / 2.0 == 0 || obj2.height / 2.0 == 0 \
     || (obj1centerx - obj2centerx).abs > obj1.width / 2.0 + obj2.width / 2.0 \
