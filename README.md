@@ -6,7 +6,7 @@ Inside of the game directory, run 'ruby main.rb'.
 
 ## Todo list
 
-- GUI Stack
+- GUI Stack (done, but could use some cleanup)
 - Camera movement
 - Scene graph
 - collision response
