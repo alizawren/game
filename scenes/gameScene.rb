@@ -26,6 +26,7 @@ class GameScene < Scene
   end
 
   def unload
+    super
     @quadtree = nil
   end
 
@@ -66,6 +67,7 @@ class GameScene < Scene
       end
     end
 
+    # OLD QUADTREE CODE
     # returnObjects = []
     # for i in 0..@allObjects.length - 1
     #   returnObjects = @quadtree.retrieve(@allObjects[i])

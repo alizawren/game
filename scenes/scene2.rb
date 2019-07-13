@@ -22,9 +22,6 @@ class Scene2 < GameScene
     # puts @allObjects
   end
 
-  def unload
-  end
-
   def update
     super
   end

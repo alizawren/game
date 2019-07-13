@@ -51,7 +51,7 @@ class Player < GameObject
   def update
     super
     # issue with this: if you are turning from left to right, vel MUST be 0 at some point (Mean Value Theorem) but we don't want to
-    # be standing suddenly
+    # be standing suddenly. Instead, look into state machines
     if (@vel_x.abs < 1.0 && @vel_y.abs < 1.0)
       @state = 0
     else

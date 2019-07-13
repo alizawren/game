@@ -12,3 +12,4 @@ Inside of the game directory, run 'ruby main.rb'.
 - collision response
 - quadtree not working
 - ideally want to place x and y at center of objects (or store center)? to detect proximity, at least (actually this whole thing is a matter of bounding rectangles)
+- Ruby method arg reference https://www.rubyguides.com/2018/06/rubys-method-arguments/

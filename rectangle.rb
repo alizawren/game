@@ -5,8 +5,8 @@ class Rectangle
   attr_accessor :y
   attr_accessor :width
   attr_accessor :height
-  attr_accessor :color
   attr_accessor :z
+  attr_accessor :color
   attr_accessor :clear
 
   def initialize(x = 0, y = 0, width = 30, height = 30, z: 0, color: Gosu::Color::WHITE, clear: false)

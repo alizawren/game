@@ -1,4 +1,4 @@
-require_relative "./sceneManager" # has ability to change scenes
+require_relative "./sceneManager" # GUI has ability to change scenes
 require_relative "./constants.rb"
 require "gosu"
 
@@ -8,7 +8,7 @@ require "gosu"
 class Gui
   attr_accessor :z
 
-  def initialize(x = 0, y = 0, width: CANVAS_WIDTH - x, height: CANVAS_HEIGHT - y)
+  def initialize(x = 0, y = 0, width: CANVAS_WIDTH - 2 * x, height: CANVAS_HEIGHT - 2 * y)
     @borderColor = Gosu::Color::WHITE
     @bgColor = Gosu::Color::BLACK
 
@@ -37,13 +37,12 @@ class Gui
       Gosu.draw_line(@x + @width, @y, @borderColor, @x + @width, @y + @height, @borderColor, @z)
       Gosu.draw_line(@x, @y + @height, @borderColor, @x + @width, @y + @height, @borderColor, @z)
     end
+
+    @selector.draw(@selector.x, @selector.y, @z + 1)
   end
 
   def button_down(id, close_callback)
     puts ("Button pressed... override me!")
     SceneManager.guiPop() # auto pops to avoid some memory issues if this hasn't been overriden yet. All guis should take care of themselves
-  end
-
-  def widgetAction(widget)
   end
 end
