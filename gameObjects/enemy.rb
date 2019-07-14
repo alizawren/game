@@ -22,7 +22,7 @@ class Enemy < GameObject
     #we'll do textures later,
     #they're just rectangles for now
     @color = Gosu::Color::BLUE
-    @boundingRect = Rectangle.new(@x, @y, @width, @height, color:@color)
+    @bounding = Rectangle.new(@x, @y, @width, @height, color:@color)
     @path = path
     @currNode = 1 # which node on path
     @state = 1 # 0 for idle, 1 for moving, 2 for pursuit
@@ -91,6 +91,11 @@ class Enemy < GameObject
 
   def draw
     super
+  end
+  def overlap(obj2,mtv=Vector[0,0])
+    if(obj2.is_a?(Obstacle))
+      force(mtv)
+    end
   end
 end
 

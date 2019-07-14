@@ -2,13 +2,19 @@ require 'gosu'
 require_relative '../../collision.rb'
 
 class Obstacle
-    attr_accessor :polygon
-    def initialize(vertices,color=Gosu::Color::WHITE,z=0,clear=false)
+    attr_accessor :bounding
+    attr_accessor :color
+    attr_accessor :vertices
+    attr_accessor :z
+    attr_accessor :clear
+     
+
+    def initialize(vertices=[],color=Gosu::Color::WHITE,z=0,clear=false)
         #when you create an obstacle, you pass in its vertices
         #these vertices have to eb relative to the origin of the map
         #optional parameters are color, order (z), and clear/block
-        @vertices = vertices;
-        @polygon = Polygon.new(vertices)
+        @vertices = vertices
+        @bounding = Polygon.new(vertices)
         #the vertices are an array of 2d ruby vectors
         @color = color
         @z = z
@@ -20,6 +26,7 @@ class Obstacle
 
     end
     def draw
+        
         #I opted to just draw its vertices for now
         #edges are unnecessary for calculation
         #when we create the actual game,
@@ -27,5 +34,8 @@ class Obstacle
         for vertex in @vertices do
             Gosu.draw_rect(vertex[0],vertex[1],15,15,Gosu::Color::WHITE)
         end
+    end
+    def overlap(obj2,mtv=Vector[0,0])
+        
     end
 end

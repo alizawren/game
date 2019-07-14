@@ -1,69 +1,7 @@
 require 'gosu'
-require 'json'
 require 'matrix'
-class Polygon
-    attr_reader :vertices 
-    attr_reader :axes
-    def initialize(vertices)
-        @position = Vector[0,0]
-        @baseVertices = []
-        for vertex in vertices do
-            @baseVertices.push(Vector[vertex[0],vertex[1]])
-        end
-        @vertices = []
-        for vertex in @baseVertices do
-            @vertices.push(Vector[vertex[0],vertex[1]])
-        end
-        
-        # for vertex in vertices do
-        #     @vertices.push(Vector.elements(vertex));
-        # end
-        @axes = []
-        for i in 0..@vertices.length-1 do
-            v = @vertices[i]
-            nextVertex = @vertices[i+1 == @vertices.length ? 0 : i + 1];
-            edge = v-nextVertex
-            normal = Vector[edge[1]*-1,edge[0]*-1].normalize()
-            @axes.push(normal)
-        end
-        @baseAxes = @axes
-    end
-    def update(x,y)
-        @position[0] = x
-        @position[1] = y
-        for i in 0..@vertices.length-1 do
-            @vertices[i] = @baseVertices[i]+@position
-        end
-        @axes = []
-        for i in 0..@vertices.length-1 do
-            v = @vertices[i]
-            nextVertex = @vertices[i+1 == @vertices.length ? 0 : i + 1];
-            edge = v-nextVertex
-            normal = Vector[edge[1]*-1,edge[0]*-1].normalize()
-            @axes.push(normal)
-        end
-    end
-    def project(axis)
-        min = axis.dot(@vertices[0])
-        max = min
-        for i in 0..@vertices.length-1 do
-            p = axis.dot(@vertices[i])
-            if p < min
-                min = p
-            elsif p > max
-                max = p
-            end
-        end
-        proj = Projection.new(min,max);
-    end
-    def draw
-        for vertex in @vertices do
-            Gosu.draw_rect(vertex[0],vertex[1],10,10,Gosu::Color.new(255,0,0))
-        end
-    end
-
-end
-
+#a projection class to store a 1-d projection
+#of a shape onto an axis
 class Projection
     attr_reader :min
     attr_reader :max
@@ -88,6 +26,9 @@ class Projection
     end
 end
 
+#a vector containing the shortest vector to push a
+#shape outside of another
+#Minimum Translation Vector
 class MTV
     attr_reader :v
     def initialize(smallest, overlap)
@@ -96,7 +37,7 @@ class MTV
         @v = smallest.normalize()*overlap;
     end
 end
-
+#checks if two shapes are colliding
 def checkCollision(polygon1,polygon2)
     for i in 0..polygon1.axes.length-1 do
         p1 = polygon1.project(polygon1.axes[i])
@@ -114,7 +55,10 @@ def checkCollision(polygon1,polygon2)
     end
     return true
 end
-
+#checks if 2 shapes are colliding
+#if they are, return a vector that
+#is the shrotest vector to move
+#the polygon out of another
 def findOverlap(polygon1,polygon2)
     overlap = 999_999_999
     smallest = NIL

@@ -6,7 +6,7 @@ class GameObject
   attr_reader :y
   attr_reader :vel_x
   attr_reader :vel_y
-  attr_reader :boundingRect
+  attr_reader :bounding
   attr_reader :width
   attr_reader :height
   attr_accessor :color
@@ -17,13 +17,8 @@ class GameObject
     @vel_x = @vel_y = @angle = 0.0
     @width = width
     @height = width
-<<<<<<< HEAD
-    @image = Rectangle.new(@x, @y, @width, @height)
-    @polygon = Polygon.new(Vector[0,0],Vector[@width,0],Vector[@width,@height],Vector[0,@height])
-=======
-    @boundingRect = Rectangle.new(@x, @y, @width, @height)
+    @bounding = Rectangle.new(@x, @y, @width, @height)
 
->>>>>>> 8a4c99469e5defd65ad34f5964423c70fcdff17f
     @allCollidingObjects = []
   end
 
@@ -36,7 +31,7 @@ class GameObject
     @y += forceVector[1]
   end
 
-  def goto(x, y)
+  def go_to(x, y)
     @x, @y = x, y
   end
 
@@ -49,7 +44,7 @@ class GameObject
   end
 
   def update
-    @boundingRect.color = @color
+    @bounding.color = @color
     move
   end
 
@@ -58,11 +53,14 @@ class GameObject
     @y += @vel_y
     @x %= CANVAS_WIDTH
     @y %= CANVAS_HEIGHT
-    @polygon.update(@x,@y)
+    @bounding.update(@x,@y)
   end
 
   def draw
     # @boundingRect.draw_rot(@x, @y, 1, @angle)
-    @boundingRect.draw(@x, @y, 1)
+    @bounding.draw(@x, @y, 1)
+  end
+  def overlap(obj2,mtv=Vector[0,0])
+
   end
 end

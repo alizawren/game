@@ -14,7 +14,7 @@ class Player < GameObject
     @color = Gosu::Color::WHITE
     @width = 128 * 0.8
     @height = 128 * 0.8
-    @boundingRect = Rectangle.new(@x, @y, @width, @height)
+    @bounding = Rectangle.new(@x, @y, @width, @height)
 
     @idle_anim = Animation.new("img/scia/idle.png", @x, @y, @width, @height)
     @walking_anim = Animation.new("img/scia/walking.png", @x, @y, @width, @height)
@@ -80,5 +80,13 @@ class Player < GameObject
   def draw
     # super
     @curr_anim.draw(@x, @y)
+  end
+  def overlap(obj2,mtv=Vector[0,0])
+    if(obj2.is_a?(Enemy))
+      go_to(50,50)
+    end
+    if(obj2.is_a?(Obstacle))
+      force(-mtv)
+    end
   end
 end
