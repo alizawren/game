@@ -4,11 +4,11 @@ require 'matrix'
 class Polygon
     attr_reader :vertices 
     attr_reader :axes
-    def initialize(vertices,startingPosition=Vector[0,0])
-        @position = startingPosition
+    def initialize(vertices)
+        @position = Vector[0,0]
         @baseVertices = []
         for vertex in vertices do
-            @baseVertices.push(Vector[vertex[0],vertex[1]]-startingPosition)
+            @baseVertices.push(Vector[vertex[0],vertex[1]])
         end
         @vertices = []
         for vertex in @baseVertices do

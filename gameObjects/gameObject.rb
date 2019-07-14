@@ -1,6 +1,6 @@
 require_relative "../rectangle.rb"
 require_relative "../constants"
-
+require_relative "../collision.rb"
 class GameObject
   attr_reader :x
   attr_reader :y
@@ -18,7 +18,7 @@ class GameObject
     @width = width
     @height = width
     @image = Rectangle.new(@x, @y, @width, @height)
-
+    @polygon = Polygon.new(Vector[0,0],Vector[@width,0],Vector[@width,@height],Vector[0,@height])
     @allCollidingObjects = []
   end
 
@@ -53,6 +53,7 @@ class GameObject
     @y += @vel_y
     @x %= CANVAS_WIDTH
     @y %= CANVAS_HEIGHT
+    @polygon.update(@x,@y)
   end
 
   def draw
