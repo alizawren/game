@@ -1,5 +1,6 @@
 require_relative "../rectangle.rb"
 require_relative "../constants"
+require_relative "../collision.rb"
 require "matrix"
 
 class GameObject
@@ -7,7 +8,7 @@ class GameObject
   attr_reader :y
   attr_reader :vel_x
   attr_reader :vel_y
-  attr_reader :boundingRect
+  attr_reader :bounding
   attr_reader :width
   attr_reader :height
   attr_accessor :color
@@ -19,7 +20,7 @@ class GameObject
     @vel_x = @vel_y = @angle = 0.0
     @width = width
     @height = width
-    @boundingRect = Rectangle.new(@x, @y, @width, @height)
+    @bounding = Rectangle.new(@x, @y, @width, @height)
 
     @transform = Matrix.I(3) # 3x3 to account for translation
 
@@ -35,7 +36,7 @@ class GameObject
     @y += forceVector[1]
   end
 
-  def goto(x, y)
+  def go_to(x, y)
     @x, @y = x, y
   end
 
@@ -48,7 +49,7 @@ class GameObject
   end
 
   def update
-    @boundingRect.color = @color
+    @bounding.color = @color
     move
   end
 
@@ -57,8 +58,9 @@ class GameObject
 
     @x += @vel_x
     @y += @vel_y
-    # @x %= CANVAS_WIDTH
-    # @y %= CANVAS_HEIGHT
+    @x %= CANVAS_WIDTH
+    @y %= CANVAS_HEIGHT
+    @bounding.update(@x, @y)
   end
 
   def draw
@@ -68,6 +70,9 @@ class GameObject
     x = newpos[0]
     y = newpos[1]
 
-    @boundingRect.draw(x, y, 1)
+    @bounding.draw(x, y, 1)
+  end
+
+  def overlap(obj2, mtv = Vector[0, 0])
   end
 end

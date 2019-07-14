@@ -1,6 +1,7 @@
 require "gosu"
 require_relative "../gameObjects/player.rb"
 require_relative "../gameObjects/enemy.rb"
+require_relative "../gameObjects/obstacles/obstacle.rb"
 require_relative "../gameObjects/obstacles/wall.rb"
 require_relative "../quadtree.rb"
 require_relative "./scene.rb"
@@ -30,7 +31,7 @@ class GameScene < Scene
     @realbg = Gosu::Image.new("img/tempbg.png", :tileable => true)
 
     @player = Player.new
-    @player.goto(50, 50)
+    @player.go_to(50, 50)
 
     @enemies = []
 
@@ -141,30 +142,44 @@ class GameScene < Scene
     @realbg.draw(x, y, 0)
 
     @player.draw
+    @player.bounding.draw_frame
     for enemy in @enemies
       enemy.draw
+      enemy.bounding.draw_frame
     end
     for obstacle in @obstacles
       obstacle.draw
+      obstacle.bounding.draw_frame
     end
   end
 end
 
 def overlap(obj1, obj2)
-  overlap = Vector[0, 0]
-
-  obj1centerx = obj1.x + (obj1.width / 2.0)
-  obj1centery = obj1.y + (obj1.height / 2.0)
-  obj2centerx = obj2.x + (obj2.width / 2.0)
-  obj2centery = obj2.y + (obj2.height / 2.0)
-
-  # algorithm for collision of normal rectangles
-  if (obj1.width / 2.0 == 0 || obj1.height / 2.0 == 0 || obj2.width / 2.0 == 0 || obj2.height / 2.0 == 0 \
-    || (obj1centerx - obj2centerx).abs > obj1.width / 2.0 + obj2.width / 2.0 \
-    || (obj1centery - obj2centery).abs > obj1.height / 2.0 + obj2.height / 2.0)
-    return false
+  mtv = findOverlap(obj1.bounding,obj2.bounding)
+  if(mtv)
+    #call overlap on both objects if they overlap?
+    #so they can handle it themselves?
+    obj1.overlap(obj2,mtv.v)
+    obj2.overlap(obj1,mtv.v)
+    return mtv 
   end
+  return false
+  # overlap = Vector[0, 0]
+
+  # obj1centerx = obj1.x + (obj1.width / 2.0)
+  # obj1centery = obj1.y + (obj1.height / 2.0)
+  # obj2centerx = obj2.x + (obj2.width / 2.0)
+  # obj2centery = obj2.y + (obj2.height / 2.0)
+
+  # # algorithm for collision of normal rectangles
+  # if (obj1.width / 2.0 == 0 || obj1.height / 2.0 == 0 || obj2.width / 2.0 == 0 || obj2.height / 2.0 == 0 \
+  #   || (obj1centerx - obj2centerx).abs > obj1.width / 2.0 + obj2.width / 2.0 \
+  #   || (obj1centery - obj2centery).abs > obj1.height / 2.0 + obj2.height / 2.0)
+  #   return false
+  # end
 
   # overlap = Vector[]
-  return true
+  
+  
+  # return true
 end
