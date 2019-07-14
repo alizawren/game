@@ -78,7 +78,12 @@ class Player < GameObject
   end
 
   def draw
-    # super
-    @curr_anim.draw(@x, @y)
+    # note: in the future, make things more consistent so we don't have to recalculate this and can just call super
+    curr = Vector[@x, @y, 1]
+    newpos = @transform * curr
+    x = newpos[0]
+    y = newpos[1]
+
+    @curr_anim.draw(x, y)
   end
 end

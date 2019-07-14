@@ -7,7 +7,8 @@ Inside of the game directory, run 'ruby main.rb'.
 ## Todo list
 
 - GUI Stack (done, but could use some cleanup)
-- Camera movement
+- Camera movement (done, but transformations not yet universal (?))
+- Data driven animation system with state machines
 - Scene graph
 - collision response
 - quadtree not working

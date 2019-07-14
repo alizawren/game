@@ -5,17 +5,29 @@ require_relative "../gameObjects/obstacles/wall.rb"
 require_relative "../quadtree.rb"
 require_relative "./scene.rb"
 require_relative "../constants.rb"
+require_relative "../camera.rb"
+require "matrix"
 
 CollisionData = Struct.new(:other, :overlap, :speed1, :speed2, :oldpos1, :oldpos2, :pos1, :pos2) do
 end
 
 class GameScene < Scene
   attr_accessor :background_image
+  attr_accessor :x
+  attr_accessor :y
 
   def load
+    # @transform = Matrix.I(3)
+    # @transform[1, 3] = 500
+    # @transform[2, 3] = 200
+    @transform = Matrix[[1, 0, 500], [0, 1, 200], [0, 0, 1]]
+
+    @camera = Camera.new
+
     @quadtree = Quadtree.new(0, Rectangle.new(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT))
 
     @background_image = Gosu::Image.new("img/space.png", :tileable => true)
+    @realbg = Gosu::Image.new("img/tempbg.png", :tileable => true)
 
     @player = Player.new
     @player.goto(50, 50)
@@ -104,10 +116,30 @@ class GameScene < Scene
         end
       end
     end
+
+    @camera.update(@player.x + @player.width / 2, @player.y + @player.height / 2, @realbg.width / 2, @realbg.height / 2)
+    @transform = @camera.transform
+
+    # update transforms for each object
+    @player.transform = @transform
+    for enemy in @enemies
+      enemy.transform = @transform
+    end
+    for obstacle in @obstacles
+      obstacle.transform = @transform
+    end
   end
 
   def draw
-    @background_image.draw(0, 0, 0)
+    # NOTE: in the future, we would want to make a bitmap class so that we could easily set their transforms
+    # and call bitmap.draw instead of the below
+    curr = Vector[0, 0, 1]
+    newpos = @transform * curr
+    x = newpos[0]
+    y = newpos[1]
+    @background_image.draw(x, y, 0)
+    @realbg.draw(x, y, 0)
+
     @player.draw
     for enemy in @enemies
       enemy.draw

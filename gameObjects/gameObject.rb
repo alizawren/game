@@ -1,8 +1,9 @@
 require_relative "../rectangle.rb"
 require_relative "../constants"
+require "matrix"
 
 class GameObject
-  attr_reader :x
+  attr_reader :x # read only! important!
   attr_reader :y
   attr_reader :vel_x
   attr_reader :vel_y
@@ -10,6 +11,7 @@ class GameObject
   attr_reader :width
   attr_reader :height
   attr_accessor :color
+  attr_accessor :transform
 
   def initialize(x = 0.0, y = 0.0, width = 30, height = 30)
     @x = x
@@ -18,6 +20,8 @@ class GameObject
     @width = width
     @height = width
     @boundingRect = Rectangle.new(@x, @y, @width, @height)
+
+    @transform = Matrix.I(3) # 3x3 to account for translation
 
     @allCollidingObjects = []
   end
@@ -49,14 +53,21 @@ class GameObject
   end
 
   def move
+    # implement collisions in here; if collide with wall, can't move
+
     @x += @vel_x
     @y += @vel_y
-    @x %= CANVAS_WIDTH
-    @y %= CANVAS_HEIGHT
+    # @x %= CANVAS_WIDTH
+    # @y %= CANVAS_HEIGHT
   end
 
   def draw
     # @boundingRect.draw_rot(@x, @y, 1, @angle)
-    @boundingRect.draw(@x, @y, 1)
+    curr = Vector[@x, @y, 1]
+    newpos = @transform * curr
+    x = newpos[0]
+    y = newpos[1]
+
+    @boundingRect.draw(x, y, 1)
   end
 end
