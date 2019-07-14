@@ -1,8 +1,8 @@
 require_relative "../constants.rb"
+require_relative "../sceneManager.rb"
 
 # when making scenes, implement each of the below methods
 class Scene
-  attr_accessor :guiStack
 
   # necessary methods
   def update
@@ -17,10 +17,13 @@ class Scene
 
   def unload
     # unload everything that the garbage collector won’t unload, itself, including graphics
+    SceneManager.guiClear
   end
 
-  def button_down(id, close_callback)
-  end
+  # getting rid of this method for now because most of the time, we only listen to button presses where GUIs have been created
+  # may change once we have dialogue
+  # def button_down(id, close_callback)
+  # end
 
   # optional methods
   def transitionIn

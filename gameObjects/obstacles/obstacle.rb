@@ -1,5 +1,5 @@
 require 'gosu'
-require_relative './collision.rb'
+require_relative '../../collision.rb'
 
 class Obstacle
     attr_accessor :polygon

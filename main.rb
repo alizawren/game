@@ -12,7 +12,7 @@ class Main < Gosu::Window
     @scene1 = Scene1.new
     @scene2 = Scene2.new
     @menu = MainMenu.new
-    SceneManager.changeScene(@scene2)
+    SceneManager.changeScene(@menu)
   end
 
   def update

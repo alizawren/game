@@ -9,8 +9,8 @@ class Scene2 < GameScene
     @player.goto(50, 50)
 
     @enemies.push(Enemy.new([Vector[1000, 50], Vector[1005, 50]]))
-    @enemies.push(Enemy.new([Vector[1000, 400], Vector[1000, 400]]))
-    @enemies.push(Enemy.new([Vector[180, 400], Vector[100, 400]]))
+    @enemies.push(Enemy.new([Vector[1000, 345], Vector[1000, 345]]))
+    @enemies.push(Enemy.new([Vector[180, 400], Vector[100, 405]]))
 
     # @obstacles.push(Wall.new(500,500,50,100))
 
@@ -20,9 +20,6 @@ class Scene2 < GameScene
       @allObjects.push(enemy)
     end
     # puts @allObjects
-  end
-
-  def unload
   end
 
   def update

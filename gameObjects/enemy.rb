@@ -22,7 +22,7 @@ class Enemy < GameObject
     #we'll do textures later,
     #they're just rectangles for now
     @color = Gosu::Color::BLUE
-    @image = Rectangle.new(@x, @y, @width, @height, @color)
+    @boundingRect = Rectangle.new(@x, @y, @width, @height, color:@color)
     @path = path
     @currNode = 1 # which node on path
     @state = 1 # 0 for idle, 1 for moving, 2 for pursuit
@@ -80,7 +80,7 @@ class Enemy < GameObject
     @vel_x = newvel[0]
     @vel_y = newvel[1]
 
-    # @image.color = @color
+    # @boundingRect.color = @color
     # move
     super()
   end
