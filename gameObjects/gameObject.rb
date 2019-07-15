@@ -1,43 +1,42 @@
-require_relative "../rectangle.rb"
+require_relative "../boundingPolygon.rb"
 require_relative "../constants"
 require_relative "../collision.rb"
 require "matrix"
 
 class GameObject
-  attr_reader :x # read only! important!
-  attr_reader :y
-  attr_reader :vel_x
-  attr_reader :vel_y
-  attr_reader :bounding
+  attr_reader :center
+  attr_reader :velocity
+
+  attr_reader :boundPoly
   attr_reader :width
   attr_reader :height
   attr_accessor :color
   attr_accessor :transform
 
-  def initialize(x = 0.0, y = 0.0, width = 30, height = 30)
-    @x = x
-    @y = y
-    @vel_x = @vel_y = @angle = 0.0
+  # def initialize(x = 0.0, y = 0.0, width = 30, height = 30)
+  def initialize(center = Vector[0.0, 0.0], width = 30, height = 30)
+    @center = center
+    @velocity = Vector[0.0, 0.0]
+    @angle = 0.0
     @width = width
-    @height = width
-    @bounding = Rectangle.new(@x, @y, @width, @height)
+    @height = height
+
+    # in the future, need a polygon for colliding with walls (feet only)
+    # and one for colliding with other objects including attacks (whole body)
+    @boundPoly = BoundingPolygon.new(self)
+    @image = Gosu::Image.new("img/aSimpleSquare.png")
 
     @transform = Matrix.I(3) # 3x3 to account for translation
 
     @allCollidingObjects = []
   end
 
-  def position
-    Vector[@x, @y]
+  def go_to(pos)
+    @center = pos
   end
 
   def force(forceVector)
-    @x += forceVector[0]
-    @y += forceVector[1]
-  end
-
-  def go_to(x, y)
-    @x, @y = x, y
+    @center = @center + forceVector
   end
 
   def turn_left
@@ -49,29 +48,24 @@ class GameObject
   end
 
   def update
-    @bounding.color = @color
-    @bounding.transform = @transform
-    move
-  end
-
-  def move
+    @boundPoly.transform = @transform
     # implement collisions in here; if collide with wall, can't move
-
-    @x += @vel_x
-    @y += @vel_y
-    @x %= CANVAS_WIDTH
-    @y %= CANVAS_HEIGHT
-    @bounding.update(@x, @y)
+    puts @velocity
+    @center = @center + @velocity
+    @boundPoly.update
   end
 
   def draw
-    # @boundingRect.draw_rot(@x, @y, 1, @angle)
-    curr = Vector[@x, @y, 1]
+    curr = Vector[@center[0], @center[1], 1]
     newpos = @transform * curr
     x = newpos[0]
     y = newpos[1]
 
-    @bounding.draw(x, y, 1)
+    @image.draw(x - @width / 2, y - @height / 2, 1)
+  end
+
+  def draw_frame
+    @boundPoly.draw
   end
 
   def overlap(obj2, mtv = Vector[0, 0])

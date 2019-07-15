@@ -1,9 +1,7 @@
 class Animation
   attr_accessor :flip
 
-  def initialize(spriteSheet, x = 0, y = 0, width = 128, height = 128, tileWidth = 128, tileHeight = 128, fps = 10)
-    @x = x
-    @y = y
+  def initialize(spriteSheet, width = 128, height = 128, tileWidth = 128, tileHeight = 128, fps = 10)
     @width = width
     @height = height
     @img_array = Gosu::Image.load_tiles(spriteSheet, tileWidth, tileHeight)
@@ -24,7 +22,7 @@ class Animation
     end
   end
 
-  def draw(x = @x, y = @y)
+  def draw(x, y)
     # @img_array[@frame].draw(x, y, 1)
 
     color = Gosu::Color::WHITE

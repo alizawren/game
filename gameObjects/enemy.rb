@@ -17,13 +17,13 @@ class Enemy < GameObject
   def initialize(path = [Vector[0, 0], Vector[100, 0]])
     super()
     #starting position is the first point in the path
-    @x = path[0][0]
-    @y = path[0][1]
+
     #we'll do textures later,
     #they're just rectangles for now
-    @color = Gosu::Color::BLUE
-    @bounding = Rectangle.new(@x, @y, @width, @height, color: @color)
+    @boundPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
+
     @path = path
+    @center = @path[0]
     @currNode = 1 # which node on path
     @state = 1 # 0 for idle, 1 for moving, 2 for pursuit
     #assign various constants
@@ -31,23 +31,20 @@ class Enemy < GameObject
     @enemy_speed = ENEMY_MAX_SPEED
   end
 
-  def update(playerX = 0, playerY = 0, playerVelX = 0, playerVelY = 0)
-    targetx = nil
-    targety = nil
+  def update(playerCenter = Vector[0, 0], playerVelocity = Vector[0, 0])
+    target = nil
 
     if (@state == 0)
       # stay in place for some time
-      targetx = @x
-      targety = @y
+      target = @center
       @timer -= 1
       if (@timer == 0)
         @timer = IDLE_TIME
         @state = 1
       end
     elsif (@state == 1)
-      targetx = @path[@currNode][0]
-      targety = @path[@currNode][1]
-      if (Math.sqrt((targetx - @x) ** 2 + (targety - @y) ** 2) <= 5)
+      target = @path[@currNode]
+      if (distance(target, @center) <= 5)
         @state = 0
         @currNode += 1
         if (@currNode == @path.length)
@@ -55,33 +52,30 @@ class Enemy < GameObject
         end
       end
     elsif (@state == 2)
-      # target = position;
-      targetx = playerX + playerVelX * PURSUIT_CONST
-      targety = playerY + playerVelY * PURSUIT_CONST
+      target = playerCenter + playerVelocity * PURSUIT_CONST
     end
 
-    if (Math.sqrt((playerX - @x) ** 2 + (playerY - @y) ** 2) <= 150)
+    if (distance(playerCenter, @center) <= 150)
       @enemy_speed = ENEMY_MAX_SPEED_PURSUIT
       @state = 2
     end
 
-    targetMinusPos = Vector[targetx - @x, targety - @y]
+    targetMinusPos = target - @center
     if !targetMinusPos.zero?
       targetMinusPos = targetMinusPos.normalize
     end
 
-    dist = Math.sqrt((targetx - @x) ** 2 + (targety - @y) ** 2)
+    # dist = Math.sqrt((target[0] - @center[0]) ** 2 + (target[1] - @center[1]) ** 2)
+    dist = distance(target, @center)
     desired_velocity = (dist < SLOWING_RADIUS) ? targetMinusPos * @enemy_speed * (dist / SLOWING_RADIUS) : targetMinusPos * @enemy_speed
-    steering = Vector[desired_velocity[0] - @vel_x, desired_velocity[1] - @vel_y]
+    steering = desired_velocity - @velocity
     steering = truncate(steering, ENEMY_MAX_FORCE)
     steering = steering / MASS
 
-    newvel = truncate(Vector[@vel_x + steering[0], @vel_y + steering[1]], @enemy_speed)
-    @vel_x = newvel[0]
-    @vel_y = newvel[1]
+    # newvel = truncate(Vector[@vel_x + steering[0], @vel_y + steering[1]], @enemy_speed)
+    newvel = truncate(@velocity + steering, @enemy_speed)
+    @velocity = newvel
 
-    # @boundingRect.color = @color
-    # move
     super()
   end
 
@@ -95,5 +89,9 @@ end
 def truncate(vec, max_const)
   i = max_const / vec.magnitude()
   i = i < 1 ? i : 1
-  return Vector[vec[0] * i, vec[1] * i]
+  return Vector[vec[0] * i, vec[1] * i] # deep copy
+end
+
+def distance(vec1, vec2)
+  return Math.sqrt((vec1[0] - vec2[0]) ** 2 + (vec1[1] - vec2[1]) ** 2)
 end
