@@ -1,5 +1,6 @@
 require "gosu"
 require_relative "./polygon.rb"
+
 class Rectangle < Polygon
   attr_accessor :x
   attr_accessor :y
@@ -24,8 +25,9 @@ class Rectangle < Polygon
   def vertices
     [Vector[@x, @y], Vector[@x + @width, @y], Vector[@x + @width, @y + @height], Vector[@x, @y + @height]]
   end
+
   def staticVertices
-    [Vector[0,0],Vector[@width,0],Vector[@width,@height],Vector[0,@height]]
+    [Vector[0, 0], Vector[@width, 0], Vector[@width, @height], Vector[0, @height]]
   end
 
   def draw(x = @x, y = @y, z = @z)

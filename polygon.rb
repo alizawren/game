@@ -5,6 +5,7 @@ class Polygon
   attr_reader :vertices
   attr_reader :axes
   attr_accessor :color
+  attr_accessor :transform
 
   def initialize(vertices = [])
     @position = Vector[0, 0]
@@ -64,7 +65,11 @@ class Polygon
 
   def draw_frame
     for vertex in @vertices
-      Gosu.draw_rect(vertex[0], vertex[1], 10, 10, Gosu::Color.new(255, 0, 0))
+      curr = Vector[vertex[0], vertex[1], 1]
+      newpos = @transform * curr
+      x = newpos[0]
+      y = newpos[1]
+      Gosu.draw_rect(x, y, 10, 10, Gosu::Color.new(255, 0, 0))
       # Gosu.draw_line()
     end
   end

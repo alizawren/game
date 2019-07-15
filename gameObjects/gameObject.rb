@@ -50,6 +50,7 @@ class GameObject
 
   def update
     @bounding.color = @color
+    @bounding.transform = @transform
     move
   end
 
