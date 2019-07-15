@@ -81,7 +81,7 @@ class BoundingPolygon
         currV = @vertices[i]
         nextV = @vertices[i + 1]
       end
-      Gosu.draw_line(currV[0], currV[1], @color, nextV[0], nextV[1], @color)
+      Gosu.draw_line(currV[0], currV[1], @color, nextV[0], nextV[1], @color, 100)
     end
   end
 end

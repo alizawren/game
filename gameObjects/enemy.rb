@@ -15,15 +15,16 @@ IDLE_TIME = 50
 class Enemy < GameObject
   #start with a path the enemy should follow
   def initialize(path = [Vector[0, 0], Vector[100, 0]])
-    super()
+    @path = path
+    @center = @path[0]
+    super(@center)
     #starting position is the first point in the path
 
     #we'll do textures later,
     #they're just rectangles for now
-    @hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
+    hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
+    @boundPolys["hit"] = hitPoly
 
-    @path = path
-    @center = @path[0]
     @currNode = 1 # which node on path
     @state = 1 # 0 for idle, 1 for moving, 2 for pursuit
     #assign various constants
@@ -79,7 +80,15 @@ class Enemy < GameObject
     super()
   end
 
-  def overlap(obj2, mtv = Vector[0, 0])
+  def overlap(obj2, poly, mtv = Vector[0, 0])
+    # case poly
+    # when "hit"
+    # when "walk"
+    #   if (obj2.is_a?(Obstacle))
+    #     force(-mtv)
+    #   end
+    # end
+    boundPolys["hit"].color = Gosu::Color::RED
     if (obj2.is_a?(Obstacle))
       force(mtv)
     end
