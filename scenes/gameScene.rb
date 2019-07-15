@@ -7,16 +7,14 @@ require_relative "../quadtree.rb"
 require_relative "./scene.rb"
 require_relative "../constants.rb"
 require_relative "../camera.rb"
+require_relative "../crosshair.rb"
 require "matrix"
 
 class GameScene < Scene
   attr_accessor :parallax
 
   def load
-    # @transform = Matrix.I(3)
-    # @transform[1, 3] = 500
-    # @transform[2, 3] = 200
-    @transform = Matrix[[1, 0, 500], [0, 1, 200], [0, 0, 1]]
+    @transform = Matrix.I(3)
 
     @camera = Camera.new
 
@@ -24,6 +22,8 @@ class GameScene < Scene
 
     @parallax = Gosu::Image.new("img/space.png", :tileable => true)
     @bg = Gosu::Image.new("img/tempbg.png", :tileable => true)
+
+    @crosshair = Crosshair.instance
 
     @player = Player.new(Vector[120, 120])
 
@@ -44,7 +44,7 @@ class GameScene < Scene
     @quadtree = nil
   end
 
-  def update
+  def update(mouse_x, mouse_y)
     #can we handle all of this in maybe a player update method?
     if Gosu.button_down? Gosu::KB_LEFT or Gosu::button_down? Gosu::GP_LEFT
       @player.go_left
@@ -128,6 +128,8 @@ class GameScene < Scene
         end
       end
     end
+
+    @crosshair.update(mouse_x, mouse_y) # might move this location
   end
 
   def draw
@@ -150,6 +152,8 @@ class GameScene < Scene
       obstacle.draw
       obstacle.draw_frame
     end
+
+    @crosshair.draw
   end
 end
 

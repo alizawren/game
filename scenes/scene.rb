@@ -5,7 +5,7 @@ require_relative "../sceneManager.rb"
 class Scene
 
   # necessary methods
-  def update
+  def update(mouse_x, mouse_y)
   end
 
   def draw

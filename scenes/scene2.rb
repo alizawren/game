@@ -23,8 +23,4 @@ class Scene2 < GameScene
       @allObjects.push(obstacle)
     end
   end
-
-  def update
-    super
-  end
 end
