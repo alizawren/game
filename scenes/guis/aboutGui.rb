@@ -22,4 +22,18 @@ class AboutGui < Gui
     text = "If you made it this far, congratulations! Oh, there's no word wrap for this, is there. Welp, here I go. Writing myself off into oblivioooooooooooooooooooooooooooooooooooooooooooooooo"
     @font.draw_text(text, @x + MARGIN, @y + MARGIN, @z)
   end
+
+  def button_down(id, close_callback)
+    case id
+    when Gosu::KB_UP
+      @select = (@select + @choices.length - 1) % @choices.length
+    when Gosu::KB_DOWN
+      @select = (@select + 1) % @choices.length
+    when Gosu::KB_RETURN, Gosu::KB_Z
+      case @select
+      when 0
+        SceneManager.guiPop
+      end
+    end
+  end
 end

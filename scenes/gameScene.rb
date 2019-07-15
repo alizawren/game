@@ -64,14 +64,6 @@ class GameScene < Scene
       # @player.state = 1
     end
 
-    for enemy in @enemies
-      enemy.update(@player.center, @player.velocity)
-    end
-    for obstacle in @obstacles
-      obstacle.update
-    end
-    @player.update
-
     # collision detection
     # @quadtree.clear
     # for i in 0..@allObjects.length - 1
@@ -131,6 +123,15 @@ class GameScene < Scene
     for obstacle in @obstacles
       obstacle.transform = @transform
     end
+
+    # make sure this is called last
+    for enemy in @enemies
+      enemy.update(@player.center, @player.velocity)
+    end
+    for obstacle in @obstacles
+      obstacle.update
+    end
+    @player.update
   end
 
   def draw
@@ -157,7 +158,7 @@ class GameScene < Scene
 end
 
 def overlap(obj1, obj2)
-  mtv = findOverlap(obj1.boundPoly, obj2.boundPoly)
+  mtv = findOverlap(obj1.hitPoly, obj2.hitPoly)
   if (mtv)
     #call overlap on both objects if they overlap?
     #so they can handle it themselves?

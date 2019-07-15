@@ -16,7 +16,7 @@ class Player < GameObject
     @height = 128 * 0.8
 
     # @boundPoly = Rectangle.new(@x, @y, @width, @height)
-    @boundPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
+    @hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
 
     @idle_anim = Animation.new("img/scia/idle.png", @width, @height)
     @walking_anim = Animation.new("img/scia/walking.png", @width, @height)
@@ -55,10 +55,9 @@ class Player < GameObject
   end
 
   def update
-    @boundPoly.transform = @transform
     @center = @center + @velocity
     @velocity = @velocity * 0.8
-    @boundPoly.update
+    @hitPoly.update
 
     # issue with this: if you are turning from left to right, vel MUST be 0 at some point (Mean Value Theorem) but we don't want to
     # be standing suddenly. Instead, look into state machines
@@ -93,6 +92,8 @@ class Player < GameObject
 
   def overlap(obj2, mtv = Vector[0, 0])
     if (obj2.is_a?(Enemy))
+      # replace with a "restartScene" call
+      # SceneManager.restartScene
       go_to(Vector[50, 50])
     end
     if (obj2.is_a?(Obstacle))
