@@ -60,6 +60,11 @@ class Enemy < GameObject
       @state = 2
     end
 
+    if (distance(playerCenter, @center) >= 200)
+      @enemy_speed = ENEMY_MAX_SPEED
+      @state = 1
+    end
+
     targetMinusPos = target - @center
     if !targetMinusPos.zero?
       targetMinusPos = targetMinusPos.normalize

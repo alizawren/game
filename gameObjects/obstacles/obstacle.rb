@@ -4,6 +4,6 @@ require_relative "../gameObject.rb"
 
 class Obstacle < GameObject
   def draw
-    draw_frame
+    
   end
 end

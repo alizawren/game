@@ -13,7 +13,6 @@ class BoundingPolygon
     if vertices.length > 0 && vertices.length < 3
       raise "ERROR instantiating bounding polygon"
     end
-
     @baseVertices = []
     for vertex in vertices
       @baseVertices.push(Vector[vertex[0], vertex[1]])
