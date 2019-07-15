@@ -5,10 +5,10 @@ class BoundingPolygon
   attr_reader :vertices
   attr_reader :axes
   attr_accessor :color
-  attr_accessor :transform
 
   # required to be initialized with an object
   def initialize(obj, vertices = [])
+    @color = Gosu::Color::GREEN
     @obj = obj
     if vertices.length > 0 && vertices.length < 3
       raise "ERROR instantiating bounding polygon"
@@ -19,13 +19,14 @@ class BoundingPolygon
       @baseVertices.push(Vector[vertex[0], vertex[1]])
     end
     @vertices = []
-    for vertex in @baseVertices
-      @vertices.push(Vector[vertex[0], vertex[1]])
+
+    hom = Vector[@obj.center[0], @obj.center[1], 1]
+    transformed_center = @obj.transform * hom
+    pos = Vector[transformed_center[0], transformed_center[1]]
+    for vert in @baseVertices
+      @vertices.push(vert + pos)
     end
 
-    # for vertex in vertices do
-    #     @vertices.push(Vector.elements(vertex));
-    # end
     @axes = []
     for i in 0..@vertices.length - 1
       v = @vertices[i]
@@ -38,7 +39,9 @@ class BoundingPolygon
   end
 
   def update
-    pos = @obj.center
+    hom = Vector[@obj.center[0], @obj.center[1], 1]
+    transformed_center = @obj.transform * hom
+    pos = Vector[transformed_center[0], transformed_center[1]]
     for i in 0..@vertices.length - 1
       @vertices[i] = @baseVertices[i] + pos
     end
@@ -67,40 +70,18 @@ class BoundingPolygon
   end
 
   def draw
-    transformed_vertices = []
-    for vertex in @vertices
-      curr = Vector[vertex[0], vertex[1], 1]
-      newpos = @transform * curr
-      x = newpos[0]
-      y = newpos[1]
-      transformed_vertices.push(Vector[x, y])
+    for i in 0..@vertices.length - 1
+      currV = nil
+      nextV = nil
+      if (i == @vertices.length - 1)
+        # draw last line
+        currV = @vertices[@vertices.length - 1]
+        nextV = @vertices[0]
+      else
+        currV = @vertices[i]
+        nextV = @vertices[i + 1]
+      end
+      Gosu.draw_line(currV[0], currV[1], @color, nextV[0], nextV[1], @color)
     end
-
-    color = Gosu::Color::GREEN
-
-    for i in 0..transformed_vertices.length - 2
-      currV = transformed_vertices[i]
-      nextV = transformed_vertices[i + 1]
-      Gosu.draw_line(currV[0], currV[1], color, nextV[0], nextV[1], color)
-    end
-    # draw last line
-    currV = transformed_vertices[transformed_vertices.length - 1]
-    nextV = transformed_vertices[0]
-    Gosu.draw_line(currV[0], currV[1], color, nextV[0], nextV[1], color)
   end
-
-  # def draw_frame
-  #   transformed_vertices = []
-  #   for vertex in @vertices
-  #     curr = Vector[vertex[0], vertex[1], 1]
-  #     newpos = @transform * curr
-  #     x = newpos[0]
-  #     y = newpos[1]
-  #     transformed_vertices.push(Vertex[x, y])
-  #   end
-
-  #   for vertex in @vertices
-  #     Gosu.draw_rect(vertex[0], vertex[1], 10, 10, Gosu::Color.new(255, 0, 0))
-  #   end
-  # end
 end

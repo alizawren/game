@@ -7,7 +7,7 @@ class GameObject
   attr_reader :center
   attr_reader :velocity
 
-  attr_reader :boundPoly
+  attr_reader :hitPoly
   attr_reader :width
   attr_reader :height
   attr_accessor :color
@@ -21,12 +21,13 @@ class GameObject
     @width = width
     @height = height
 
-    # in the future, need a polygon for colliding with walls (feet only)
-    # and one for colliding with other objects including attacks (whole body)
-    @boundPoly = BoundingPolygon.new(self)
-    @image = Gosu::Image.new("img/aSimpleSquare.png")
-
     @transform = Matrix.I(3) # 3x3 to account for translation
+
+    # in the future, need a polygon for colliding with walls (feet only)
+    # but we need to make it optional for objects that don't walk, such as obstacles
+    # @walkPoly = BoundingPolygon.new(self)
+    @hitPoly = BoundingPolygon.new(self)
+    @image = Gosu::Image.new("img/aSimpleSquare.png")
 
     @allCollidingObjects = []
   end
@@ -48,11 +49,11 @@ class GameObject
   end
 
   def update
-    @boundPoly.transform = @transform
     # implement collisions in here; if collide with wall, can't move
     puts @velocity
     @center = @center + @velocity
-    @boundPoly.update
+    # @walkPoly.update
+    @hitPoly.update
   end
 
   def draw
@@ -65,7 +66,8 @@ class GameObject
   end
 
   def draw_frame
-    @boundPoly.draw
+    # @walkPoly.draw
+    @hitPoly.draw
   end
 
   def overlap(obj2, mtv = Vector[0, 0])

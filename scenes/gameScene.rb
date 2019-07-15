@@ -157,7 +157,7 @@ class GameScene < Scene
 end
 
 def overlap(obj1, obj2)
-  mtv = findOverlap(obj1.boundPoly, obj2.boundPoly)
+  mtv = findOverlap(obj1.hitPoly, obj2.hitPoly)
   if (mtv)
     #call overlap on both objects if they overlap?
     #so they can handle it themselves?
