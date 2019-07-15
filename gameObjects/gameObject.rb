@@ -50,7 +50,6 @@ class GameObject
 
   def update
     # implement collisions in here; if collide with wall, can't move
-    puts @velocity
     @center = @center + @velocity
     # @walkPoly.update
     @hitPoly.update

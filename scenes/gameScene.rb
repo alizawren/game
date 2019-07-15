@@ -13,7 +13,7 @@ CollisionData = Struct.new(:other, :overlap, :speed1, :speed2, :oldpos1, :oldpos
 end
 
 class GameScene < Scene
-  attr_accessor :background_image
+  attr_accessor :parallax
   attr_accessor :x
   attr_accessor :y
 
@@ -27,15 +27,21 @@ class GameScene < Scene
 
     @quadtree = Quadtree.new(0, Rectangle.new(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT))
 
-    @background_image = Gosu::Image.new("img/space.png", :tileable => true)
-    @realbg = Gosu::Image.new("img/tempbg.png", :tileable => true)
+    @parallax = Gosu::Image.new("img/space.png", :tileable => true)
+    @bg = Gosu::Image.new("img/tempbg.png", :tileable => true)
 
-    @player = Player.new
-    @player.go_to(Vector[50, 50])
+    @player = Player.new(Vector[120, 120])
 
     @enemies = []
-
     @obstacles = []
+    # first we always need walls to prevent character from walking outside of real bg
+    bg_width = @bg.width
+    bg_height = @bg.height
+    wall_thickness = 20
+    @obstacles.push(Wall.new(Vector[0, bg_height / 2], wall_thickness / 2, bg_height))
+    @obstacles.push(Wall.new(Vector[bg_width / 2, 0], bg_width, wall_thickness / 2))
+    @obstacles.push(Wall.new(Vector[bg_width, bg_height / 2], wall_thickness / 2, bg_height))
+    @obstacles.push(Wall.new(Vector[bg_width / 2, bg_height], bg_width, wall_thickness / 2))
   end
 
   def unload
@@ -103,16 +109,15 @@ class GameScene < Scene
             break
           end
           if (overlap(obj1, obj2))
-            puts "collided"
-            @allObjects[i].color = Gosu::Color::RED
-            @allObjects[x].color = Gosu::Color::RED
+            @allObjects[i].hitPoly.color = Gosu::Color::RED
+            @allObjects[x].hitPoly.color = Gosu::Color::RED
           end
         end
       end
     end
 
-    # @camera.update(@player.x + @player.width / 2, @player.y + @player.height / 2, @realbg.width / 2, @realbg.height / 2)
-    @camera.update(@player.center, Vector[@realbg.width / 2, @realbg.height / 2])
+    # @camera.update(@player.x + @player.width / 2, @player.y + @player.height / 2, @bg.width / 2, @bg.height / 2)
+    @camera.update(@player.center, Vector[@bg.width / 2, @bg.height / 2])
     @transform = @camera.transform
 
     # update transforms for each object
@@ -124,7 +129,7 @@ class GameScene < Scene
       obstacle.transform = @transform
     end
 
-    # make sure this is called last
+    # make sure these are called last
     for enemy in @enemies
       enemy.update(@player.center, @player.velocity)
     end
@@ -141,8 +146,8 @@ class GameScene < Scene
     newpos = @transform * curr
     x = newpos[0]
     y = newpos[1]
-    @background_image.draw(x, y, 0)
-    @realbg.draw(x, y, 0)
+    @parallax.draw(x, y, 0)
+    @bg.draw(x, y, 0)
 
     @player.draw
     @player.draw_frame

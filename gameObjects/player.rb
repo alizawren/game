@@ -9,7 +9,7 @@ class Player < GameObject
   attr_accessor :state
   attr_accessor :flip
 
-  def initialize
+  def initialize(center)
     super
     @color = Gosu::Color::WHITE
     @width = 128 * 0.8
