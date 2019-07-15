@@ -31,7 +31,7 @@ class GameScene < Scene
     @realbg = Gosu::Image.new("img/tempbg.png", :tileable => true)
 
     @player = Player.new
-    @player.go_to(50, 50)
+    @player.go_to(Vector[50, 50])
 
     @enemies = []
 
@@ -65,7 +65,7 @@ class GameScene < Scene
     end
 
     for enemy in @enemies
-      enemy.update(@player.x, @player.y, @player.vel_x, @player.vel_y)
+      enemy.update(@player.center, @player.velocity)
     end
     for obstacle in @obstacles
       obstacle.update
@@ -73,12 +73,12 @@ class GameScene < Scene
     @player.update
 
     # collision detection
-    @quadtree.clear
-    for i in 0..@allObjects.length - 1
-      if (!@allObjects[i].nil?)
-        @quadtree.insert(@allObjects[i])
-      end
-    end
+    # @quadtree.clear
+    # for i in 0..@allObjects.length - 1
+    #   if (!@allObjects[i].nil?)
+    #     @quadtree.insert(@allObjects[i])
+    #   end
+    # end
 
     # OLD QUADTREE CODE
     # returnObjects = []
@@ -111,6 +111,7 @@ class GameScene < Scene
             break
           end
           if (overlap(obj1, obj2))
+            puts "collided"
             @allObjects[i].color = Gosu::Color::RED
             @allObjects[x].color = Gosu::Color::RED
           end
@@ -118,7 +119,8 @@ class GameScene < Scene
       end
     end
 
-    @camera.update(@player.x + @player.width / 2, @player.y + @player.height / 2, @realbg.width / 2, @realbg.height / 2)
+    # @camera.update(@player.x + @player.width / 2, @player.y + @player.height / 2, @realbg.width / 2, @realbg.height / 2)
+    @camera.update(@player.center, Vector[@realbg.width / 2, @realbg.height / 2])
     @transform = @camera.transform
 
     # update transforms for each object
@@ -142,26 +144,26 @@ class GameScene < Scene
     @realbg.draw(x, y, 0)
 
     @player.draw
-    @player.bounding.draw_frame
+    @player.draw_frame
     for enemy in @enemies
       enemy.draw
-      enemy.bounding.draw_frame
+      enemy.draw_frame
     end
     for obstacle in @obstacles
       obstacle.draw
-      obstacle.bounding.draw_frame
+      obstacle.draw_frame
     end
   end
 end
 
 def overlap(obj1, obj2)
-  mtv = findOverlap(obj1.bounding,obj2.bounding)
-  if(mtv)
+  mtv = findOverlap(obj1.boundPoly, obj2.boundPoly)
+  if (mtv)
     #call overlap on both objects if they overlap?
     #so they can handle it themselves?
-    obj1.overlap(obj2,mtv.v)
-    obj2.overlap(obj1,mtv.v)
-    return mtv 
+    obj1.overlap(obj2, mtv.v)
+    obj2.overlap(obj1, mtv.v)
+    return mtv
   end
   return false
   # overlap = Vector[0, 0]
@@ -179,7 +181,6 @@ def overlap(obj1, obj2)
   # end
 
   # overlap = Vector[]
-  
-  
+
   # return true
 end
