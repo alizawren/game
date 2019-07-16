@@ -66,6 +66,9 @@ end
 #is the shrotest vector to move
 #the polygon out of another
 def findOverlap(polygon1, polygon2)
+  if (!polygon1 || !polygon2)
+    return false
+  end
   overlap = 999_999_999
   smallest = nil
   for i in 0..polygon1.axes.length - 1

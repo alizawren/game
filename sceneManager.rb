@@ -7,9 +7,9 @@ class SceneManager
     @currScene = nil
   end
 
-  def self.update
+  def self.update(mouse_x, mouse_y)
     if (!@currScene.nil?)
-      @currScene.update
+      @currScene.update(mouse_x, mouse_y)
     end
     if (@@guiStack.length > 0)
       @@guiStack[-1].update

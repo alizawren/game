@@ -9,6 +9,8 @@ class Wall < Obstacle
     @width = width
     @height = height
     #calculates the vertices and calls on superclass constructor
-    @hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
+    hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
+    @boundPolys["hit"] = hitPoly
+    @boundPolys["walk"] = hitPoly
   end
 end

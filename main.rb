@@ -16,7 +16,7 @@ class Main < Gosu::Window
   end
 
   def update
-    SceneManager.update
+    SceneManager.update(mouse_x, mouse_y)
   end
 
   def draw

@@ -7,35 +7,36 @@ require_relative "../quadtree.rb"
 require_relative "./scene.rb"
 require_relative "../constants.rb"
 require_relative "../camera.rb"
+require_relative "../crosshair.rb"
 require "matrix"
 
-CollisionData = Struct.new(:other, :overlap, :speed1, :speed2, :oldpos1, :oldpos2, :pos1, :pos2) do
-end
-
 class GameScene < Scene
-  attr_accessor :background_image
-  attr_accessor :x
-  attr_accessor :y
+  attr_accessor :parallax
 
   def load
-    # @transform = Matrix.I(3)
-    # @transform[1, 3] = 500
-    # @transform[2, 3] = 200
-    @transform = Matrix[[1, 0, 500], [0, 1, 200], [0, 0, 1]]
+    @transform = Matrix.I(3)
 
     @camera = Camera.new
 
     @quadtree = Quadtree.new(0, Rectangle.new(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT))
 
-    @background_image = Gosu::Image.new("img/space.png", :tileable => true)
-    @realbg = Gosu::Image.new("img/tempbg.png", :tileable => true)
+    @parallax = Gosu::Image.new("img/space.png", :tileable => true)
+    @bg = Gosu::Image.new("img/tempbg.png", :tileable => true)
 
-    @player = Player.new
-    @player.go_to(Vector[50, 50])
+    @crosshair = Crosshair.instance
+
+    @player = Player.new(Vector[120, 120])
 
     @enemies = []
-
     @obstacles = []
+    # first we always need walls to prevent character from walking outside of real bg
+    bg_width = @bg.width
+    bg_height = @bg.height
+    wall_thickness = 20
+    @obstacles.push(Wall.new(Vector[0, bg_height / 2], wall_thickness / 2, bg_height))
+    @obstacles.push(Wall.new(Vector[bg_width / 2, 0], bg_width, wall_thickness / 2))
+    @obstacles.push(Wall.new(Vector[bg_width, bg_height / 2], wall_thickness / 2, bg_height))
+    @obstacles.push(Wall.new(Vector[bg_width / 2, bg_height], bg_width, wall_thickness / 2))
   end
 
   def unload
@@ -43,7 +44,7 @@ class GameScene < Scene
     @quadtree = nil
   end
 
-  def update
+  def update(mouse_x, mouse_y)
     #can we handle all of this in maybe a player update method?
     if Gosu.button_down? Gosu::KB_LEFT or Gosu::button_down? Gosu::GP_LEFT
       @player.go_left
@@ -71,6 +72,27 @@ class GameScene < Scene
     #     @quadtree.insert(@allObjects[i])
     #   end
     # end
+
+    # @camera.update(@player.x + @player.width / 2, @player.y + @player.height / 2, @bg.width / 2, @bg.height / 2)
+    @camera.update(@player.center, Vector[@bg.width / 2, @bg.height / 2])
+    @transform = @camera.transform
+
+    # update transforms for each object
+    @player.transform = @transform
+    for enemy in @enemies
+      enemy.transform = @transform
+    end
+    for obstacle in @obstacles
+      obstacle.transform = @transform
+    end
+
+    for enemy in @enemies
+      enemy.update(@player.center, @player.velocity)
+    end
+    for obstacle in @obstacles
+      obstacle.update
+    end
+    @player.update
 
     # OLD QUADTREE CODE
     # returnObjects = []
@@ -102,36 +124,12 @@ class GameScene < Scene
           if obj1 == obj2
             break
           end
-          if (overlap(obj1, obj2))
-            puts "collided"
-            @allObjects[i].color = Gosu::Color::RED
-            @allObjects[x].color = Gosu::Color::RED
-          end
+          overlap(obj1, obj2)
         end
       end
     end
 
-    # @camera.update(@player.x + @player.width / 2, @player.y + @player.height / 2, @realbg.width / 2, @realbg.height / 2)
-    @camera.update(@player.center, Vector[@realbg.width / 2, @realbg.height / 2])
-    @transform = @camera.transform
-
-    # update transforms for each object
-    @player.transform = @transform
-    for enemy in @enemies
-      enemy.transform = @transform
-    end
-    for obstacle in @obstacles
-      obstacle.transform = @transform
-    end
-
-    # make sure this is called last
-    for enemy in @enemies
-      enemy.update(@player.center, @player.velocity)
-    end
-    for obstacle in @obstacles
-      obstacle.update
-    end
-    @player.update
+    @crosshair.update(mouse_x, mouse_y) # might move this location
   end
 
   def draw
@@ -141,8 +139,8 @@ class GameScene < Scene
     newpos = @transform * curr
     x = newpos[0]
     y = newpos[1]
-    @background_image.draw(x, y, 0)
-    @realbg.draw(x, y, 0)
+    @parallax.draw(x, y, 0)
+    @bg.draw(x, y, 0)
 
     @player.draw
     @player.draw_frame
@@ -154,34 +152,27 @@ class GameScene < Scene
       obstacle.draw
       obstacle.draw_frame
     end
+
+    @crosshair.draw
   end
 end
 
 def overlap(obj1, obj2)
-  mtv = findOverlap(obj1.hitPoly, obj2.hitPoly)
-  if (mtv)
+  mtv = Hash.new
+  mtvHit = findOverlap(obj1.boundPolys["hit"], obj2.boundPolys["hit"])
+  if (mtvHit)
     #call overlap on both objects if they overlap?
     #so they can handle it themselves?
-    obj1.overlap(obj2, mtv.v)
-    obj2.overlap(obj1, mtv.v)
-    return mtv
+    obj1.overlap(obj2, "hit", mtvHit.v)
+    obj2.overlap(obj1, "hit", mtvHit.v)
+    mtv["hit"] = mtvHit
   end
-  return false
-  # overlap = Vector[0, 0]
+  mtvWalk = findOverlap(obj1.boundPolys["walk"], obj2.boundPolys["walk"])
+  if (mtvWalk)
+    obj1.overlap(obj2, "walk", mtvWalk.v)
+    obj2.overlap(obj1, "walk", mtvWalk.v)
+    mtv["walk"] = mtvWalk
+  end
 
-  # obj1centerx = obj1.x + (obj1.width / 2.0)
-  # obj1centery = obj1.y + (obj1.height / 2.0)
-  # obj2centerx = obj2.x + (obj2.width / 2.0)
-  # obj2centery = obj2.y + (obj2.height / 2.0)
-
-  # # algorithm for collision of normal rectangles
-  # if (obj1.width / 2.0 == 0 || obj1.height / 2.0 == 0 || obj2.width / 2.0 == 0 || obj2.height / 2.0 == 0 \
-  #   || (obj1centerx - obj2centerx).abs > obj1.width / 2.0 + obj2.width / 2.0 \
-  #   || (obj1centery - obj2centery).abs > obj1.height / 2.0 + obj2.height / 2.0)
-  #   return false
-  # end
-
-  # overlap = Vector[]
-
-  # return true
+  return mtv
 end

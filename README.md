@@ -6,11 +6,17 @@ Inside of the game directory, run 'ruby main.rb'.
 
 ## Todo list
 
+### Priority
+
+- Data driven animation system with state machines
+
+### Less important
+
 - GUI Stack (done, but could use some cleanup)
 - Camera movement (done, but transformations not yet universal (?))
-- Data driven animation system with state machines
 - Scene graph
-- collision response
+- collision response (done, but undesirably vibrates when colliding with object)
+
 - quadtree not working
-- ideally want to place x and y at center of objects (or store center)? to detect proximity, at least (actually this whole thing is a matter of bounding rectangles)
-- Ruby method arg reference https://www.rubyguides.com/2018/06/rubys-method-arguments/
+
+Ruby method arg reference https://www.rubyguides.com/2018/06/rubys-method-arguments/

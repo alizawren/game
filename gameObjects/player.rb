@@ -9,14 +9,16 @@ class Player < GameObject
   attr_accessor :state
   attr_accessor :flip
 
-  def initialize
+  def initialize(center)
     super
-    @color = Gosu::Color::WHITE
     @width = 128 * 0.8
     @height = 128 * 0.8
 
     # @boundPoly = Rectangle.new(@x, @y, @width, @height)
-    @hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
+    hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
+    walkPoly = BoundingPolygon.new(self, [Vector[-@width / 4, @height / 4], Vector[@width / 4, @height / 4], Vector[@width / 4, @height / 2], Vector[-@width / 4, @height / 2]])
+    @boundPolys["hit"] = hitPoly
+    @boundPolys["walk"] = walkPoly
 
     @idle_anim = Animation.new("img/scia/idle.png", @width, @height)
     @walking_anim = Animation.new("img/scia/walking.png", @width, @height)
@@ -57,7 +59,9 @@ class Player < GameObject
   def update
     @center = @center + @velocity
     @velocity = @velocity * 0.8
-    @hitPoly.update
+    @boundPolys.each_value do |value|
+      value.update
+    end
 
     # issue with this: if you are turning from left to right, vel MUST be 0 at some point (Mean Value Theorem) but we don't want to
     # be standing suddenly. Instead, look into state machines
@@ -90,14 +94,19 @@ class Player < GameObject
     @curr_anim.draw(x - @width / 2, y - @height / 2)
   end
 
-  def overlap(obj2, mtv = Vector[0, 0])
-    if (obj2.is_a?(Enemy))
-      # replace with a "restartScene" call
-      # SceneManager.restartScene
-      go_to(Vector[50, 50])
-    end
-    if (obj2.is_a?(Obstacle))
-      force(-mtv)
+  def overlap(obj2, poly, mtv = Vector[0, 0])
+    case poly
+    when "hit"
+      if (obj2.is_a?(Enemy))
+        boundPolys["hit"].color = Gosu::Color::RED
+        # replace with a "restartScene" call
+        # SceneManager.restartScene
+        go_to(Vector[50, 50])
+      end
+    when "walk"
+      if (obj2.is_a?(Obstacle))
+        force(-mtv)
+      end
     end
   end
 end
