@@ -15,8 +15,4 @@ class Camera
     pos = (playerCenter + bgCenter) / 2
     @transform = Matrix[[1, 0, CANVAS_WIDTH / 2 - pos[0]], [0, 1, CANVAS_HEIGHT / 2 - pos[1]], [0, 0, 1]]
   end
-
-  def getTransform
-    return @transform
-  end
 end

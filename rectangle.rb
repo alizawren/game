@@ -1,7 +1,7 @@
 require "gosu"
 require_relative "./boundingPolygon.rb"
 
-class Rectangle < BoundingPolygon
+class Rectangle
   attr_accessor :x
   attr_accessor :y
   attr_accessor :width
@@ -20,15 +20,6 @@ class Rectangle < BoundingPolygon
     @clear = clear
     # super staticVertices
   end
-
-  #a way to find collisions using vertices
-  # def vertices
-  #   [Vector[@x, @y], Vector[@x + @width, @y], Vector[@x + @width, @y + @height], Vector[@x, @y + @height]]
-  # end
-
-  # def staticVertices
-  #   [Vector[0, 0], Vector[@width, 0], Vector[@width, @height], Vector[0, @height]]
-  # end
 
   def draw(x = @x, y = @y, z = @z)
     if (clear)

@@ -45,24 +45,41 @@ class GameScene < Scene
   end
 
   def update(mouse_x, mouse_y)
+    @camera.update(@player.center, Vector[@bg.width / 2, @bg.height / 2])
+    @transform = @camera.transform
     #can we handle all of this in maybe a player update method?
-    if Gosu.button_down? Gosu::KB_LEFT or Gosu::button_down? Gosu::GP_LEFT
+    @player.state = 0
+    # WARNING: technically we don't want to allow them to use both. If they are holding left and D at the same time,
+    # we don't want one to cancel out the other.
+    if Gosu.button_down? Gosu::KB_A or Gosu.button_down? Gosu::KB_LEFT
       @player.go_left
-      # @player.state = 1
+      @player.state = 1
       @player.flip = 1
     end
-    if Gosu.button_down? Gosu::KB_RIGHT or Gosu::button_down? Gosu::GP_RIGHT
+    if Gosu.button_down? Gosu::KB_D or Gosu.button_down? Gosu::KB_RIGHT
       @player.go_right
-      # @player.state = 1
+      @player.state = 1
       @player.flip = 0
     end
-    if Gosu.button_down? Gosu::KB_UP
+    if Gosu.button_down? Gosu::KB_W or Gosu.button_down? Gosu::KB_UP
       @player.go_up
-      # @player.state = 1
+      @player.state = 1
     end
-    if Gosu.button_down? Gosu::KB_DOWN
+    if Gosu.button_down? Gosu::KB_S or Gosu.button_down? Gosu::KB_DOWN
       @player.go_down
-      # @player.state = 1
+      @player.state = 1
+    end
+    # NOTE: must make state transitions more clear, rewrite whole thing
+    if Gosu.button_down? Gosu::MS_LEFT
+      # angle logic in here
+      # hom = Vector[@player.armanchor[0], @player.armanchor[1], 1]
+      # anchorpos = @transform * hom
+      # @player.armangle = Gosu.angle(anchorpos[0], anchorpos[1], mouse_x, mouse_y)
+      invtransf = @transform.inverse
+      hom = Vector[@player.center[0], @player.center[1], 1]
+      pcenter = @transform * hom
+      @player.armangle = Gosu.angle(pcenter[0], pcenter[1], mouse_x, mouse_y)
+      @player.state = 2
     end
 
     # collision detection
@@ -72,10 +89,6 @@ class GameScene < Scene
     #     @quadtree.insert(@allObjects[i])
     #   end
     # end
-
-    # @camera.update(@player.x + @player.width / 2, @player.y + @player.height / 2, @bg.width / 2, @bg.height / 2)
-    @camera.update(@player.center, Vector[@bg.width / 2, @bg.height / 2])
-    @transform = @camera.transform
 
     # update transforms for each object
     @player.transform = @transform

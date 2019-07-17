@@ -2,12 +2,14 @@ require_relative "../rectangle.rb"
 require_relative "../constants"
 require_relative "./gameObject.rb"
 require_relative "../animation.rb"
+require_relative "../sceneManager.rb"
 
 MAX_SPEED = 5
 
 class Player < GameObject
   attr_accessor :state
   attr_accessor :flip
+  attr_accessor :armangle
 
   def initialize(center)
     super
@@ -22,10 +24,19 @@ class Player < GameObject
 
     @idle_anim = Animation.new("img/scia/idle.png", @width, @height)
     @walking_anim = Animation.new("img/scia/walking.png", @width, @height)
+    @shoot_anim = Animation.new("img/scia/shootright.png", @width, @height)
 
-    @state = 0 # 0 for idle, 1 for walking
+    @armleft = Gosu::Image.new("img/scia/armleft.bmp")
+    @armright = Gosu::Image.new("img/scia/armright.bmp")
+    @armup = Gosu::Image.new("img/scia/armup.bmp")
+    @armdown = Gosu::Image.new("img/scia/armdown.bmp")
+    @armangle = 0
+    @arm_transform = Matrix[[1, 0, (64 - 72) * 0.8], [0, 1, (38 - 64) * 0.8], [0, 0, 1]]
+
+    @state = 0 # 0 for idle, 1 for walking, 2 for shooting (tentative)
     @flip = 0 # 0 for facing right, 1 for facing left
     @curr_anim = @idle_anim
+    @arm = nil
   end
 
   def go_up
@@ -65,17 +76,22 @@ class Player < GameObject
 
     # issue with this: if you are turning from left to right, vel MUST be 0 at some point (Mean Value Theorem) but we don't want to
     # be standing suddenly. Instead, look into state machines
-    if (@velocity[0].abs < 1.0 && @velocity[1].abs < 1.0)
-      @state = 0
-    else
-      @state = 1
-    end
+    # if (@velocity[0].abs < 1.0 && @velocity[1].abs < 1.0)
+    #   @state = 0
+    # else
+    #   @state = 1
+    # end
 
     case @state
     when 0
       @curr_anim = @idle_anim
+      @arm = nil
     when 1
       @curr_anim = @walking_anim
+      @arm = nil
+    when 2
+      @curr_anim = @shoot_anim
+      @arm = @armright
     else
       @curr_anim = @idle_anim
     end
@@ -88,10 +104,13 @@ class Player < GameObject
     # note: in the future, make things more consistent so we don't have to recalculate this and can just call super
     curr = Vector[@center[0], @center[1], 1]
     newpos = @transform * curr
-    x = newpos[0]
-    y = newpos[1]
 
-    @curr_anim.draw(x - @width / 2, y - @height / 2)
+    armpos = @arm_transform * @transform * curr
+
+    @curr_anim.draw(newpos[0] - @width / 2, newpos[1] - @height / 2, 1)
+    if (!@arm.nil?)
+      @arm.draw_rot(armpos[0], armpos[1], 1, @armangle - 90, 0.125, 0.45)
+    end
   end
 
   def overlap(obj2, poly, mtv = Vector[0, 0])
@@ -101,7 +120,8 @@ class Player < GameObject
         boundPolys["hit"].color = Gosu::Color::RED
         # replace with a "restartScene" call
         # SceneManager.restartScene
-        go_to(Vector[50, 50])
+        # go_to(Vector[50, 50])
+        SceneManager.restartScene
       end
     when "walk"
       if (obj2.is_a?(Obstacle))
