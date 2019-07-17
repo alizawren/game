@@ -55,30 +55,47 @@ class GameScene < Scene
       @player.go_left
       @player.state = 1
       @player.flip = 1
+      @player.facing = 2
     end
     if Gosu.button_down? Gosu::KB_D or Gosu.button_down? Gosu::KB_RIGHT
       @player.go_right
       @player.state = 1
       @player.flip = 0
+      @player.facing = 0
     end
     if Gosu.button_down? Gosu::KB_W or Gosu.button_down? Gosu::KB_UP
       @player.go_up
       @player.state = 1
+      @player.facing = 1
     end
     if Gosu.button_down? Gosu::KB_S or Gosu.button_down? Gosu::KB_DOWN
       @player.go_down
       @player.state = 1
+      @player.facing = 3
     end
     # NOTE: must make state transitions more clear, rewrite whole thing
     if Gosu.button_down? Gosu::MS_LEFT
       # angle logic in here
-      # hom = Vector[@player.armanchor[0], @player.armanchor[1], 1]
-      # anchorpos = @transform * hom
-      # @player.armangle = Gosu.angle(anchorpos[0], anchorpos[1], mouse_x, mouse_y)
       invtransf = @transform.inverse
       hom = Vector[@player.center[0], @player.center[1], 1]
       pcenter = @transform * hom
-      @player.armangle = Gosu.angle(pcenter[0], pcenter[1], mouse_x, mouse_y)
+      angle = Gosu.angle(pcenter[0], pcenter[1], mouse_x, mouse_y) - 90
+      @player.armangle = angle
+      case angle
+      when -45..45
+        # puts "right"
+        @player.facing = 0
+      when 45..135
+        # puts "down"
+        @player.facing = 3
+      when 135..225
+        # puts "left"
+        @player.facing = 2
+      else
+        # puts "up"
+        @player.facing = 1
+      end
+      puts angle
       @player.state = 2
     end
 
