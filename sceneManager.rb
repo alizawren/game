@@ -11,6 +11,7 @@ class SceneManager
     if (!@currScene.nil?)
       @currScene.update(mouse_x, mouse_y)
     end
+    #we're only updating the last gui????
     if (@@guiStack.length > 0)
       @@guiStack[-1].update
     end
@@ -41,9 +42,9 @@ class SceneManager
   def self.button_down(id, close_callback)
     # getting rid of this loop for now because most of the time, we only listen to button presses where GUIs have been created
     # may change once we have dialogue
-    # if (!@currScene.nil?)
-    #   @currScene.button_down(id, close_callback)
-    # end
+    if (!@currScene.nil?)
+      @currScene.button_down(id, close_callback)
+    end
     if (@@guiStack.length > 0)
       @@guiStack[-1].button_down(id, close_callback)
     end

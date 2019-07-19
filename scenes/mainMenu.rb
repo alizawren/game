@@ -21,4 +21,6 @@ class MainMenu < Scene
     @background_image.draw(0, 0, 0)
     @title.draw(0, 0, 0)
   end
+  def button_down(id,close_callback)
+  end
 end

@@ -1,8 +1,7 @@
-require_relative "../../gui.rb"
+require_relative "./menuGui.rb"
 require_relative "./aboutGui.rb"
-require_relative "../../constants.rb"
 
-class MainMenuGui < Gui
+class MainMenuGui < MenuGui
   def initialize
     super
     @choices = ["Play", "About", "What", "Exit"]

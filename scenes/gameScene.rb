@@ -8,6 +8,11 @@ require_relative "./scene.rb"
 require_relative "../constants.rb"
 require_relative "../camera.rb"
 require_relative "../crosshair.rb"
+require_relative "./guis/pauseMenuGui.rb"
+require_relative "./dialogue/dialogueBubble.rb"
+require_relative "./dialogue/optionsBubble.rb"
+require_relative "./dialogue/partnerDialogue.rb"
+
 require "matrix"
 
 class GameScene < Scene
@@ -45,6 +50,12 @@ class GameScene < Scene
   end
 
   def update(mouse_x, mouse_y)
+    #GUI stuff here!
+    if Gosu.button_down? Gosu::KB_ESCAPE
+      #open up pause menu 
+      #maybe don't update players/characters/other stuff if pause menu is open
+      SceneManager.guiPush(PauseMenuGui.new)
+    end
     #can we handle all of this in maybe a player update method?
     if Gosu.button_down? Gosu::KB_LEFT or Gosu::button_down? Gosu::GP_LEFT
       @player.go_left
@@ -64,6 +75,8 @@ class GameScene < Scene
       @player.go_down
       # @player.state = 1
     end
+
+    
 
     # collision detection
     # @quadtree.clear
@@ -154,6 +167,12 @@ class GameScene < Scene
     end
 
     @crosshair.draw
+  end
+  def button_down(id,close_callback)
+    case id
+    when Gosu::KB_T
+      # do something with DialogueBubble.new(@player,"Thinking")
+    end
   end
 end
 

@@ -8,7 +8,7 @@ require "gosu"
 class Gui
   attr_accessor :z
 
-  def initialize(x = 0, y = 0, width: CANVAS_WIDTH - 2 * x, height: CANVAS_HEIGHT - 2 * y)
+  def initialize(x = 0, y = 0, width = CANVAS_WIDTH - 2 * x, height = CANVAS_HEIGHT - 2 * y)
     @borderColor = Gosu::Color::WHITE
     @bgColor = Gosu::Color::BLACK
 
@@ -20,9 +20,7 @@ class Gui
     # default font
     @font = Gosu::Font.new(FONT_HEIGHT)
 
-    # in every GUI there is a selector
-    @selector = Rectangle.new(@x, @y, 40, 30, clear: true)
-    @select = 0
+    
   end
 
   def update
@@ -38,7 +36,7 @@ class Gui
       Gosu.draw_line(@x, @y + @height, @borderColor, @x + @width, @y + @height, @borderColor, @z)
     end
 
-    @selector.draw(@selector.x, @selector.y, @z + 1)
+    
   end
 
   def button_down(id, close_callback)

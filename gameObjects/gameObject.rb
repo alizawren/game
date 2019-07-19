@@ -29,6 +29,12 @@ class GameObject
     @allCollidingObjects = []
   end
 
+  def x
+    @center[0]
+  end
+  def y
+    @center[1]
+  end
   def go_to(pos)
     @center = pos
   end
