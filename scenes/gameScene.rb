@@ -12,6 +12,7 @@ require_relative "./guis/pauseMenuGui.rb"
 require_relative "./dialogue/dialogueBubble.rb"
 require_relative "./dialogue/optionsBubble.rb"
 require_relative "./dialogue/partnerDialogue.rb"
+require_relative "../gameObjects/projectiles/bullet.rb"
 
 require "matrix"
 
@@ -34,6 +35,7 @@ class GameScene < Scene
 
     @enemies = []
     @obstacles = []
+    @projectiles = []
     # first we always need walls to prevent character from walking outside of real bg
     bg_width = @bg.width
     bg_height = @bg.height
@@ -115,19 +117,26 @@ class GameScene < Scene
     # end
 
     # update transforms for each object
-    @player.transform = @transform
+    
     for enemy in @enemies
       enemy.transform = @transform
     end
     for obstacle in @obstacles
       obstacle.transform = @transform
     end
+    for projectile in @projectiles 
+      projectile.transform = @transform 
+    end
+    @player.transform = @transform
 
     for enemy in @enemies
       enemy.update(@player.center, @player.velocity)
     end
     for obstacle in @obstacles
       obstacle.update
+    end
+    for projectile in @projectiles 
+      projectile.update 
     end
     @player.update
 
@@ -189,6 +198,10 @@ class GameScene < Scene
       obstacle.draw
       obstacle.draw_frame
     end
+    for projectile in @projectiles 
+      # projectile.draw 
+      projectile.draw_frame 
+    end
 
     @crosshair.draw
   end
@@ -196,6 +209,11 @@ class GameScene < Scene
     case id
     when Gosu::KB_T
       # do something with DialogueBubble.new(@player,"Thinking")
+    when Gosu::MS_LEFT 
+      old_pos = @transform.inverse * Vector[@crosshair.x,@crosshair.y,1]
+      bullet = Bullet.new(@player.center,(Vector[old_pos[0],old_pos[1]] - @player.center).normalize*10)
+      @projectiles.push(bullet)
+      @allObjects.push(bullet)
     end
   end
 end

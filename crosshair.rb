@@ -2,6 +2,8 @@ require "singleton"
 require "gosu"
 
 class Crosshair
+  attr_accessor :x
+  attr_accessor :y
   include Singleton
 
   def initialize

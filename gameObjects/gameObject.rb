@@ -1,5 +1,5 @@
 require_relative "../boundingPolygon.rb"
-require_relative "../constants"
+require_relative "../constants.rb"
 require_relative "../collision.rb"
 require "matrix"
 
