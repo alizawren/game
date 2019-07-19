@@ -57,4 +57,11 @@ class SceneManager
     newScene.load()
     @currScene = newScene
   end
+
+  def self.restartScene
+    if (!@currScene.nil?)
+      @currScene.unload()
+      @currScene.load()
+    end
+  end
 end
