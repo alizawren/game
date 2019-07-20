@@ -33,19 +33,20 @@ class GameScene < Scene
 
     @player = Player.new(Vector[120, 120])
 
-    @enemies = []
-    @obstacles = []
-    @projectiles = []
+    @objects = Hash.new 
+    @objects["player"] = []
+    @objects["enemies"] = []
+    @objects["obstacles"] = []
+    @objects["projectiles"] = []
     # first we always need walls to prevent character from walking outside of real bg
     bg_width = @bg.width
     bg_height = @bg.height
     wall_thickness = 20
-    @obstacles.push(Wall.new(Vector[0, bg_height / 2], wall_thickness / 2, bg_height))
-    @obstacles.push(Wall.new(Vector[bg_width / 2, 0], bg_width, wall_thickness / 2))
-    @obstacles.push(Wall.new(Vector[bg_width, bg_height / 2], wall_thickness / 2, bg_height))
-    @obstacles.push(Wall.new(Vector[bg_width / 2, bg_height], bg_width, wall_thickness / 2))
+    @objects["obstacles"].push(Wall.new(Vector[0, bg_height / 2], wall_thickness / 2, bg_height))
+    @objects["obstacles"].push(Wall.new(Vector[bg_width / 2, 0], bg_width, wall_thickness / 2))
+    @objects["obstacles"].push(Wall.new(Vector[bg_width, bg_height / 2], wall_thickness / 2, bg_height))
+    @objects["obstacles"].push(Wall.new(Vector[bg_width / 2, bg_height], bg_width, wall_thickness / 2))
   end
-
   def unload
     super
     @quadtree = nil
@@ -118,27 +119,63 @@ class GameScene < Scene
 
     # update transforms for each object
     
-    for enemy in @enemies
-      enemy.transform = @transform
-    end
-    for obstacle in @obstacles
-      obstacle.transform = @transform
-    end
-    for projectile in @projectiles 
-      projectile.transform = @transform 
-    end
-    @player.transform = @transform
+    @objects.each_value do |objectList|
+      for i in 0..objectList.length-1
+        objectList[i].transform = @transform 
+        if(objectList[i].is_a?(Enemy))
+          objectList[i].update(@player.center,@player.velocity)
+        else 
+          objectList[i].update
+        end
 
-    for enemy in @enemies
-      enemy.update(@player.center, @player.velocity)
+        #now check collisions
+        @objects.each_value do |objectList2|
+          for j in 0..objectList2.length-1
+            obj1 = objectList[i]
+            obj2 = objectList2[j]
+            if obj1 == obj2 
+              break 
+            end
+            overlap(obj1,obj2)
+          end
+        end
+      end
     end
-    for obstacle in @obstacles
-      obstacle.update
-    end
-    for projectile in @projectiles 
-      projectile.update 
-    end
-    @player.update
+        
+    # for i in 0..@objects.length - 1
+    #   if (!@objects[i].nil?)
+    #     for x in 0..@objects.length - 1
+    #       # run collision detection algorithm between @allObjects[i] and returnObjects[x]
+    #       obj1 = @allObjects[i]
+    #       obj2 = @allObjects[x]
+    #       if obj1 == obj2
+    #         break
+    #       end
+    #       overlap(obj1, obj2)
+    #     end
+    #   end
+    # end
+    # for enemy in @enemies
+    #   enemy.transform = @transform
+    # end
+    # for obstacle in @obstacles
+    #   obstacle.transform = @transform
+    # end
+    # for projectile in @projectiles 
+    #   projectile.transform = @transform 
+    # end
+    # @player.transform = @transform
+
+    # for enemy in @enemies
+    #   enemy.update(@player.center, @player.velocity)
+    # end
+    # for obstacle in @obstacles
+    #   obstacle.update
+    # end
+    # for projectile in @projectiles 
+    #   projectile.update 
+    # end
+    # @player.update
 
     # OLD QUADTREE CODE
     # returnObjects = []
@@ -161,19 +198,19 @@ class GameScene < Scene
 
     # NOTE: there is an issue with quadtree, it seems particularly when objects are in between two quadrants
     # so, this method simply loops through all objects regardless of quadrant
-    for i in 0..@allObjects.length - 1
-      if (!@allObjects[i].nil?)
-        for x in 0..@allObjects.length - 1
-          # run collision detection algorithm between @allObjects[i] and returnObjects[x]
-          obj1 = @allObjects[i]
-          obj2 = @allObjects[x]
-          if obj1 == obj2
-            break
-          end
-          overlap(obj1, obj2)
-        end
-      end
-    end
+    # for i in 0..@allObjects.length - 1
+    #   if (!@allObjects[i].nil?)
+    #     for x in 0..@allObjects.length - 1
+    #       # run collision detection algorithm between @allObjects[i] and returnObjects[x]
+    #       obj1 = @allObjects[i]
+    #       obj2 = @allObjects[x]
+    #       if obj1 == obj2
+    #         break
+    #       end
+    #       overlap(obj1, obj2)
+    #     end
+    #   end
+    # end
 
     @crosshair.update(mouse_x, mouse_y) # might move this location
   end
@@ -188,20 +225,26 @@ class GameScene < Scene
     @parallax.draw(x, y, 0)
     @bg.draw(x, y, 0)
 
-    @player.draw
-    @player.draw_frame
-    for enemy in @enemies
-      enemy.draw
-      enemy.draw_frame
+    @objects.each_value do |objectList|
+      for object in objectList do 
+        object.draw 
+        object.draw_frame
+      end
     end
-    for obstacle in @obstacles
-      obstacle.draw
-      obstacle.draw_frame
-    end
-    for projectile in @projectiles 
-      # projectile.draw 
-      projectile.draw_frame 
-    end
+    # @player.draw
+    # @player.draw_frame
+    # for enemy in @enemies
+    #   enemy.draw
+    #   enemy.draw_frame
+    # end
+    # for obstacle in @obstacles
+    #   obstacle.draw
+    #   obstacle.draw_frame
+    # end
+    # for projectile in @projectiles 
+    #   # projectile.draw 
+    #   projectile.draw_frame 
+    # end
 
     @crosshair.draw
   end
@@ -212,8 +255,7 @@ class GameScene < Scene
     when Gosu::MS_LEFT 
       old_pos = @transform.inverse * Vector[@crosshair.x,@crosshair.y,1]
       bullet = Bullet.new(@player.center,(Vector[old_pos[0],old_pos[1]] - @player.center).normalize*10)
-      @projectiles.push(bullet)
-      @allObjects.push(bullet)
+      @objects["projectiles"].push(bullet)
     end
   end
 end
