@@ -4,15 +4,16 @@ require_relative "./gameObject.rb"
 require_relative "../animation.rb"
 require_relative "../sceneManager.rb"
 
+PLAYER_SCALE = 1.2
 MAX_SPEED = 5
 ARM_RIGHT_ANCHOR = Vector[0.125, 0.45]
 ARM_LEFT_ANCHOR = Vector[0.9, 0.5]
 ARM_UP_ANCHOR = Vector[0.5, 0.9]
 ARM_DOWN_ANCHOR = Vector[0.55, 0.125]
-ARM_RIGHT_TRANSF = Matrix[[1, 0, (64 - 72) * 0.8], [0, 1, (38 - 64) * 0.8], [0, 0, 1]]
-ARM_LEFT_TRANSF = Matrix[[1, 0, (53 - 64) * 0.8], [0, 1, (42 - 64) * 0.8], [0, 0, 1]]
-ARM_UP_TRANSF = Matrix[[1, 0, (76 - 64) * 0.8], [0, 1, (36 - 64) * 0.8], [0, 0, 1]]
-ARM_DOWN_TRANSF = Matrix[[1, 0, (48 - 64) * 0.8], [0, 1, (34 - 64) * 0.8], [0, 0, 1]]
+ARM_RIGHT_TRANSF = Matrix[[1, 0, (64 - 72) * PLAYER_SCALE], [0, 1, (38 - 64) * PLAYER_SCALE], [0, 0, 1]]
+ARM_LEFT_TRANSF = Matrix[[1, 0, (53 - 64) * PLAYER_SCALE], [0, 1, (42 - 64) * PLAYER_SCALE], [0, 0, 1]]
+ARM_UP_TRANSF = Matrix[[1, 0, (76 - 64) * PLAYER_SCALE], [0, 1, (36 - 64) * PLAYER_SCALE], [0, 0, 1]]
+ARM_DOWN_TRANSF = Matrix[[1, 0, (48 - 64) * PLAYER_SCALE], [0, 1, (34 - 64) * PLAYER_SCALE], [0, 0, 1]]
 
 class Player < GameObject
   attr_accessor :state
@@ -22,8 +23,8 @@ class Player < GameObject
 
   def initialize(center)
     super
-    @width = 128
-    @height = 128
+    @width = 128 * PLAYER_SCALE
+    @height = 128 * PLAYER_SCALE
 
     # @boundPoly = Rectangle.new(@x, @y, @width, @height)
     hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
