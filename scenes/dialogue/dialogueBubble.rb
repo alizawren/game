@@ -1,4 +1,4 @@
-
+require "gosu"
 class DialogueBubble
     def initialize(source, text, fps = 20)
       
@@ -7,6 +7,7 @@ class DialogueBubble
         @font = Gosu::Font.new(FONT_HEIGHT)
         @x = 0
         @y = 0
+        @z = 1
         @width = @font.text_width(@text)+MARGIN*2
         @height = @font.height+MARGIN*2
 
@@ -32,6 +33,7 @@ class DialogueBubble
     end
   
     def draw
+        # Gosu::draw_rect(@x,@y,@width,@height,Gosu::Color::WHITE)
         @font.draw_text(@text[0,@frame],@x+MARGIN,@y+MARGIN,@z)
     end
     def button_down(id,close_callback)
