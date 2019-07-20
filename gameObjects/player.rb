@@ -157,7 +157,7 @@ class Player < GameObject
       end
     when "walk"
       if (obj2.is_a?(Obstacle))
-        force(-mtv)
+        force(mtv)
       end
     end
   end

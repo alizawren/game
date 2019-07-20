@@ -19,8 +19,6 @@ class Gui
 
     # default font
     @font = Gosu::Font.new(FONT_HEIGHT)
-
-    
   end
 
   def update

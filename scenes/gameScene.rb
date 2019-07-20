@@ -33,6 +33,7 @@ class GameScene < Scene
 
     @player = Player.new(Vector[120, 120])
 
+    @dialogues = []
     @objects = Hash.new
     @objects["player"] = []
     @objects["enemies"] = []
@@ -126,7 +127,11 @@ class GameScene < Scene
         else
           objectList[i].update
         end
+      end
+    end
 
+    @objects.each_value do |objectList|
+      for i in 0..objectList.length - 1
         #now check collisions
         @objects.each_value do |objectList2|
           for j in 0..objectList2.length - 1
@@ -141,6 +146,9 @@ class GameScene < Scene
       end
     end
 
+    for dialogue in @dialogues
+      dialogue.update
+    end
     # for i in 0..@objects.length - 1
     #   if (!@objects[i].nil?)
     #     for x in 0..@objects.length - 1
@@ -230,6 +238,9 @@ class GameScene < Scene
         object.draw_frame
       end
     end
+    for dialogue in @dialogues
+      dialogue.draw
+    end
     # @player.draw
     # @player.draw_frame
     # for enemy in @enemies
@@ -251,6 +262,7 @@ class GameScene < Scene
   def button_down(id, close_callback)
     case id
     when Gosu::KB_T
+      @dialogues.push(DialogueBubble.new(@player, "Thinking"))
       # do something with DialogueBubble.new(@player,"Thinking")
     when Gosu::MS_LEFT
       old_pos = @transform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
@@ -266,14 +278,15 @@ def overlap(obj1, obj2)
   if (mtvHit)
     #call overlap on both objects if they overlap?
     #so they can handle it themselves?
+
     obj1.overlap(obj2, "hit", mtvHit.v)
-    obj2.overlap(obj1, "hit", mtvHit.v)
+    # obj2.overlap(obj1, "hit", mtvHit.v)
     mtv["hit"] = mtvHit
   end
   mtvWalk = findOverlap(obj1.boundPolys["walk"], obj2.boundPolys["walk"])
   if (mtvWalk)
     obj1.overlap(obj2, "walk", mtvWalk.v)
-    obj2.overlap(obj1, "walk", mtvWalk.v)
+    # obj2.overlap(obj1, "walk", mtvWalk.v)
     mtv["walk"] = mtvWalk
   end
 
