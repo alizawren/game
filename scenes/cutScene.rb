@@ -1,6 +1,5 @@
 require "gosu"
 require_relative "../gameObjects/player.rb"
-require_relative "../gameObjects/enemy.rb"
 require_relative "../gameObjects/obstacles/obstacle.rb"
 require_relative "../gameObjects/obstacles/wall.rb"
 require_relative "../quadtree.rb"
@@ -12,11 +11,10 @@ require_relative "./guis/pauseMenuGui.rb"
 require_relative "./dialogue/dialogueBubble.rb"
 require_relative "./dialogue/optionsBubble.rb"
 require_relative "./dialogue/partnerDialogue.rb"
-require_relative "../gameObjects/projectiles/bullet.rb"
 
 require "matrix"
 
-class GameScene < Scene
+class CutScene < Scene
   attr_accessor :parallax
 
   def load
@@ -35,9 +33,7 @@ class GameScene < Scene
 
     @objects = Hash.new
     @objects["player"] = []
-    @objects["enemies"] = []
     @objects["obstacles"] = []
-    @objects["projectiles"] = []
     # first we always need walls to prevent character from walking outside of real bg
     bg_width = @bg.width
     bg_height = @bg.height
@@ -85,27 +81,27 @@ class GameScene < Scene
     # NOTE: must make state transitions more clear, rewrite whole thing
     if Gosu.button_down? Gosu::MS_LEFT
       # angle logic in here
-      invtransf = @transform.inverse
-      hom = Vector[@player.center[0], @player.center[1], 1]
-      pcenter = @transform * hom
-      angle = Gosu.angle(pcenter[0], pcenter[1], mouse_x, mouse_y) - 90
-      @player.armangle = angle
-      case angle
-      when -45..45
-        # puts "right"
-        @player.facing = 0
-      when 45..135
-        # puts "down"
-        @player.facing = 3
-      when 135..225
-        # puts "left"
-        @player.facing = 2
-      else
-        # puts "up"
-        @player.facing = 1
-      end
-      puts angle
-      @player.state = 2
+      #   invtransf = @transform.inverse
+      #   hom = Vector[@player.center[0], @player.center[1], 1]
+      #   pcenter = @transform * hom
+      #   angle = Gosu.angle(pcenter[0], pcenter[1], mouse_x, mouse_y) - 90
+      #   @player.armangle = angle
+      #   case angle
+      #   when -45..45
+      #     # puts "right"
+      #     @player.facing = 0
+      #   when 45..135
+      #     # puts "down"
+      #     @player.facing = 3
+      #   when 135..225
+      #     # puts "left"
+      #     @player.facing = 2
+      #   else
+      #     # puts "up"
+      #     @player.facing = 1
+      #   end
+      #   puts angle
+      #   @player.state = 2
     end
 
     # collision detection
@@ -121,11 +117,8 @@ class GameScene < Scene
     @objects.each_value do |objectList|
       for i in 0..objectList.length - 1
         objectList[i].transform = @transform
-        if (objectList[i].is_a?(Enemy))
-          objectList[i].update(@player.center, @player.velocity)
-        else
-          objectList[i].update
-        end
+
+        objectList[i].update
 
         #now check collisions
         @objects.each_value do |objectList2|
@@ -253,9 +246,9 @@ class GameScene < Scene
     when Gosu::KB_T
       # do something with DialogueBubble.new(@player,"Thinking")
     when Gosu::MS_LEFT
-      old_pos = @transform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
-      bullet = Bullet.new(@player.center, (Vector[old_pos[0], old_pos[1]] - @player.center).normalize * 10)
-      @objects["projectiles"].push(bullet)
+      #   old_pos = @transform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
+      #   bullet = Bullet.new(@player.center, (Vector[old_pos[0], old_pos[1]] - @player.center).normalize * 10)
+      #   @objects["projectiles"].push(bullet)
     end
   end
 end

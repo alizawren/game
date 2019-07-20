@@ -22,8 +22,8 @@ class Player < GameObject
 
   def initialize(center)
     super
-    @width = 128 * 0.8
-    @height = 128 * 0.8
+    @width = 128
+    @height = 128
 
     # @boundPoly = Rectangle.new(@x, @y, @width, @height)
     hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])

@@ -1,21 +1,22 @@
 require "gosu"
-require_relative "./gameScene.rb"
-class Scene1 < GameScene
+require_relative "./cutScene.rb"
+
+class Scene1 < CutScene
   attr_accessor :background_image
 
   def load
-    @background_image = Gosu::Image.new("img/space.png", :tileable => true)
+    super
+    @bg = Gosu::Image.new("img/tempbg.png", :tileable => true)
 
-    @player = Player.new
-    @player.go_to(50, 50)
+    @player = Player.new(Vector[130, 530])
+    @objects["player"].push(@player)
+    # @player = Player.new(Vector[50, 50])
 
-    @enemies = []
-    @enemies.push(Enemy.new([Vector[660, 50], Vector[450, 50]]))
-    @enemies.push(Enemy.new([Vector[700, 300], Vector[500, 300]]))
-    @enemies.push(Enemy.new([Vector[180, 300], Vector[100, 300]]))
-    @obstacles = []
-
-    @obstacles.push(Wall.new(500,500,100,50))
+    @objects["obstacles"].push(Wall.new(Vector[@bg.width / 2, 70], @bg.width, 140))
+    @objects["obstacles"].push(Wall.new(Vector[110, 120], 90, 100))
+    @objects["obstacles"].push(Wall.new(Vector[170, 190], 260, 40))
+    @objects["obstacles"].push(Wall.new(Vector[265, 140], 70, 100))
+    @objects["obstacles"].push(Wall.new(Vector[470, 370], 230, 90))
   end
 
   def unload
