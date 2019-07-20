@@ -104,7 +104,7 @@ class GameScene < Scene
         # puts "up"
         @player.facing = 1
       end
-      puts angle
+      # puts angle
       @player.state = 2
     end
 

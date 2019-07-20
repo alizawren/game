@@ -40,9 +40,7 @@ class GameObject
   end
 
   def force(forceVector)
-    puts @center
     @center = @center + forceVector
-    puts @center
   end
 
   def turn_left
