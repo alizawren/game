@@ -9,10 +9,7 @@ class Main < Gosu::Window
     super 1280, 720
     self.caption = "Game?"
 
-    @scene1 = Scene1.new
-    @scene2 = Scene2.new
-    @menu = MainMenu.new
-    SceneManager.changeScene(@scene1)
+    SceneManager.changeScene(MainMenu.new)
   end
 
   def update
@@ -27,7 +24,7 @@ class Main < Gosu::Window
     SceneManager.button_down(id, method(:close))
 
     if id == Gosu::KB_ESCAPE
-      SceneManager.changeScene(@menu)
+      SceneManager.changeScene(MainMenu.new)
     else
       super
     end

@@ -1,3 +1,4 @@
+require "json"
 require_relative "../rectangle.rb"
 require_relative "../constants"
 require_relative "./gameObject.rb"
@@ -17,11 +18,11 @@ ARM_DOWN_TRANSF = Matrix[[1, 0, (48 - 64) * PLAYER_SCALE], [0, 1, (34 - 64) * PL
 
 class Player < GameObject
   attr_accessor :state
-  attr_accessor :flip
+  # attr_accessor :flip
   attr_accessor :armangle
   attr_accessor :facing
 
-  def initialize(center)
+  def initialize(center, sceneType = "gamescene")
     super
     @width = 128 * PLAYER_SCALE
     @height = 128 * PLAYER_SCALE
@@ -32,12 +33,7 @@ class Player < GameObject
     @boundPolys["hit"] = hitPoly
     @boundPolys["walk"] = walkPoly
 
-    @idle_anim = Animation.new("img/scia/idle.png", @width, @height)
-    @walking_anim = Animation.new("img/scia/walking.png", @width, @height)
-    @shoot_right = Animation.new("img/scia/shootright.png", @width, @height)
-    @shoot_left = Animation.new("img/scia/shootleft.png", @width, @height)
-    @shoot_up = Animation.new("img/scia/shootup.png", @width, @height)
-    @shoot_down = Animation.new("img/scia/shootdown.png", @width, @height)
+    instantiateAnimations(sceneType)
 
     @armleft = Gosu::Image.new("img/scia/armleft.bmp")
     @armright = Gosu::Image.new("img/scia/armright.bmp")
@@ -48,10 +44,32 @@ class Player < GameObject
     @armanchor = ARM_RIGHT_ANCHOR
 
     @state = 0 # 0 for idle, 1 for walking, 2 for shooting (tentative)
-    @flip = 0 # 0 for facing right, 1 for facing left
+    # @flip = 0 # 0 for facing right, 1 for facing left
     @facing = 0 # 0 for right, 1 for up, 2 for left, 3 for down
-    @curr_anim = @idle_anim
+    @curr_anim = @idle_right
     @arm = nil
+  end
+
+  def instantiateAnimations(sceneType)
+    file = File.read("gameObjects/playerAnims.json")
+    data_hash = JSON.parse(file)
+
+    @idle_up = Animation.new(data_hash[sceneType]["idle"]["up"], @width, @height)
+    @idle_right = Animation.new(data_hash[sceneType]["idle"]["right"], @width, @height)
+    @idle_left = Animation.new(data_hash[sceneType]["idle"]["left"], @width, @height)
+    @idle_down = Animation.new(data_hash[sceneType]["idle"]["down"], @width, @height)
+
+    @walking_up = Animation.new(data_hash[sceneType]["walking"]["up"], @width, @height)
+    @walking_right = Animation.new(data_hash[sceneType]["walking"]["right"], @width, @height)
+    @walking_left = Animation.new(data_hash[sceneType]["walking"]["left"], @width, @height)
+    @walking_down = Animation.new(data_hash[sceneType]["walking"]["down"], @width, @height)
+
+    if (data_hash[sceneType]["shoot"])
+      @shoot_right = Animation.new(data_hash[sceneType]["shoot"]["right"], @width, @height)
+      @shoot_left = Animation.new(data_hash[sceneType]["shoot"]["left"], @width, @height)
+      @shoot_up = Animation.new(data_hash[sceneType]["shoot"]["up"], @width, @height)
+      @shoot_down = Animation.new(data_hash[sceneType]["shoot"]["down"], @width, @height)
+    end
   end
 
   def go_up
@@ -91,13 +109,31 @@ class Player < GameObject
 
     case @state
     when 0
-      @curr_anim = @idle_anim
+      case @facing
+      when 0
+        @curr_anim = @idle_right
+      when 1
+        @curr_anim = @idle_up
+      when 2
+        @curr_anim = @idle_left
+      when 3
+        @curr_anim = @idle_down
+      end
+
       @arm = nil
-      @curr_anim.flip = @flip
     when 1
-      @curr_anim = @walking_anim
+      case @facing
+      when 0
+        @curr_anim = @walking_right
+      when 1
+        @curr_anim = @walking_up
+      when 2
+        @curr_anim = @walking_left
+      when 3
+        @curr_anim = @walking_down
+      end
       @arm = nil
-      @curr_anim.flip = @flip
+      # @curr_anim.flip = @flip
     when 2
       case @facing
       when 0
@@ -127,7 +163,7 @@ class Player < GameObject
     else
       @curr_anim = @idle_anim
       @arm = nil
-      @curr_anim.flip = @flip
+      # @curr_anim.flip = @flip
     end
 
     @curr_anim.update

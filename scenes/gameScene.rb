@@ -3,6 +3,7 @@ require_relative "../gameObjects/player.rb"
 require_relative "../gameObjects/enemy.rb"
 require_relative "../gameObjects/obstacles/obstacle.rb"
 require_relative "../gameObjects/obstacles/wall.rb"
+require_relative "../gameObjects/interactable.rb"
 require_relative "../quadtree.rb"
 require_relative "./scene.rb"
 require_relative "../constants.rb"
@@ -31,22 +32,27 @@ class GameScene < Scene
 
     @crosshair = Crosshair.instance
 
-    @player = Player.new(Vector[120, 120])
+    @player = Player.new(Vector[120, 120], "gamescene")
 
     @dialogues = []
     @objects = Hash.new
     @objects["player"] = []
     @objects["enemies"] = []
     @objects["obstacles"] = []
+    @objects["interactables"] = []
     @objects["projectiles"] = []
     # first we always need walls to prevent character from walking outside of real bg
     bg_width = @bg.width
     bg_height = @bg.height
-    wall_thickness = 20
-    @objects["obstacles"].push(Wall.new(Vector[0, bg_height / 2], wall_thickness / 2, bg_height))
-    @objects["obstacles"].push(Wall.new(Vector[bg_width / 2, 0], bg_width, wall_thickness / 2))
-    @objects["obstacles"].push(Wall.new(Vector[bg_width, bg_height / 2], wall_thickness / 2, bg_height))
-    @objects["obstacles"].push(Wall.new(Vector[bg_width / 2, bg_height], bg_width, wall_thickness / 2))
+    wall_thickness = 10
+    # @objects["obstacles"].push(Wall.new(0, bg_height / 2, wall_thickness / 2, bg_height))
+    # @objects["obstacles"].push(Wall.new(bg_width / 2, 0, bg_width, wall_thickness / 2))
+    # @objects["obstacles"].push(Wall.new(bg_width, bg_height / 2, wall_thickness / 2, bg_height))
+    # @objects["obstacles"].push(Wall.new(bg_width / 2, bg_height, bg_width, wall_thickness / 2))
+    @objects["obstacles"].push(Wall.new(0, 0, -wall_thickness, bg_height))
+    @objects["obstacles"].push(Wall.new(0, 0, bg_width, -wall_thickness))
+    @objects["obstacles"].push(Wall.new(bg_width, 0, wall_thickness, bg_height))
+    @objects["obstacles"].push(Wall.new(0, bg_height, bg_width, wall_thickness))
   end
 
   def unload
@@ -64,13 +70,13 @@ class GameScene < Scene
     if Gosu.button_down? Gosu::KB_A or Gosu.button_down? Gosu::KB_LEFT
       @player.go_left
       @player.state = 1
-      @player.flip = 1
+      # @player.flip = 1
       @player.facing = 2
     end
     if Gosu.button_down? Gosu::KB_D or Gosu.button_down? Gosu::KB_RIGHT
       @player.go_right
       @player.state = 1
-      @player.flip = 0
+      # @player.flip = 0
       @player.facing = 0
     end
     if Gosu.button_down? Gosu::KB_W or Gosu.button_down? Gosu::KB_UP
@@ -93,19 +99,18 @@ class GameScene < Scene
       @player.armangle = angle
       case angle
       when -45..45
-        # puts "right"
+        # right
         @player.facing = 0
       when 45..135
-        # puts "down"
+        # down
         @player.facing = 3
       when 135..225
-        # puts "left"
+        # left
         @player.facing = 2
       else
-        # puts "up"
+        # up
         @player.facing = 1
       end
-      puts angle
       @player.state = 2
     end
 

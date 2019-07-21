@@ -32,25 +32,17 @@ class GameObject
   def x
     @center[0]
   end
+
   def y
     @center[1]
   end
+
   def go_to(pos)
     @center = pos
   end
 
   def force(forceVector)
-    puts @center
     @center = @center + forceVector
-    puts @center
-  end
-
-  def turn_left
-    @angle -= 4.5
-  end
-
-  def turn_right
-    @angle += 4.5
   end
 
   def update
