@@ -111,10 +111,6 @@ class GameScene < Scene
         # up
         @player.facing = 1
       end
-<<<<<<< HEAD
-      # puts angle
-=======
->>>>>>> cb7e028308986f273be5b62e17dbb668025eb7e0
       @player.state = 2
     end
 

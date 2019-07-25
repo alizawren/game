@@ -27,6 +27,8 @@ class GameObject
     @image = Gosu::Image.new("img/aSimpleSquare.png")
 
     @allCollidingObjects = []
+
+    @dialogue = Dialogue.new("", show = False)
   end
 
   def x
@@ -43,17 +45,6 @@ class GameObject
 
   def force(forceVector)
     @center = @center + forceVector
-<<<<<<< HEAD
-  end
-
-  def turn_left
-    @angle -= 4.5
-  end
-
-  def turn_right
-    @angle += 4.5
-=======
->>>>>>> cb7e028308986f273be5b62e17dbb668025eb7e0
   end
 
   def update
@@ -62,6 +53,7 @@ class GameObject
     @boundPolys.each_value do |value|
       value.update
     end
+    @dialogue.update
   end
 
   def draw
@@ -71,6 +63,7 @@ class GameObject
     y = newpos[1]
 
     @image.draw(x - @width / 2, y - @height / 2, 1)
+    @dialogue.draw()
   end
 
   def draw_frame
