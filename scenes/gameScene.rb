@@ -1,26 +1,15 @@
-require "gosu"
-require_relative "../gameObjects/player.rb"
-require_relative "../gameObjects/enemy.rb"
-require_relative "../gameObjects/obstacles/obstacle.rb"
-require_relative "../gameObjects/obstacles/wall.rb"
-require_relative "../gameObjects/interactable.rb"
-require_relative "../quadtree.rb"
 require_relative "./scene.rb"
-require_relative "../constants.rb"
-require_relative "../camera.rb"
-require_relative "../crosshair.rb"
 require_relative "./guis/pauseMenuGui.rb"
 require_relative "./dialogue/dialogueBubble.rb"
 require_relative "./dialogue/optionsBubble.rb"
 require_relative "./dialogue/partnerDialogue.rb"
-require_relative "../gameObjects/projectiles/bullet.rb"
-
-require "matrix"
 
 class GameScene < Scene
   attr_accessor :parallax
 
   def load
+    @mouse_x = 0
+    @mouse_y = 0
     @transform = Matrix.I(3)
 
     @camera = Camera.new
@@ -32,15 +21,13 @@ class GameScene < Scene
 
     @crosshair = Crosshair.instance
 
-    @player = Player.new(Vector[120, 120], "gamescene")
+    @player = Player.new(Vector[120, 120])
 
     @dialogues = []
     @objects = Hash.new
     @objects["player"] = []
-    @objects["enemies"] = []
     @objects["obstacles"] = []
     @objects["interactables"] = []
-    @objects["projectiles"] = []
     # first we always need walls to prevent character from walking outside of real bg
     bg_width = @bg.width
     bg_height = @bg.height
@@ -61,9 +48,11 @@ class GameScene < Scene
   end
 
   def update(mouse_x, mouse_y)
+    @mouse_x = mouse_x
+    @mouse_y = mouse_y
+
     @camera.update(@player.center, Vector[@bg.width / 2, @bg.height / 2])
     @transform = @camera.transform
-    #can we handle all of this in maybe a player update method?
     @player.state = 0
     # WARNING: technically we don't want to allow them to use both. If they are holding left and D at the same time,
     # we don't want one to cancel out the other.
@@ -90,40 +79,8 @@ class GameScene < Scene
       @player.facing = 3
     end
     # NOTE: must make state transitions more clear, rewrite whole thing
-    if Gosu.button_down? Gosu::MS_LEFT
-      # angle logic in here
-      invtransf = @transform.inverse
-      hom = Vector[@player.center[0], @player.center[1], 1]
-      pcenter = @transform * hom
-      angle = Gosu.angle(pcenter[0], pcenter[1], mouse_x, mouse_y) - 90
-      @player.armangle = angle
-      case angle
-      when -45..45
-        # right
-        @player.facing = 0
-      when 45..135
-        # down
-        @player.facing = 3
-      when 135..225
-        # left
-        @player.facing = 2
-      else
-        # up
-        @player.facing = 1
-      end
-      @player.state = 2
-    end
-
-    # collision detection
-    # @quadtree.clear
-    # for i in 0..@allObjects.length - 1
-    #   if (!@allObjects[i].nil?)
-    #     @quadtree.insert(@allObjects[i])
-    #   end
-    # end
 
     # update transforms for each object
-
     @objects.each_value do |objectList|
       for i in 0..objectList.length - 1
         objectList[i].transform = @transform
@@ -154,76 +111,6 @@ class GameScene < Scene
     for dialogue in @dialogues
       dialogue.update
     end
-    # for i in 0..@objects.length - 1
-    #   if (!@objects[i].nil?)
-    #     for x in 0..@objects.length - 1
-    #       # run collision detection algorithm between @allObjects[i] and returnObjects[x]
-    #       obj1 = @allObjects[i]
-    #       obj2 = @allObjects[x]
-    #       if obj1 == obj2
-    #         break
-    #       end
-    #       overlap(obj1, obj2)
-    #     end
-    #   end
-    # end
-    # for enemy in @enemies
-    #   enemy.transform = @transform
-    # end
-    # for obstacle in @obstacles
-    #   obstacle.transform = @transform
-    # end
-    # for projectile in @projectiles
-    #   projectile.transform = @transform
-    # end
-    # @player.transform = @transform
-
-    # for enemy in @enemies
-    #   enemy.update(@player.center, @player.velocity)
-    # end
-    # for obstacle in @obstacles
-    #   obstacle.update
-    # end
-    # for projectile in @projectiles
-    #   projectile.update
-    # end
-    # @player.update
-
-    # OLD QUADTREE CODE
-    # returnObjects = []
-    # for i in 0..@allObjects.length - 1
-    #   returnObjects = @quadtree.retrieve(@allObjects[i])
-
-    #   for x in 0..returnObjects.length - 1
-    #     # run collision detection algorithm between @allObjects[i] and returnObjects[x]
-    #     obj1 = @allObjects[i]
-    #     obj2 = returnObjects[x]
-    #     if obj1 == obj2
-    #       break
-    #     end
-    #     if (overlap(obj1, obj2))
-    #       @allObjects[i].color = Gosu::Color::RED
-    #       returnObjects[x].color = Gosu::Color::RED
-    #     end
-    #   end
-    # end
-
-    # NOTE: there is an issue with quadtree, it seems particularly when objects are in between two quadrants
-    # so, this method simply loops through all objects regardless of quadrant
-    # for i in 0..@allObjects.length - 1
-    #   if (!@allObjects[i].nil?)
-    #     for x in 0..@allObjects.length - 1
-    #       # run collision detection algorithm between @allObjects[i] and returnObjects[x]
-    #       obj1 = @allObjects[i]
-    #       obj2 = @allObjects[x]
-    #       if obj1 == obj2
-    #         break
-    #       end
-    #       overlap(obj1, obj2)
-    #     end
-    #   end
-    # end
-
     @crosshair.update(mouse_x, mouse_y) # might move this location
   end
 
@@ -246,20 +133,6 @@ class GameScene < Scene
     for dialogue in @dialogues
       dialogue.draw
     end
-    # @player.draw
-    # @player.draw_frame
-    # for enemy in @enemies
-    #   enemy.draw
-    #   enemy.draw_frame
-    # end
-    # for obstacle in @obstacles
-    #   obstacle.draw
-    #   obstacle.draw_frame
-    # end
-    # for projectile in @projectiles
-    #   # projectile.draw
-    #   projectile.draw_frame
-    # end
 
     @crosshair.draw
   end
@@ -270,9 +143,15 @@ class GameScene < Scene
       @dialogues.push(DialogueBubble.new(@player, "Thinking"))
       # do something with DialogueBubble.new(@player,"Thinking")
     when Gosu::MS_LEFT
-      old_pos = @transform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
-      bullet = Bullet.new(@player.center, (Vector[old_pos[0], old_pos[1]] - @player.center).normalize * 10)
-      @objects["projectiles"].push(bullet)
+      # instead of shooting bullets, check if it's clicking on an interactable
+      if (@mouse_x.nil? or @mouse_y.nil?)
+        return
+      end
+      for interactable in @objects["interactables"]
+        if interactable.contains(@mouse_x, @mouse_y)
+          interactable.activate
+        end
+      end
     end
   end
 end
@@ -283,7 +162,6 @@ def overlap(obj1, obj2)
   if (mtvHit)
     #call overlap on both objects if they overlap?
     #so they can handle it themselves?
-
     obj1.overlap(obj2, "hit", mtvHit.v)
     # obj2.overlap(obj1, "hit", mtvHit.v)
     mtv["hit"] = mtvHit
