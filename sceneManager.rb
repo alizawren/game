@@ -40,8 +40,6 @@ class SceneManager
   end
 
   def self.button_down(id, close_callback)
-    # getting rid of this loop for now because most of the time, we only listen to button presses where GUIs have been created
-    # may change once we have dialogue
     if (!@currScene.nil?)
       @currScene.button_down(id, close_callback)
     end

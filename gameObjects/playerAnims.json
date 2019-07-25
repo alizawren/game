@@ -1,0 +1,36 @@
+{
+  "gamescene": {
+    "idle": {
+      "up": "img/scia/idle.png",
+      "left": "img/scia/idle.png",
+      "down": "img/scia/idle.png",
+      "right": "img/scia/idle.png"
+    },
+    "walking": {
+      "up": "img/scia/walking_right.png",
+      "left": "img/scia/walking_left.png",
+      "down": "img/scia/walking_right.png",
+      "right": "img/scia/walking_right.png"
+    },
+    "shoot": {
+      "up": "img/scia/shootup.png",
+      "left": "img/scia/shootleft.png",
+      "down": "img/scia/shootdown.png",
+      "right": "img/scia/shootright.png"
+    }
+  },
+  "cutscene": {
+    "idle": {
+      "up": "img/scia/scia_cut_up.png",
+      "left": "img/scia/scia_cut_left.png",
+      "down": "img/scia/scia_cut_down.png",
+      "right": "img/scia/scia_cut_right.png"
+    },
+    "walking": {
+      "up": "img/scia/walking_right.png",
+      "left": "img/scia/walking_left.png",
+      "down": "img/scia/walking_right.png",
+      "right": "img/scia/walking_right.png"
+    }
+  }
+}

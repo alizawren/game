@@ -31,7 +31,7 @@ class MainMenuGui < MenuGui
     when Gosu::KB_RETURN, Gosu::KB_Z
       case @select
       when 0
-        SceneManager.changeScene(Scene2.new)
+        SceneManager.changeScene(Scene1.new)
       when 1
         SceneManager.guiPush(AboutGui.new)
       when 3

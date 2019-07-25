@@ -3,14 +3,11 @@ require_relative "./obstacle.rb"
 
 class Wall < Obstacle
   #walls are just rectangle shaped obstacles
-  def initialize(center, width = 30, height = 30, color = Gosu::Color::WHITE)
-    super(center, width, height)
-    @center = center
+  def initialize(x, y, width = 30, height = 30, color = Gosu::Color::WHITE)
+    @center = Vector[x + width / 2, y + height / 2]
     @width = width
     @height = height
-    #calculates the vertices and calls on superclass constructor
-    hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
-    @boundPolys["hit"] = hitPoly
-    @boundPolys["walk"] = hitPoly
+    vertices = [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]]
+    super(@center, vertices)
   end
 end

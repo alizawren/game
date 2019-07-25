@@ -32,15 +32,18 @@ class GameObject
   def x
     @center[0]
   end
+
   def y
     @center[1]
   end
+
   def go_to(pos)
     @center = pos
   end
 
   def force(forceVector)
     @center = @center + forceVector
+<<<<<<< HEAD
   end
 
   def turn_left
@@ -49,6 +52,8 @@ class GameObject
 
   def turn_right
     @angle += 4.5
+=======
+>>>>>>> cb7e028308986f273be5b62e17dbb668025eb7e0
   end
 
   def update

@@ -1,21 +1,35 @@
 require "gosu"
-require_relative "./gameScene.rb"
-class Scene1 < GameScene
+require_relative "./cutScene.rb"
+require_relative "./scene2.rb"
+
+class Scene1 < CutScene
   attr_accessor :background_image
 
   def load
-    @background_image = Gosu::Image.new("img/space.png", :tileable => true)
+    super
+    @bg = Gosu::Image.new("img/tempbg.png", :tileable => true)
 
-    @player = Player.new
-    @player.go_to(50, 50)
+    @player = Player.new(Vector[130, 530], "cutscene")
+    @objects["player"].push(@player)
+    # @player = Player.new(50, 50])
 
-    @enemies = []
-    @enemies.push(Enemy.new([Vector[660, 50], Vector[450, 50]]))
-    @enemies.push(Enemy.new([Vector[700, 300], Vector[500, 300]]))
-    @enemies.push(Enemy.new([Vector[180, 300], Vector[100, 300]]))
-    @obstacles = []
+    # upper wall
+    @objects["obstacles"].push(Wall.new(0, 0, @bg.width, 140))
+    # chair
+    @objects["obstacles"].push(Wall.new(65, 70, 90, 100))
+    # desk
+    @objects["obstacles"].push(Obstacle.new(Vector[230, 170], [Vector[0, 0], Vector[0, -80], Vector[70, -80], Vector[70, 60], Vector[-180, 60], Vector[-180, 0]]))
+    # pool
+    @objects["obstacles"].push(Wall.new(355, 325, 230, 90))
+    #couch
+    @objects["obstacles"].push(Obstacle.new(Vector[755, 355], [Vector[0, 0], Vector[60, 0], Vector[60, -30], Vector[100, -30], Vector[100, 245], Vector[-140, 245], Vector[-140, 125], Vector[0, 125]]))
 
-    @obstacles.push(Wall.new(500,500,100,50))
+    @objects["interactables"].push(Interactable.new(Vector[180, 180], 40, 40, method(:phoneActivate)))
+  end
+
+  # NOTE: YES, this is probably a messy way to do this.
+  def phoneActivate
+    SceneManager.changeScene(Scene2.new)
   end
 
   def unload
