@@ -1,10 +1,10 @@
 class Animation
   attr_accessor :flip
 
-  def initialize(spriteSheet, width = 128, height = 128, tileWidth = 128, tileHeight = 128, fps = 10)
+  def initialize(spriteSheet, width = 128, height = 128, tileWidth = 128, tileHeight = 128, fps = 10, tileable: false, retro: true)
     @width = width
     @height = height
-    @img_array = Gosu::Image.load_tiles(spriteSheet, tileWidth, tileHeight)
+    @img_array = Gosu::Image.load_tiles(spriteSheet, tileWidth, tileHeight, :tileable => tileable, :retro => retro)
 
     @frame = 0
     @fps = fps

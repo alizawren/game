@@ -17,7 +17,7 @@ class CutScene < GameScene
     @parallax = Gosu::Image.new("img/space.png", :tileable => true)
     @bg = Gosu::Image.new("img/tempbg.png", :tileable => true)
 
-    @player = Player.new(Vector[120, 120], "cutscene")
+    @player = Player.new(Vector[130, 450], "cutscene")
   end
 
   def update(mouse_x, mouse_y)

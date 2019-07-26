@@ -5,7 +5,7 @@ require_relative "./gameObject.rb"
 require_relative "../animation.rb"
 require_relative "../sceneManager.rb"
 
-PLAYER_SCALE = 1.2
+PLAYER_SCALE = 2
 MAX_SPEED = 5
 ARM_RIGHT_ANCHOR = Vector[0.125, 0.45]
 ARM_LEFT_ANCHOR = Vector[0.9, 0.5]
@@ -29,7 +29,8 @@ class Player < GameObject
 
     # @boundPoly = Rectangle.new(@x, @y, @width, @height)
     hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
-    walkPoly = BoundingPolygon.new(self, [Vector[-@width / 4, @height / 4], Vector[@width / 4, @height / 4], Vector[@width / 4, @height / 2], Vector[-@width / 4, @height / 2]])
+    # walkPoly = BoundingPolygon.new(self, [Vector[-@width / 4, @height / 4], Vector[@width / 4, @height / 4], Vector[@width / 4, @height / 2], Vector[-@width / 4, @height / 2]])
+    walkPoly = BoundingPolygon.new(self, [Vector[-16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-16 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
     @boundPolys["hit"] = hitPoly
     @boundPolys["walk"] = walkPoly
 
@@ -43,6 +44,8 @@ class Player < GameObject
     @arm_transform = ARM_RIGHT_TRANSF
     @armanchor = ARM_RIGHT_ANCHOR
 
+    @shadow = Gosu::Image.new("img/scia/scia_shadow.bmp")
+
     @state = 0 # 0 for idle, 1 for walking, 2 for shooting (tentative)
     # @flip = 0 # 0 for facing right, 1 for facing left
     @facing = 0 # 0 for right, 1 for up, 2 for left, 3 for down
@@ -54,15 +57,15 @@ class Player < GameObject
     file = File.read("gameObjects/playerAnims.json")
     data_hash = JSON.parse(file)
 
-    @idle_up = Animation.new(data_hash[sceneType]["idle"]["up"], @width, @height)
-    @idle_right = Animation.new(data_hash[sceneType]["idle"]["right"], @width, @height)
-    @idle_left = Animation.new(data_hash[sceneType]["idle"]["left"], @width, @height)
-    @idle_down = Animation.new(data_hash[sceneType]["idle"]["down"], @width, @height)
+    @idle_up = Animation.new(data_hash[sceneType]["idle"]["up"], @width, @height, retro: true)
+    @idle_right = Animation.new(data_hash[sceneType]["idle"]["right"], @width, @height, retro: true)
+    @idle_left = Animation.new(data_hash[sceneType]["idle"]["left"], @width, @height, retro: true)
+    @idle_down = Animation.new(data_hash[sceneType]["idle"]["down"], @width, @height, retro: true)
 
-    @walking_up = Animation.new(data_hash[sceneType]["walking"]["up"], @width, @height)
-    @walking_right = Animation.new(data_hash[sceneType]["walking"]["right"], @width, @height)
-    @walking_left = Animation.new(data_hash[sceneType]["walking"]["left"], @width, @height)
-    @walking_down = Animation.new(data_hash[sceneType]["walking"]["down"], @width, @height)
+    @walking_up = Animation.new(data_hash[sceneType]["walking"]["up"], @width, @height, retro: true)
+    @walking_right = Animation.new(data_hash[sceneType]["walking"]["right"], @width, @height, retro: true)
+    @walking_left = Animation.new(data_hash[sceneType]["walking"]["left"], @width, @height, retro: true)
+    @walking_down = Animation.new(data_hash[sceneType]["walking"]["down"], @width, @height, retro: true)
 
     if (data_hash[sceneType]["shoot"])
       @shoot_right = Animation.new(data_hash[sceneType]["shoot"]["right"], @width, @height)
@@ -176,9 +179,12 @@ class Player < GameObject
 
     armpos = @arm_transform * @transform * curr
 
-    @curr_anim.draw(newpos[0] - @width / 2, newpos[1] - @height / 2, 1)
+    @curr_anim.draw(newpos[0] - @width / 2, newpos[1] - @height / 2, PLAYER_LAYER)
+
+    @shadow.draw(newpos[0] - @width / 2, newpos[1] - @height / 2, SHADOW_LAYER, 2, 2, Gosu::Color.new(128, 255, 255, 255))
+
     if (!@arm.nil?)
-      @arm.draw_rot(armpos[0], armpos[1], 1, @armangle, @armanchor[0], @armanchor[1])
+      @arm.draw_rot(armpos[0], armpos[1], 1, @armangle, @armanchor[0], @armanchor[1], PLAYER_ARM_LAYER)
     end
   end
 

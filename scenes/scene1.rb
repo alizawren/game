@@ -9,7 +9,7 @@ class Scene1 < CutScene
     super
     @bg = Gosu::Image.new("img/tempbg.png", :tileable => true)
 
-    @player = Player.new(Vector[130, 530], "cutscene")
+    @player = Player.new(Vector[120, 380], "cutscene")
     @objects["player"].push(@player)
     # @player = Player.new(50, 50])
 
