@@ -28,7 +28,7 @@ class Player < GameObject
     @height = 128 * PLAYER_SCALE
 
     # @boundPoly = Rectangle.new(@x, @y, @width, @height)
-    hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
+    hitPoly = BoundingPolygon.new(self, [Vector[-12 * PLAYER_SCALE, -36 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, -36 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-12 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
     # walkPoly = BoundingPolygon.new(self, [Vector[-@width / 4, @height / 4], Vector[@width / 4, @height / 4], Vector[@width / 4, @height / 2], Vector[-@width / 4, @height / 2]])
     walkPoly = BoundingPolygon.new(self, [Vector[-16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-16 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
     @boundPolys["hit"] = hitPoly

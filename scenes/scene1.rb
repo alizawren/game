@@ -29,7 +29,7 @@ class Scene1 < CutScene
 
   # NOTE: YES, this is probably a messy way to do this.
   def phoneActivate
-    SceneManager.changeScene(Scene2.new)
+    SceneManager.changeScene(GameScene.new("scenes/scene2.json"))
   end
 
   def unload

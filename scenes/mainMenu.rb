@@ -1,6 +1,5 @@
 require "gosu"
 require_relative "./scene.rb"
-require_relative "./scene1.rb"
 require_relative "../rectangle.rb"
 require_relative "../constants.rb"
 require_relative "./guis/mainMenuGui.rb"
@@ -21,6 +20,7 @@ class MainMenu < Scene
     @background_image.draw(0, 0, 0)
     @title.draw(0, 0, 0)
   end
-  def button_down(id,close_callback)
+
+  def button_down(id, close_callback)
   end
 end

@@ -1,41 +1,58 @@
+require "json"
 require_relative "./scene.rb"
 require_relative "./guis/pauseMenuGui.rb"
 require_relative "./dialogue/dialogueBubble.rb"
 require_relative "./dialogue/optionsBubble.rb"
 require_relative "./dialogue/partnerDialogue.rb"
+require_relative "../camera.rb"
+require_relative "../crosshair.rb"
+require_relative "../gameObjects/player.rb"
+require_relative "../gameObjects/enemy.rb"
+require_relative "../gameObjects/obstacles/obstacle.rb"
+require_relative "../gameObjects/obstacles/wall.rb"
 
 class GameScene < Scene
   attr_accessor :parallax
 
-  def load
+  def initialize(jsonfile = "scenes/defaultScene.json")
     @mouse_x = 0
     @mouse_y = 0
     @transform = Matrix.I(3)
 
     @camera = Camera.new
 
-    @quadtree = Quadtree.new(0, Rectangle.new(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT))
-
-    @parallax = Gosu::Image.new("img/space.png", :tileable => true)
-    @bg = Gosu::Image.new("img/tempbg.png", :tileable => true)
+    # @quadtree = Quadtree.new(0, Rectangle.new(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT))
 
     @crosshair = Crosshair.instance
 
-    @player = Player.new(Vector[120, 120])
-
     @dialogues = []
     @objects = Hash.new
+
+    file = File.read(jsonfile)
+    data = JSON.parse(file)
+
+    @type = data["type"]
+
+    @parallax = Gosu::Image.new(data["parallax"], :tileable => true)
+    @bg = Gosu::Image.new(data["bg"], :tileable => true)
+
     @objects["player"] = []
     @objects["obstacles"] = []
     @objects["interactables"] = []
+    if (@type == "gamescene")
+      @objects["enemies"] = []
+      @objects["projectiles"] = []
+    end
+
+    @player = Player.new(Vector[data["player"]["x"], data["player"]["y"]], "cutscene")
+    @objects["player"].push(@player)
+
+    addObjects(data)
+
     # first we always need walls to prevent character from walking outside of real bg
     bg_width = @bg.width
     bg_height = @bg.height
     wall_thickness = 10
-    # @objects["obstacles"].push(Wall.new(0, bg_height / 2, wall_thickness / 2, bg_height))
-    # @objects["obstacles"].push(Wall.new(bg_width / 2, 0, bg_width, wall_thickness / 2))
-    # @objects["obstacles"].push(Wall.new(bg_width, bg_height / 2, wall_thickness / 2, bg_height))
-    # @objects["obstacles"].push(Wall.new(bg_width / 2, bg_height, bg_width, wall_thickness / 2))
     @objects["obstacles"].push(Wall.new(0, 0, -wall_thickness, bg_height))
     @objects["obstacles"].push(Wall.new(0, 0, bg_width, -wall_thickness))
     @objects["obstacles"].push(Wall.new(bg_width, 0, wall_thickness, bg_height))
@@ -45,6 +62,63 @@ class GameScene < Scene
   def unload
     super
     @quadtree = nil
+  end
+
+  def addObjects(data)
+    # get objects
+    if (!data["objects"].nil?)
+      # get each key (obstacles, interactables, etc)
+      keys = data["objects"].keys
+      for key in keys
+        # add key to dictionary
+        @objects[key] = []
+        # for each object, construct object and add to list of objects
+        for val in data["objects"][key]
+          obj = nil
+
+          case val["type"]
+          when "wall"
+            w = val["width"]
+            h = val["height"]
+            if (val["width"] == "bgwidth")
+              w = @bg.width
+            end
+            if (val["height"] == "bgheight")
+              h = @bg.height
+            end
+            obj = Wall.new(val["x"], val["y"], w, h)
+          when "polygon"
+            if (val["x"].nil? or val["y"].nil? or val["vertices"].nil?)
+              next
+            end
+            vertices = val["vertices"]
+            if (vertices.empty?)
+              next
+            end
+            newverts = []
+            for vertex in vertices
+              newverts.push(Vector[vertex["x"], vertex["y"]])
+            end
+            obj = Obstacle.new(Vector[val["x"], val["y"]], newverts)
+          when "enemy"
+            path = val["path"]
+            newpath = []
+            for node in path
+              newpath.push(Vector[node["x"], node["y"]])
+            end
+            obj = Enemy.new(newpath)
+          when "interactable"
+            # todo
+            # note, we need some list of defined methods
+          else
+          end
+
+          if (!obj.nil?)
+            @objects[key].push(obj)
+          end
+        end
+      end
+    end
   end
 
   def update(mouse_x, mouse_y)
@@ -77,6 +151,31 @@ class GameScene < Scene
       @player.go_down
       @player.state = 1
       @player.facing = 3
+    end
+    if (@type == "gamescene")
+      if Gosu.button_down? Gosu::MS_LEFT
+        # angle logic in here
+        invtransf = @transform.inverse
+        hom = Vector[@player.center[0], @player.center[1], 1]
+        pcenter = @transform * hom
+        angle = Gosu.angle(pcenter[0], pcenter[1], mouse_x, mouse_y) - 90
+        @player.armangle = angle
+        case angle
+        when -45..45
+          # right
+          @player.facing = 0
+        when 45..135
+          # down
+          @player.facing = 3
+        when 135..225
+          # left
+          @player.facing = 2
+        else
+          # up
+          @player.facing = 1
+        end
+        @player.state = 2
+      end
     end
     # NOTE: must make state transitions more clear, rewrite whole thing
 
@@ -151,6 +250,12 @@ class GameScene < Scene
         if interactable.contains(@mouse_x, @mouse_y)
           interactable.activate
         end
+      end
+
+      if (@type == "gamescene")
+        old_pos = @transform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
+        bullet = Bullet.new(@player.center, (Vector[old_pos[0], old_pos[1]] - @player.center).normalize * 10)
+        @objects["projectiles"].push(bullet)
       end
     end
   end
