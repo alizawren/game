@@ -7,10 +7,13 @@ class GameObject
   attr_reader :center
   attr_reader :velocity
 
-  attr_reader :boundPolys
+  attr_accessor :image
+  attr_accessor :boundPolys
+
+  attr_accessor :z
   attr_reader :width
   attr_reader :height
-  attr_accessor :transform
+  attr_reader :transform
 
   # def initialize(x = 0.0, y = 0.0, width = 30, height = 30)
   def initialize(center = Vector[0.0, 0.0], width = 30, height = 30)
@@ -24,7 +27,9 @@ class GameObject
 
     @boundPolys = Hash.new
 
-    @image = Gosu::Image.new("img/aSimpleSquare.png")
+    # @image = Gosu::Image.new("img/aSimpleSquare.png")
+
+    @z = 1
 
     @allCollidingObjects = []
   end
@@ -50,21 +55,25 @@ class GameObject
     @center = @center + @velocity
     @boundPolys.each_value do |value|
       value.update
+      @z = BELOW_PLAYER
     end
   end
 
-  def draw
+  def draw(transf = Matrix.I(3))
     curr = Vector[@center[0], @center[1], 1]
-    newpos = @transform * curr
+    newpos = transf * @transform * curr
     x = newpos[0]
     y = newpos[1]
 
-    @image.draw(x - @width / 2, y - @height / 2, 1)
+    if (!@image.nil?)
+      @image.draw(x - @width / 2, y - @height / 2, @z)
+      # @image.draw(@center[0], @center[1], @z)
+    end
   end
 
-  def draw_frame
+  def draw_frame(transf = Matrix.I(3))
     @boundPolys.each_value do |value|
-      value.draw
+      value.draw(transf)
     end
   end
 

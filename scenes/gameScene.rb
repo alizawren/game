@@ -17,9 +17,9 @@ class GameScene < Scene
   def initialize(jsonfile = "scenes/defaultScene.json")
     @mouse_x = 0
     @mouse_y = 0
-    @transform = Matrix.I(3)
 
     @camera = Camera.new
+    @cameratransform = Matrix.I(3)
 
     # @quadtree = Quadtree.new(0, Rectangle.new(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT))
 
@@ -113,6 +113,21 @@ class GameScene < Scene
           else
           end
 
+          if (!obj.nil? and !val["boundPolys"].nil?)
+            val["boundPolys"].each do |poly, polys|
+              vertices = []
+              for vertex in polys
+                vertices.push(Vector[vertex["x"], vertex["y"]])
+              end
+              boundPoly = BoundingPolygon.new(obj, vertices)
+              obj.boundPolys[poly] = boundPoly
+            end
+          end
+
+          if (!obj.nil? and !val["img"].nil?)
+            obj.image = Gosu::Image.new(val["img"])
+          end
+
           if (!obj.nil?)
             @objects[key].push(obj)
           end
@@ -126,7 +141,7 @@ class GameScene < Scene
     @mouse_y = mouse_y
 
     @camera.update(@player.center, Vector[@bg.width / 2, @bg.height / 2])
-    @transform = @camera.transform
+    @cameratransform = @camera.transform
     @player.state = 0
     # WARNING: technically we don't want to allow them to use both. If they are holding left and D at the same time,
     # we don't want one to cancel out the other.
@@ -155,9 +170,9 @@ class GameScene < Scene
     if (@type == "gamescene")
       if Gosu.button_down? Gosu::MS_LEFT
         # angle logic in here
-        invtransf = @transform.inverse
+        invtransf = @cameratransform.inverse
         hom = Vector[@player.center[0], @player.center[1], 1]
-        pcenter = @transform * hom
+        pcenter = @cameratransform * hom
         angle = Gosu.angle(pcenter[0], pcenter[1], mouse_x, mouse_y) - 90
         @player.armangle = angle
         case angle
@@ -179,10 +194,9 @@ class GameScene < Scene
     end
     # NOTE: must make state transitions more clear, rewrite whole thing
 
-    # update transforms for each object
+    # update each object
     @objects.each_value do |objectList|
       for i in 0..objectList.length - 1
-        objectList[i].transform = @transform
         if (objectList[i].is_a?(Enemy))
           objectList[i].update(@player.center, @player.velocity)
         else
@@ -217,16 +231,16 @@ class GameScene < Scene
     # NOTE: in the future, we would want to make a bitmap class so that we could easily set their transforms
     # and call bitmap.draw instead of the below
     curr = Vector[0, 0, 1]
-    newpos = @transform * curr
+    newpos = @cameratransform * curr
     x = newpos[0]
     y = newpos[1]
-    @parallax.draw(x, y, 0)
-    @bg.draw(x, y, 0)
+    @parallax.draw(x, y, PARALLAX_LAYER)
+    @bg.draw(x, y, BG_LAYER)
 
     @objects.each_value do |objectList|
       for object in objectList
-        object.draw
-        object.draw_frame
+        object.draw(@cameratransform)
+        object.draw_frame(@cameratransform)
       end
     end
     for dialogue in @dialogues
@@ -276,6 +290,12 @@ def overlap(obj1, obj2)
     obj1.overlap(obj2, "walk", mtvWalk.v)
     # obj2.overlap(obj1, "walk", mtvWalk.v)
     mtv["walk"] = mtvWalk
+  end
+
+  mtvWalkHit = findOverlap(obj1.boundPolys["walk"], obj2.boundPolys["hit"])
+  if (mtvWalkHit)
+    obj1.overlap(obj2, "walkhit", mtvWalkHit.v)
+    mtv["walkhit"] = mtvWalkHit
   end
 
   return mtv

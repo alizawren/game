@@ -7,7 +7,7 @@
       "right": "img/scia/idle.png"
     },
     "walking": {
-      "up": "img/scia/cut_walking_down.bmp",
+      "up": "img/scia/scia_cut_sprite_up.bmp",
       "left": "img/scia/cut_walking_left.bmp",
       "down": "img/scia/cut_walking_down.bmp",
       "right": "img/scia/cut_walking_right.bmp"
@@ -27,7 +27,7 @@
       "right": "img/scia/scia_cut_sprite_right.bmp"
     },
     "walking": {
-      "up": "img/scia/cut_walking_down.bmp",
+      "up": "img/scia/scia_cut_sprite_up.bmp",
       "left": "img/scia/cut_walking_left.bmp",
       "down": "img/scia/cut_walking_down.bmp",
       "right": "img/scia/cut_walking_right.bmp"

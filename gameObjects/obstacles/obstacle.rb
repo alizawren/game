@@ -10,8 +10,4 @@ class Obstacle < GameObject
     @boundPolys["hit"] = hitPoly
     @boundPolys["walk"] = hitPoly
   end
-
-  def draw
-    # draw nothing for obstacles for now; scene code will call draw frames
-  end
 end

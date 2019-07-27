@@ -28,7 +28,7 @@ class Player < GameObject
     @height = 128 * PLAYER_SCALE
 
     # @boundPoly = Rectangle.new(@x, @y, @width, @height)
-    hitPoly = BoundingPolygon.new(self, [Vector[-12 * PLAYER_SCALE, -36 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, -36 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-12 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
+    hitPoly = BoundingPolygon.new(self, [Vector[-12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-12 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
     # walkPoly = BoundingPolygon.new(self, [Vector[-@width / 4, @height / 4], Vector[@width / 4, @height / 4], Vector[@width / 4, @height / 2], Vector[-@width / 4, @height / 2]])
     walkPoly = BoundingPolygon.new(self, [Vector[-16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-16 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
     @boundPolys["hit"] = hitPoly
@@ -172,12 +172,12 @@ class Player < GameObject
     @curr_anim.update
   end
 
-  def draw
+  def draw(transf = Matrix.I(3))
     # note: in the future, make things more consistent so we don't have to recalculate this and can just call super
     curr = Vector[@center[0], @center[1], 1]
-    newpos = @transform * curr
+    newpos = transf * @transform * curr
 
-    armpos = @arm_transform * @transform * curr
+    armpos = @arm_transform * newpos
 
     @curr_anim.draw(newpos[0] - @width / 2, newpos[1] - @height / 2, PLAYER_LAYER)
 
@@ -201,6 +201,13 @@ class Player < GameObject
     when "walk"
       if (obj2.is_a?(Obstacle))
         force(mtv)
+      end
+    when "walkhit"
+      # check when hitting hit poly
+      if (obj2.is_a?(Obstacle))
+        obj2.z = ABOVE_PLAYER
+      else
+        obj2.z = BELOW_PLAYER
       end
     end
   end
