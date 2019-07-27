@@ -278,9 +278,6 @@ class GameScene < Scene
         return
       end
 
-
-      #do stuff with choices
-
       if (!@dialogues.empty?)
         # do stuff with choices
         for dialogue in @dialogues

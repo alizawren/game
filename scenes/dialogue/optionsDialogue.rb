@@ -1,10 +1,11 @@
 
 class OptionsDialogue
-  def initialize(choices,source=false,duration = 50, fps = 20, show:true)
+  def initialize(choices, source = nil, duration = 100, fps = 20, show: true)
     @source = source
     @type = "options"
     @choices = choices
     @font = Gosu::Font.new(FONT_HEIGHT, :name => FONT_TYPE)
+    @show = show
 
     @width = @font.text_width(@choices[0]) + MARGIN * 2
     @height = @font.height + MARGIN * 2
@@ -13,12 +14,12 @@ class OptionsDialogue
     @duration = duration
     @fps = fps
     @timer = 60 / @fps
-    if source
+    if !@source.nil?
       @x = source.x
       @y = source.y
-    else 
-      @x=0
-      @y=0
+    else
+      @x = 0
+      @y = 0
     end
     @z = TEXT_LAYER
   end
@@ -27,7 +28,7 @@ class OptionsDialogue
     if (@timer == 0)
       if @frame < @text.length + duration
         @frame += 1
-      else 
+      else
         @show = false
       end
       @timer = 60 / @fps
@@ -37,14 +38,22 @@ class OptionsDialogue
     #do some kind of check for mouse clicking
   end
 
-  def draw(transform=Vector[0,0,0])
-    if @show
+  def draw(transform = Vector[0, 0, 0])
+    if !@source.nil?
+      if @show
+        vec = transform * Vector[@x, @y, 1]
+        for i in 0..@choices.length - 1
+          @font.draw_text(@choices[i][0, @frame], vec[0] + MARGIN, vec[1] + (i + 1) * (FONT_HEIGHT + MARGIN), @z)
+        end
+      end
+    else
+
       for i in 0..@choices.length - 1
-        @font.draw_text(@choices[i][0, @frame], x + MARGIN, y + (i + 1) * (FONT_HEIGHT + MARGIN), z)
+        @font.draw_text(@choices[i][0, @frame], 100+ MARGIN, CANVAS_WIDTH + (i + 1) * (FONT_HEIGHT + MARGIN), @z)
       end
     end
   end
-  
+
   def contains(cameratransf, x, y)
     mouseHom = Vector[x, y, 1]
     worldMouse = cameratransf.inverse * mouseHom
@@ -57,6 +66,7 @@ class OptionsDialogue
       return false
     end
   end
+
   # def button_down(id, close_callback)
   #     case id
   #     when Gosu::KB_UP
