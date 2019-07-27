@@ -1,7 +1,7 @@
 require "gosu"
 
 class Dialogue
-  def initialize(text, fps = 20, show = true)
+  def initialize(text, duration = 50, fps = 20, show = true)
     @text = text
     @font = Gosu::Font.new(FONT_HEIGHT)
 
@@ -9,14 +9,17 @@ class Dialogue
     @height = @font.height + MARGIN * 2
 
     @frame = 0
+    @duration = duration 
     @fps = fps
     @timer = 60 / @fps
   end
 
   def update
     if (@timer == 0)
-      if @frame < @text.length
+      if @frame < @text.length + @duration
         @frame += 1
+      else 
+        show = false
       end
       @timer = 60 / @fps
     else

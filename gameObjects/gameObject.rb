@@ -28,7 +28,7 @@ class GameObject
 
     @allCollidingObjects = []
 
-    @dialogue = Dialogue.new("", show = False)
+    @dialogue = Dialogue.new("",show = false)
   end
 
   def x
@@ -63,7 +63,7 @@ class GameObject
     y = newpos[1]
 
     @image.draw(x - @width / 2, y - @height / 2, 1)
-    @dialogue.draw()
+    @dialogue.draw(@x,@y,1)
   end
 
   def draw_frame

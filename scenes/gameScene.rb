@@ -1,8 +1,7 @@
 require_relative "./scene.rb"
 require_relative "./guis/pauseMenuGui.rb"
-require_relative "./dialogue/dialogueBubble.rb"
-require_relative "./dialogue/optionsBubble.rb"
-require_relative "./dialogue/partnerDialogue.rb"
+require_relative "./dialogue/dialogue.rb"
+require_relative "./dialogue/dialogueOptions.rb"
 
 class GameScene < Scene
   attr_accessor :parallax
@@ -23,7 +22,6 @@ class GameScene < Scene
 
     @player = Player.new(Vector[120, 120])
 
-    @dialogues = []
     @objects = Hash.new
     @objects["player"] = []
     @objects["obstacles"] = []
@@ -108,9 +106,6 @@ class GameScene < Scene
       end
     end
 
-    for dialogue in @dialogues
-      dialogue.update
-    end
     @crosshair.update(mouse_x, mouse_y) # might move this location
   end
 
@@ -130,9 +125,6 @@ class GameScene < Scene
         object.draw_frame
       end
     end
-    for dialogue in @dialogues
-      dialogue.draw
-    end
 
     @crosshair.draw
   end
@@ -140,8 +132,8 @@ class GameScene < Scene
   def button_down(id, close_callback)
     case id
     when Gosu::KB_T
-      @dialogues.push(DialogueBubble.new(@player, "Thinking"))
-      # do something with DialogueBubble.new(@player,"Thinking")
+      #set player dialogue to a new bubble
+      @player.dialogue = Dialogue.new("wassup")
     when Gosu::MS_LEFT
       # instead of shooting bullets, check if it's clicking on an interactable
       if (@mouse_x.nil? or @mouse_y.nil?)
@@ -152,6 +144,7 @@ class GameScene < Scene
           interactable.activate
         end
       end
+      #when are we gonna shoot bullets?
     end
   end
 end
