@@ -1,0 +1,32 @@
+{
+  "type": "gamescene",
+  "parallax": "img/space.png",
+  "bg": "img/bluebg.png",
+  "player": { "id": "scia", "x": 120, "y": 120 },
+  "objects": {
+    "obstacles": [
+      { "type": "fixed", "x": 400, "y": 400, "width": 100, "height": 50 }
+    ],
+    "enemies": [
+      {
+        "type": "enemy",
+        "path": [{ "x": 400, "y": 50 }, { "x": 450, "y": 50 }]
+      },
+      {
+        "type": "enemy",
+        "path": [{ "x": 180, "y": 400 }, { "x": 100, "y": 405 }]
+      }
+    ],
+    "interactables": [
+      {
+        "type": "fixed",
+        "x": 500,
+        "y": 500,
+        "width": 100,
+        "height": 50,
+        "method": "objActivate",
+        "through": true
+      }
+    ]
+  }
+}

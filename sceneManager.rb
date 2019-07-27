@@ -62,4 +62,8 @@ class SceneManager
       @currScene.load()
     end
   end
+
+  def self.createDialogue(param)
+    @currScene.createDialogue(param)
+  end
 end

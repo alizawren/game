@@ -19,6 +19,7 @@ class Enemy < GameObject
     @center = @path[0]
     super(@center)
     #starting position is the first point in the path
+    @image = Gosu::Image.new("img/aSimpleSquare.png")
 
     #we'll do textures later,
     #they're just rectangles for now

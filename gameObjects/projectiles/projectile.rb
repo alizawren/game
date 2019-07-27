@@ -3,16 +3,22 @@ require_relative "../gameObject.rb"
 
 class Projectile < GameObject
   attr_accessor :damage
-  def initialize(center = Vector[0,0], velocity = Vector[0,0], damage = 0, width = 2, height = 2)
+
+  def initialize(sceneref, center = Vector[0, 0], velocity = Vector[0, 0], damage = 0, width = 2, height = 2)
     super(center, width, height)
-    @velocity = velocity 
-    @angle = Math.atan(velocity[1]/velocity[0])
+    @velocity = velocity
+    @angle = Math.atan(velocity[1] / velocity[0])
     hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
     @boundPolys["hit"] = hitPoly
+    @sceneref = sceneref
   end
-  def overlap(obj2,poly,mtv=Vector[0,0])
-    if (obj2.is_a?(Obstacle))
-      @velocity = Vector[0,0]
+
+  def overlap(obj2, poly, mtv = Vector[0, 0])
+    if (obj2.is_a?(FixedObject))
+      @sceneref.deleteObject(self.object_id)
+    end
+    if (obj2.is_a?(Enemy))
+      @sceneref.deleteObject(self.object_id)
     end
   end
 end

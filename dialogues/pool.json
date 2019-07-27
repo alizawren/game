@@ -1,0 +1,12 @@
+{
+  "sequence": [
+    {
+      "id": 1,
+      "dialogues": [
+        { "type": "partner", "source": "player", "text": "Play some pool?" },
+        { "type": "normal", "text": "" },
+        { "type": "options", "choices": ["No", "Definitely no"] }
+      ]
+    }
+  ]
+}

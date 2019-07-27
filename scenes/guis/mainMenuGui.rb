@@ -1,5 +1,6 @@
 require_relative "./menuGui.rb"
 require_relative "./aboutGui.rb"
+require_relative "../gameScene.rb"
 
 class MainMenuGui < MenuGui
   def initialize
@@ -31,7 +32,8 @@ class MainMenuGui < MenuGui
     when Gosu::KB_RETURN, Gosu::KB_Z
       case @select
       when 0
-        SceneManager.changeScene(Scene1.new)
+        SceneManager.changeScene(GameScene.new("scenes/scenefiles/scene1.json"))
+        # SceneManager.changeScene(GameScene.new("scenes/scenefiles/scene2.json"))
       when 1
         SceneManager.guiPush(AboutGui.new)
       when 3

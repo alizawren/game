@@ -17,14 +17,8 @@ class BoundingPolygon
     for vertex in vertices
       @baseVertices.push(Vector[vertex[0], vertex[1]])
     end
-    @vertices = []
 
-    hom = Vector[@obj.center[0], @obj.center[1], 1]
-    transformed_center = @obj.transform * hom
-    pos = Vector[transformed_center[0], transformed_center[1]]
-    for vert in @baseVertices
-      @vertices.push(vert + pos)
-    end
+    transformVertices
 
     @axes = []
     for i in 0..@vertices.length - 1
@@ -37,10 +31,18 @@ class BoundingPolygon
     @baseAxes = @axes
   end
 
+  def transformVertices
+    @vertices = []
+    pos = Vector[@obj.center[0], @obj.center[1]]
+    for vert in @baseVertices
+      @vertices.push(vert + pos)
+    end
+  end
+
   def update
-    hom = Vector[@obj.center[0], @obj.center[1], 1]
-    transformed_center = @obj.transform * hom
-    pos = Vector[transformed_center[0], transformed_center[1]]
+    # hom = Vector[@obj.center[0], @obj.center[1], 1]
+    # transformed_center = @obj.transform * hom
+    pos = Vector[@obj.center[0], @obj.center[1]]
     for i in 0..@vertices.length - 1
       @vertices[i] = @baseVertices[i] + pos
     end
@@ -68,7 +70,7 @@ class BoundingPolygon
     proj = Projection.new(min, max)
   end
 
-  def draw
+  def draw(transf)
     for i in 0..@vertices.length - 1
       currV = nil
       nextV = nil
@@ -80,6 +82,13 @@ class BoundingPolygon
         currV = @vertices[i]
         nextV = @vertices[i + 1]
       end
+      currHom = Vector[currV[0], currV[1], 1]
+      newCurr = transf * currHom
+      currV = Vector[newCurr[0], newCurr[1]]
+
+      nextHom = Vector[nextV[0], nextV[1], 1]
+      newNext = transf * nextHom
+      nextV = Vector[newNext[0], newNext[1]]
       Gosu.draw_line(currV[0], currV[1], @color, nextV[0], nextV[1], @color, 100)
     end
   end

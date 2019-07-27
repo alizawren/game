@@ -9,7 +9,7 @@ class Scene1 < CutScene
     super
     @bg = Gosu::Image.new("img/tempbg.png", :tileable => true)
 
-    @player = Player.new(Vector[130, 530], "cutscene")
+    @player = Player.new(Vector[120, 380], "cutscene")
     @objects["player"].push(@player)
     # @player = Player.new(50, 50])
 
@@ -29,7 +29,7 @@ class Scene1 < CutScene
 
   # NOTE: YES, this is probably a messy way to do this.
   def phoneActivate
-    SceneManager.changeScene(Scene2.new)
+    SceneManager.changeScene(GameScene.new("scenes/scene2.json"))
   end
 
   def unload

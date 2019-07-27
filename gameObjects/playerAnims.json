@@ -1,16 +1,16 @@
 {
   "gamescene": {
     "idle": {
-      "up": "img/scia/idle.png",
-      "left": "img/scia/idle.png",
-      "down": "img/scia/idle.png",
-      "right": "img/scia/idle.png"
+      "up": "img/scia/scia_cut_sprite_up.bmp",
+      "left": "img/scia/scia_cut_sprite_left.bmp",
+      "down": "img/scia/scia_cut_sprite_down.bmp",
+      "right": "img/scia/scia_cut_sprite_right.bmp"
     },
     "walking": {
-      "up": "img/scia/walking_right.png",
-      "left": "img/scia/walking_left.png",
-      "down": "img/scia/walking_right.png",
-      "right": "img/scia/walking_right.png"
+      "up": "img/scia/scia_cut_sprite_up.bmp",
+      "left": "img/scia/cut_walking_left.bmp",
+      "down": "img/scia/cut_walking_down.bmp",
+      "right": "img/scia/cut_walking_right.bmp"
     },
     "shoot": {
       "up": "img/scia/shootup.png",
@@ -21,16 +21,16 @@
   },
   "cutscene": {
     "idle": {
-      "up": "img/scia/scia_cut_up.png",
-      "left": "img/scia/scia_cut_left.png",
-      "down": "img/scia/scia_cut_down.png",
-      "right": "img/scia/scia_cut_right.png"
+      "up": "img/scia/scia_cut_sprite_up.bmp",
+      "left": "img/scia/scia_cut_sprite_left.bmp",
+      "down": "img/scia/scia_cut_sprite_down.bmp",
+      "right": "img/scia/scia_cut_sprite_right.bmp"
     },
     "walking": {
-      "up": "img/scia/walking_right.png",
-      "left": "img/scia/walking_left.png",
-      "down": "img/scia/walking_right.png",
-      "right": "img/scia/walking_right.png"
+      "up": "img/scia/scia_cut_sprite_up.bmp",
+      "left": "img/scia/cut_walking_left.bmp",
+      "down": "img/scia/cut_walking_down.bmp",
+      "right": "img/scia/cut_walking_right.bmp"
     }
   }
 }
