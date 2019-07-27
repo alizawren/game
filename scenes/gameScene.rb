@@ -2,8 +2,8 @@ require "json"
 require_relative "../functions.rb"
 require_relative "./scene.rb"
 require_relative "./guis/pauseMenuGui.rb"
-require_relative "./dialogue/dialogue.rb"
-require_relative "./dialogue/dialogueOptions.rb"
+require_relative "./dialogue/normalDialogue.rb"
+require_relative "./dialogue/optionsDialogue.rb"
 require_relative "../camera.rb"
 require_relative "../crosshair.rb"
 require_relative "../gameObjects/player.rb"
@@ -25,7 +25,7 @@ class GameScene < Scene
     # @quadtree = Quadtree.new(0, Rectangle.new(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT))
 
     @crosshair = Crosshair.instance
-
+    @dialogues = []
     @objects = Hash.new
 
     file = File.read(jsonfile)
@@ -237,6 +237,10 @@ class GameScene < Scene
       end
     end
 
+    for dialogue in @dialogues
+      dialogue.update()
+    end
+
     @crosshair.update(mouse_x, mouse_y) # might move this location
   end
 
@@ -257,24 +261,30 @@ class GameScene < Scene
       end
     end
 
+    for dialogue in @dialogues
+      dialogue.draw(@cameratransform)
+    end
+
     @crosshair.draw
   end
 
   def button_down(id, close_callback)
     case id
     when Gosu::KB_T
-      @player.dialogue = Dialogue.new("wassup")
-      # do something with DialogueBubble.new(@player,"Thinking")
+      @dialogues.push(NormalDialogue.new("Thinking",@player))
     when Gosu::MS_LEFT
       # instead of shooting bullets, check if it's clicking on an interactable
       if (@mouse_x.nil? or @mouse_y.nil?)
         return
       end
 
+
+      #do stuff with choices
+
       if (!@dialogues.empty?)
         # do stuff with choices
         for dialogue in @dialogues
-          if (dialogue.is_a?(OptionsBubble) and dialogue.contains(@cameratransform, @mouse_x, @mouse_y))
+          if (dialogue.is_a?(OptionsDialogue) and dialogue.contains(@cameratransform, @mouse_x, @mouse_y))
             @dialogues = []
           end
         end
@@ -316,21 +326,17 @@ class GameScene < Scene
       for dialogue in val["dialogues"]
         obj = nil
         # parse source
-        source = self
+        source = false
         case dialogue["source"]
         when "player"
-          source = @player
-        else
           source = @player
         end
 
         case dialogue["type"]
-        when "partner"
-          obj = PartnerDialogue.new(dialogue["text"])
         when "normal"
-          obj = DialogueBubble.new(source, dialogue["text"])
+          obj = NormalDialogue.new(dialogue["text"],source)
         when "options"
-          obj = OptionsBubble.new(source, dialogue["choices"])
+          obj = OptionsDialogue.new(dialogue["choices"],source)
         end
         @dialogues.push(obj)
       end

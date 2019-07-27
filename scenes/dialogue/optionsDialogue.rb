@@ -1,8 +1,10 @@
 
-class DialogueOptions
-  def initialize(choices = ["..."], duration = 50, fps = 20, show = true)
+class OptionsDialogue
+  def initialize(choices,source=false,duration = 50, fps = 20, show:true)
+    @source = source
+    @type = "options"
     @choices = choices
-    @font = Gosu::Font.new(FONT_HEIGHT)
+    @font = Gosu::Font.new(FONT_HEIGHT, :name => FONT_TYPE)
 
     @width = @font.text_width(@choices[0]) + MARGIN * 2
     @height = @font.height + MARGIN * 2
@@ -11,6 +13,14 @@ class DialogueOptions
     @duration = duration
     @fps = fps
     @timer = 60 / @fps
+    if source
+      @x = source.x
+      @y = source.y
+    else 
+      @x=0
+      @y=0
+    end
+    @z = TEXT_LAYER
   end
 
   def update
@@ -27,14 +37,26 @@ class DialogueOptions
     #do some kind of check for mouse clicking
   end
 
-  def draw
+  def draw(transform=Vector[0,0,0])
     if @show
       for i in 0..@choices.length - 1
         @font.draw_text(@choices[i][0, @frame], x + MARGIN, y + (i + 1) * (FONT_HEIGHT + MARGIN), z)
       end
     end
   end
+  
+  def contains(cameratransf, x, y)
+    mouseHom = Vector[x, y, 1]
+    worldMouse = cameratransf.inverse * mouseHom
+    x = worldMouse[0]
+    y = worldMouse[1]
 
+    if (x <= @center[0] + @width / 2 && x >= @center[0] - @width / 2 && y <= @center[1] + @height / 2 && y >= @center[1] - @height / 2)
+      return true
+    else
+      return false
+    end
+  end
   # def button_down(id, close_callback)
   #     case id
   #     when Gosu::KB_UP

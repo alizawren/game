@@ -3,8 +3,8 @@
     {
       "id": 1,
       "dialogues": [
-        { "type": "partner", "source": "player", "text": "Play some pool?" },
-        { "type": "normal", "text": "" },
+        { "type": "normal", "source": "player", "text": "Play some pool?" },
+        { "type": "normal", "text": "Narration" },
         { "type": "options", "choices": ["No", "Definitely no"] }
       ]
     }

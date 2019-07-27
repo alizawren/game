@@ -33,7 +33,6 @@ class GameObject
 
     @allCollidingObjects = []
 
-    @dialogue = Dialogue.new("",show = false)
   end
 
   def x
@@ -59,7 +58,6 @@ class GameObject
       value.update
       @z = BELOW_PLAYER
     end
-    @dialogue.update
   end
 
   def draw(transf = Matrix.I(3))
@@ -72,7 +70,6 @@ class GameObject
       @image.draw(x - @width / 2, y - @height / 2, @z)
       # @image.draw(@center[0], @center[1], @z)
     end
-    @dialogue.draw(x,y,1)
   end
 
   def draw_frame(transf = Matrix.I(3))
