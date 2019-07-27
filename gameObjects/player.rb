@@ -199,12 +199,12 @@ class Player < GameObject
         SceneManager.restartScene
       end
     when "walk"
-      if (obj2.is_a?(Obstacle))
+      if (obj2.is_a?(FixedObject) && !obj2.through)
         force(mtv)
       end
     when "walkhit"
       # check when hitting hit poly
-      if (obj2.is_a?(Obstacle))
+      if (obj2.is_a?(FixedObject))
         obj2.z = ABOVE_PLAYER
       else
         obj2.z = BELOW_PLAYER

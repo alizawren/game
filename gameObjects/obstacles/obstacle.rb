@@ -2,6 +2,8 @@ require "gosu"
 require_relative "../gameObject.rb"
 
 class Obstacle < GameObject
+  attr_reader :activateFunc # TEMPORARY
+
   def initialize(center, vertices)
     super(center)
 
@@ -9,5 +11,7 @@ class Obstacle < GameObject
     hitPoly = BoundingPolygon.new(self, vertices)
     @boundPolys["hit"] = hitPoly
     @boundPolys["walk"] = hitPoly
+
+    @activateFunc = ""
   end
 end

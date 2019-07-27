@@ -4,7 +4,7 @@ class OptionsBubble
   def initialize(source, choices = ["..."], fps = 20)
     @source = source
     @choices = choices
-    @font = Gosu::Font.new(FONT_HEIGHT)
+    @font = Gosu::Font.new(FONT_HEIGHT, :name => FONT_TYPE)
     @x = 0
     @y = 0
     @z = TEXT_LAYER
@@ -32,6 +32,20 @@ class OptionsBubble
     y = newpos[1]
     @x = x
     @y = y
+  end
+
+  def contains(cameratransf, x, y)
+    return true
+    mouseHom = Vector[x, y, 1]
+    worldMouse = cameratransf.inverse * mouseHom
+    x = worldMouse[0]
+    y = worldMouse[1]
+
+    if (x <= @x + @width && x >= @x && y <= @y + @height && y >= @y)
+      return true
+    else
+      return false
+    end
   end
 
   def draw(transf)

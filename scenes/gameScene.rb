@@ -10,14 +10,13 @@ require_relative "../crosshair.rb"
 require_relative "../gameObjects/player.rb"
 require_relative "../gameObjects/enemy.rb"
 require_relative "../gameObjects/obstacles/obstacle.rb"
-require_relative "../gameObjects/obstacles/wall.rb"
-require_relative "../gameObjects/interactable.rb"
+require_relative "../gameObjects/fixedObject.rb"
 require_relative "../gameObjects/projectiles/bullet.rb"
 
 class GameScene < Scene
   attr_accessor :parallax
 
-  def initialize(jsonfile = "scenes/defaultScene.json")
+  def initialize(jsonfile = "scenes/scenefiles/defaultScene.json")
     @mouse_x = 0
     @mouse_y = 0
 
@@ -40,8 +39,7 @@ class GameScene < Scene
     @bg = Gosu::Image.new(data["bg"], :tileable => true)
 
     @objects["player"] = []
-    @objects["obstacles"] = []
-    @objects["interactables"] = []
+    @objects["fixed"] = []
     if (@type == "gamescene")
       @objects["enemies"] = []
       @objects["projectiles"] = []
@@ -56,10 +54,10 @@ class GameScene < Scene
     bg_width = @bg.width
     bg_height = @bg.height
     wall_thickness = 10
-    @objects["obstacles"].push(Wall.new(0, 0, -wall_thickness, bg_height))
-    @objects["obstacles"].push(Wall.new(0, 0, bg_width, -wall_thickness))
-    @objects["obstacles"].push(Wall.new(bg_width, 0, wall_thickness, bg_height))
-    @objects["obstacles"].push(Wall.new(0, bg_height, bg_width, wall_thickness))
+    @objects["fixed"].push(FixedObject.new(0, 0, -wall_thickness, bg_height))
+    @objects["fixed"].push(FixedObject.new(0, 0, bg_width, -wall_thickness))
+    @objects["fixed"].push(FixedObject.new(bg_width, 0, wall_thickness, bg_height))
+    @objects["fixed"].push(FixedObject.new(0, bg_height, bg_width, wall_thickness))
   end
 
   def unload
@@ -70,7 +68,7 @@ class GameScene < Scene
   def addObjects(data)
     # get objects
     if (!data["objects"].nil?)
-      # get each key (obstacles, interactables, etc)
+      # get each key (obstacles, fixed, etc)
       keys = data["objects"].keys
       for key in keys
         # add key to dictionary
@@ -80,7 +78,7 @@ class GameScene < Scene
           obj = nil
 
           case val["type"]
-          when "wall"
+          when "fixed"
             w = val["width"]
             h = val["height"]
             if (val["width"] == "bgwidth")
@@ -89,7 +87,14 @@ class GameScene < Scene
             if (val["height"] == "bgheight")
               h = @bg.height
             end
-            obj = Wall.new(val["x"], val["y"], w, h)
+
+            through = val["through"]
+            method = ""
+            if val["method"]
+              method = val["method"]
+            end
+
+            obj = FixedObject.new(val["x"], val["y"], w, h, method, through)
           when "polygon"
             if (val["x"].nil? or val["y"].nil? or val["vertices"].nil?)
               next
@@ -102,7 +107,7 @@ class GameScene < Scene
             for vertex in vertices
               newverts.push(Vector[vertex["x"], vertex["y"]])
             end
-            obj = Obstacle.new(Vector[val["x"], val["y"]], newverts)
+            # obj = Obstacle.new(Vector[val["x"], val["y"]], newverts)
           when "enemy"
             path = val["path"]
             newpath = []
@@ -110,11 +115,6 @@ class GameScene < Scene
               newpath.push(Vector[node["x"], node["y"]])
             end
             obj = Enemy.new(newpath)
-          when "interactable"
-            # todo
-            # note, we need some list of defined methods
-            method = val["method"].to_sym
-            obj = Interactable.new(Vector[val["x"], val["y"]], val["width"], val["height"], val["method"])
           else
           end
 
@@ -280,28 +280,69 @@ class GameScene < Scene
       if (@mouse_x.nil? or @mouse_y.nil?)
         return
       end
-      for interactable in @objects["interactables"]
+
+      if (!@dialogues.empty?)
+        # do stuff with choices
+        for dialogue in @dialogues
+          if (dialogue.is_a?(OptionsBubble) and dialogue.contains(@cameratransform, @mouse_x, @mouse_y))
+            @dialogues = []
+          end
+        end
+        return
+      end
+
+      for interactable in @objects["fixed"]
         if interactable.contains(@cameratransform, @mouse_x, @mouse_y)
           interactable.activate
+          return
         end
       end
 
       if (@type == "gamescene")
         old_pos = @cameratransform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
         # old_pos = Vector[@crosshair.x, @crosshair.y]
-        bullet = Bullet.new(self, @player.center, (Vector[old_pos[0], old_pos[1]] - @player.center).normalize * 10)
+        bullet = Bullet.new(self, @player.center, (Vector[old_pos[0], old_pos[1]] - @player.center).normalize * BULLET_SPEED)
         @objects["projectiles"].push(bullet)
       end
     end
   end
 
-  def delete(objid)
+  def deleteObject(objid)
     @objects.each_value do |objectList|
       for i in 0..objectList.length - 1
         if objectList[i].object_id == objid
           objectList.delete_at(i)
           return
         end
+      end
+    end
+  end
+
+  def createDialogue(jsonfile)
+    file = File.read(jsonfile)
+    data = JSON.parse(file)
+
+    for val in data["sequence"]
+      for dialogue in val["dialogues"]
+        obj = nil
+        # parse source
+        source = self
+        case dialogue["source"]
+        when "player"
+          source = @player
+        else
+          source = @player
+        end
+
+        case dialogue["type"]
+        when "partner"
+          obj = PartnerDialogue.new(dialogue["text"])
+        when "normal"
+          obj = DialogueBubble.new(source, dialogue["text"])
+        when "options"
+          obj = OptionsBubble.new(source, dialogue["choices"])
+        end
+        @dialogues.push(obj)
       end
     end
   end

@@ -4,9 +4,9 @@
   "bg": "img/tempbg.png",
   "player": { "id": "scia", "x": 120, "y": 380 },
   "objects": {
-    "obstacles": [
-      { "type": "wall", "x": 0, "y": 0, "width": "bgwidth", "height": 140 },
-      { "type": "wall", "x": 65, "y": 70, "width": 90, "height": 100 },
+    "fixed": [
+      { "type": "fixed", "x": 0, "y": 0, "width": "bgwidth", "height": 140 },
+      { "type": "fixed", "x": 65, "y": 70, "width": 90, "height": 100 },
       {
         "type": "polygon",
         "x": 230,
@@ -21,7 +21,7 @@
         ]
       },
       {
-        "type": "wall",
+        "type": "fixed",
         "x": 360,
         "y": 305,
         "width": 200,
@@ -40,16 +40,15 @@
             { "x": 100, "y": 60 },
             { "x": -100, "y": 60 }
           ]
-        }
+        },
+        "method": "poolActivate"
       },
       {
         "type": "polygon",
         "vertices": []
-      }
-    ],
-    "interactables": [
+      },
       {
-        "type": "interactable",
+        "type": "fixed",
         "x": 180,
         "y": 180,
         "width": 40,

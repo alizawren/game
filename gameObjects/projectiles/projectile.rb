@@ -14,9 +14,11 @@ class Projectile < GameObject
   end
 
   def overlap(obj2, poly, mtv = Vector[0, 0])
-    if (obj2.is_a?(Obstacle))
-      @velocity = Vector[0, 0]
-      @sceneref.delete(self.object_id)
+    if (obj2.is_a?(FixedObject))
+      @sceneref.deleteObject(self.object_id)
+    end
+    if (obj2.is_a?(Enemy))
+      @sceneref.deleteObject(self.object_id)
     end
   end
 end
