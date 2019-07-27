@@ -1,10 +1,10 @@
 {
   "gamescene": {
     "idle": {
-      "up": "img/scia/idle.png",
-      "left": "img/scia/idle.png",
-      "down": "img/scia/idle.png",
-      "right": "img/scia/idle.png"
+      "up": "img/scia/scia_cut_sprite_up.bmp",
+      "left": "img/scia/scia_cut_sprite_left.bmp",
+      "down": "img/scia/scia_cut_sprite_down.bmp",
+      "right": "img/scia/scia_cut_sprite_right.bmp"
     },
     "walking": {
       "up": "img/scia/scia_cut_sprite_up.bmp",

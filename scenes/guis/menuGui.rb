@@ -1,4 +1,4 @@
-require_relative "../../gui.rb"
+require_relative "./gui.rb"
 
 class MenuGui < Gui 
     def initialize(x = 0, y = 0, width = CANVAS_WIDTH - 2 * x, height = CANVAS_HEIGHT - 2 * y)

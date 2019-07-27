@@ -1,5 +1,5 @@
-require_relative "./sceneManager" # GUI has ability to change scenes
-require_relative "./constants.rb"
+require_relative "../../sceneManager" # GUI has ability to change scenes
+require_relative "../../constants.rb"
 require "gosu"
 
 # class to be inherited
@@ -18,7 +18,7 @@ class Gui
     @height = height
 
     # default font
-    @font = Gosu::Font.new(FONT_HEIGHT)
+    @font = Gosu::Font.new(FONT_HEIGHT, :name => FONT_TYPE)
   end
 
   def update
@@ -33,8 +33,6 @@ class Gui
       Gosu.draw_line(@x + @width, @y, @borderColor, @x + @width, @y + @height, @borderColor, @z)
       Gosu.draw_line(@x, @y + @height, @borderColor, @x + @width, @y + @height, @borderColor, @z)
     end
-
-    
   end
 
   def button_down(id, close_callback)

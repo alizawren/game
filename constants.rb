@@ -1,8 +1,11 @@
+require "gosu"
+
 #canvas constants
 CANVAS_WIDTH = 1280
 CANVAS_HEIGHT = 720
 
 # gui constants
+FONT_TYPE = "fonts/fixedsys.ttf"
 FONT_HEIGHT = 24
 MARGIN = 12
 
@@ -14,3 +17,6 @@ ABOVE_PLAYER = 5
 BELOW_PLAYER = 1
 BG_LAYER = 0
 PARALLAX_LAYER = -1000
+
+TEXT_LAYER = 1000
+BUBBLE_COLOR = Gosu::Color::BLUE

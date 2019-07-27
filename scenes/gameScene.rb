@@ -1,4 +1,5 @@
 require "json"
+require_relative "../functions.rb"
 require_relative "./scene.rb"
 require_relative "./guis/pauseMenuGui.rb"
 require_relative "./dialogue/dialogueBubble.rb"
@@ -10,6 +11,8 @@ require_relative "../gameObjects/player.rb"
 require_relative "../gameObjects/enemy.rb"
 require_relative "../gameObjects/obstacles/obstacle.rb"
 require_relative "../gameObjects/obstacles/wall.rb"
+require_relative "../gameObjects/interactable.rb"
+require_relative "../gameObjects/projectiles/bullet.rb"
 
 class GameScene < Scene
   attr_accessor :parallax
@@ -44,7 +47,7 @@ class GameScene < Scene
       @objects["projectiles"] = []
     end
 
-    @player = Player.new(Vector[data["player"]["x"], data["player"]["y"]], "cutscene")
+    @player = Player.new(Vector[data["player"]["x"], data["player"]["y"]], @type)
     @objects["player"].push(@player)
 
     addObjects(data)
@@ -110,6 +113,8 @@ class GameScene < Scene
           when "interactable"
             # todo
             # note, we need some list of defined methods
+            method = val["method"].to_sym
+            obj = Interactable.new(Vector[val["x"], val["y"]], val["width"], val["height"], val["method"])
           else
           end
 
@@ -205,13 +210,26 @@ class GameScene < Scene
       end
     end
 
+    # @objects.each_value do |objectList|
+    #   for i in 0..objectList.length - 1
+    #     #now check collisions
+    #     @objects.each_value do |objectList2|
+    #       for j in 0..objectList2.length - 1
+    #         obj1 = objectList[i]
+    #         obj2 = objectList2[j]
+    #         if obj1 == obj2
+    #           break
+    #         end
+    #         overlap(obj1, obj2)
+    #       end
+    #     end
+    #   end
+    # end
     @objects.each_value do |objectList|
-      for i in 0..objectList.length - 1
+      for obj1 in objectList
         #now check collisions
         @objects.each_value do |objectList2|
-          for j in 0..objectList2.length - 1
-            obj1 = objectList[i]
-            obj2 = objectList2[j]
+          for obj2 in objectList2
             if obj1 == obj2
               break
             end
@@ -244,7 +262,7 @@ class GameScene < Scene
       end
     end
     for dialogue in @dialogues
-      dialogue.draw
+      dialogue.draw(@cameratransform)
     end
 
     @crosshair.draw
@@ -254,6 +272,8 @@ class GameScene < Scene
     case id
     when Gosu::KB_T
       @dialogues.push(DialogueBubble.new(@player, "Thinking"))
+      @dialogues.push(OptionsBubble.new(@player, ["Stop thinking", "Do something with that big brain of yours"]))
+      @dialogues.push(PartnerDialogue.new("Yoooo dis shit wack"))
       # do something with DialogueBubble.new(@player,"Thinking")
     when Gosu::MS_LEFT
       # instead of shooting bullets, check if it's clicking on an interactable
@@ -261,15 +281,27 @@ class GameScene < Scene
         return
       end
       for interactable in @objects["interactables"]
-        if interactable.contains(@mouse_x, @mouse_y)
+        if interactable.contains(@cameratransform, @mouse_x, @mouse_y)
           interactable.activate
         end
       end
 
       if (@type == "gamescene")
-        old_pos = @transform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
-        bullet = Bullet.new(@player.center, (Vector[old_pos[0], old_pos[1]] - @player.center).normalize * 10)
+        old_pos = @cameratransform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
+        # old_pos = Vector[@crosshair.x, @crosshair.y]
+        bullet = Bullet.new(self, @player.center, (Vector[old_pos[0], old_pos[1]] - @player.center).normalize * 10)
         @objects["projectiles"].push(bullet)
+      end
+    end
+  end
+
+  def delete(objid)
+    @objects.each_value do |objectList|
+      for i in 0..objectList.length - 1
+        if objectList[i].object_id == objid
+          objectList.delete_at(i)
+          return
+        end
       end
     end
   end

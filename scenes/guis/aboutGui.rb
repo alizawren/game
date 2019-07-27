@@ -1,4 +1,4 @@
-require_relative "../../gui.rb"
+require_relative "./menuGui.rb"
 require_relative "../../constants.rb"
 
 class AboutGui < MenuGui
