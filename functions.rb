@@ -3,11 +3,12 @@ def phoneActivate
 end
 
 def objActivate
-  puts "object clicked"
+  currScene = SceneManager.getCurrentScene
+  currScene.eventHandler.onNotify({ jsonfile: "dialogues/level1.json" }, :createDialogue)
 end
 
 def poolActivate
   # SceneManager.createDialogue("dialogues/pool.json")
   currScene = SceneManager.getCurrentScene
-  currScene.dialogueHandler.onNotify({ jsonfile: "dialogues/pool.json" }, :createDialogue)
+  currScene.eventHandler.onNotify({ jsonfile: "dialogues/pool.json" }, :createDialogue)
 end

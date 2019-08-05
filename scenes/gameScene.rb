@@ -2,7 +2,7 @@ require "json"
 require_relative "../functions.rb"
 require_relative "./scene.rb"
 require_relative "./guis/pauseMenuGui.rb"
-require_relative "./dialogue/dialogueHandler.rb"
+require_relative "../eventHandler.rb"
 require_relative "../camera.rb"
 require_relative "../crosshair.rb"
 require_relative "../gameObjects/player.rb"
@@ -14,7 +14,7 @@ require_relative "../gameObjects/projectiles/bullet.rb"
 class GameScene < Scene
   attr_accessor :parallax
   attr_reader :cameratransform
-  attr_accessor :dialogueHandler
+  attr_accessor :eventHandler
   attr_reader :objects
   attr_reader :player
   attr_reader :mouse_x
@@ -31,7 +31,8 @@ class GameScene < Scene
 
     @crosshair = Crosshair.instance
     # @dialogues = []
-    @dialogueHandler = DialogueHandler.new(self)
+    @eventHandler = EventHandler.new(self)
+    @eventHandler.addHandler("dialogue")
     @objects = Hash.new
 
     file = File.read(jsonfile)
@@ -243,7 +244,7 @@ class GameScene < Scene
       end
     end
 
-    @dialogueHandler.update()
+    @eventHandler.update()
 
     @crosshair.update(mouse_x, mouse_y) # might move this location
   end
@@ -265,7 +266,7 @@ class GameScene < Scene
       end
     end
 
-    @dialogueHandler.draw
+    @eventHandler.draw
 
     @crosshair.draw
   end
@@ -280,22 +281,27 @@ class GameScene < Scene
         return
       end
 
-      if (@dialogueHandler.active)
-        @dialogueHandler.button_down(id, close_callback)
-      else
-        for interactable in @objects["fixed"]
-          if interactable.contains(@cameratransform, @mouse_x, @mouse_y)
-            interactable.activate
-            return
-          end
-        end
+      @eventHandler.button_down(id, close_callback)
+      # PREVIOUSLY, checking if a dialogue was active was enough to restrict actions. Should rethink this
+      # if (@dialogueHandler.active)
+      #   @dialogueHandler.button_down(id, close_callback)
+      # else
 
-        if (@type == "gamescene")
-          old_pos = @cameratransform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
-          # old_pos = Vector[@crosshair.x, @crosshair.y]
-          bullet = Bullet.new(self, @player.center, (Vector[old_pos[0], old_pos[1]] - @player.center).normalize * BULLET_SPEED)
-          @objects["projectiles"].push(bullet)
+      # TODO: Ideally we don't want to loop over ALL the fixed objects and check if the player wants to interact with it
+      # separate fixed from fixed interactables? Add some flag so at least they don't perform contains calculations?
+      # (note: inverse matrix calculations are particularly expensive)
+      for interactable in @objects["fixed"]
+        if interactable.contains(@cameratransform, @mouse_x, @mouse_y)
+          interactable.activate
+          return
         end
+      end
+
+      if (@type == "gamescene")
+        old_pos = @cameratransform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
+        # old_pos = Vector[@crosshair.x, @crosshair.y]
+        bullet = Bullet.new(self, @player.center, (Vector[old_pos[0], old_pos[1]] - @player.center).normalize * BULLET_SPEED)
+        @objects["projectiles"].push(bullet)
       end
     end
   end
@@ -310,32 +316,6 @@ class GameScene < Scene
       end
     end
   end
-
-  # def createDialogue(jsonfile)
-  #   file = File.read(jsonfile)
-  #   data = JSON.parse(file)
-
-  #   for val in data["sequence"]
-  #     for dialogue in val["dialogues"]
-  #       obj = nil
-  #       # parse source
-  #       source = nil
-  #       case dialogue["source"]
-  #       when "player"
-  #         source = @player
-  #       end
-
-  #       case dialogue["type"]
-  #       when "normal"
-  #         obj = NormalDialogue.new(dialogue["text"], source)
-  #       when "options"
-  #         obj = OptionsDialogue.new(dialogue["choices"], source)
-  #       end
-  #       @dialogues.push(obj)
-  #     end
-  #     #when are we gonna shoot bullets?
-  #   end
-  # end
 end
 
 def overlap(obj1, obj2)

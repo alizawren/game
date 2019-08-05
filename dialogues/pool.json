@@ -1,7 +1,7 @@
 {
   "sequence": [
     {
-      "id": 1,
+      "id": 0,
       "bubbles": [
         { "type": "normal", "source": "player", "text": "Play some pool?" },
         { "type": "normal", "text": "Narration" },

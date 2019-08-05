@@ -1,13 +1,19 @@
-require_relative "../../eventHandler.rb"
+# require_relative "../../eventHandler.rb"
 require_relative "./bubble.rb"
 # require_relative "./optionsDialogue.rb"
 
-class DialogueHandler < EventHandler
+class DialogueHandler
   attr_reader :active
 
   def initialize(sceneRef)
     @active = false
     @sceneRef = sceneRef
+
+    @timer = -1
+    @timeoutId = -1
+
+    @dialogueData = nil
+    @id = 0
     @dialogues = []
   end
 
@@ -16,6 +22,7 @@ class DialogueHandler < EventHandler
     when :createDialogue
       createDialogue(dataObj)
       @active = true
+    when :dialogueTimeOut
     else
     end
   end
@@ -23,38 +30,63 @@ class DialogueHandler < EventHandler
   def createDialogue(dataObj)
     file = File.read(dataObj[:jsonfile])
     data = JSON.parse(file)
+    @dialogueData = data
+    nextSequence
+  end
 
-    for val in data["sequence"]
-      for dialogue in val["bubbles"]
-        obj = nil
-        # parse source
-        source = nil
-        case dialogue["source"]
-        when "player"
-          source = @sceneRef.player
-        end
-
-        case dialogue["type"]
-        when "normal"
-          text = !dialogue["text"].nil? ? dialogue["text"] : ""
-          obj = Bubble.new(text, source, @sceneRef.cameratransform)
-          @dialogues.push(obj)
-        when "options"
-          for i in 0..dialogue["choices"].length - 1
-            choice = dialogue["choices"][i]
-            text = !choice["text"].nil? ? choice["text"] : ""
-            obj = Bubble.new(text, source, @sceneRef.cameratransform, true, i: i)
-            @dialogues.push(obj)
+  def nextSequence
+    @dialogues = []
+    for val in @dialogueData["sequence"]
+      if (val["id"] == @id)
+        for dialogue in val["bubbles"]
+          obj = nil
+          # parse source
+          source = nil
+          case dialogue["source"]
+          when "player"
+            source = @sceneRef.player
           end
-          #   obj = OptionsDialogue.new(dialogue["choices"], source)
+
+          case dialogue["type"]
+          when "normal"
+            text = !dialogue["text"].nil? ? dialogue["text"] : ""
+            wait = dialogue["wait"] ? dialogue["wait"] : 0
+            obj = Bubble.new(@sceneRef, text, source, val["id"], wait: wait)
+            @dialogues.push(obj)
+          when "options"
+            wait = dialogue["wait"] ? dialogue["wait"] : 0
+            for i in 0..dialogue["choices"].length - 1
+              choice = dialogue["choices"][i]
+              text = !choice["text"].nil? ? choice["text"] : ""
+              nextId = choice["nextId"] ? choice["nextId"] : -1
+              if (choice["wait"])
+                wait = choice["wait"]
+              end
+              obj = Bubble.new(@sceneRef, text, source, val["id"], true, i, nextId, wait: wait)
+              @dialogues.push(obj)
+            end
+            #   obj = OptionsDialogue.new(dialogue["choices"], source)
+          end
         end
+        duration = val["duration"] ? val["duration"] : -1
+        @timeoutId = val["timeoutId"]
+        @timer = duration
+        return
       end
     end
+    @active = false
   end
 
   def update
     for dialogue in @dialogues
-      dialogue.update(@sceneRef.cameratransform)
+      dialogue.update
+    end
+    if (@timer == 0)
+      # dialogue time out
+      @id = @timeoutId
+      nextSequence
+    elsif (@timer > 0)
+      @timer -= 1
     end
   end
 
@@ -82,8 +114,15 @@ class DialogueHandler < EventHandler
           #     @active = false
           #   end
           if (dialogue.isOption and dialogue.contains(mouse_x, mouse_y))
-            @dialogues = []
-            @active = false
+            # onNotify({:dialogue: dialogue},:optionClicked)
+            # @dialogues = []
+            # @active = false
+            if (dialogue.nextId < 0)
+              @id += 1
+            else
+              @id = dialogue.nextId
+            end
+            nextSequence
           end
         end
       end

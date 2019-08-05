@@ -2,11 +2,15 @@ require "gosu"
 
 class Bubble
   attr_reader :isOption
+  attr_reader :nextId
+  attr_accessor :show
 
-  def initialize(text = "", source = nil, transform = Matrix.I(3), isOption = false, bubbleColor = BUBBLE_COLOR, i: 0, duration: 100, fps: 20, show: true)
+  def initialize(sceneRef, text = "", source = nil, sequenceId = 0, isOption = false, i = 0, nextId = -1, bubbleColor: BUBBLE_COLOR, wait: 0, fps: 20, show: false)
+    @sceneRef = sceneRef
     @source = source
     @type = "normal"
     @text = text
+    @sequenceId = sequenceId
     @font = Gosu::Font.new(FONT_HEIGHT, :name => FONT_TYPE)
     @show = show
 
@@ -15,16 +19,19 @@ class Bubble
     @width = @font.text_width(@text) + BUBBLE_PADDING * 2
     @height = @font.height + BUBBLE_PADDING * 2
 
+    # options stuff
     @isOption = isOption
     @i = i
     @extra_height_based_on_index = @isOption ? (@i + 1) * (@height + BUBBLE_PADDING) : 0
+    @nextId = nextId
 
     @frame = 0
-    @duration = duration
+    @wait = wait # NOTE: we should configure a way of automatically showing this bubble once the MAIN dialogue has finished loading, if wait = -1
     @fps = fps
     @timer = 60 / @fps
+    @timer2 = 0 # TEMPORARY, we really want just one timer
     if !@source.nil?
-      vec = transform * Vector[@source.x, @source.y, 1]
+      vec = @sceneRef.cameratransform * Vector[@source.x, @source.y, 1]
       @x = vec[0]
       @y = vec[1] + @extra_height_based_on_index
     else
@@ -34,21 +41,28 @@ class Bubble
     @z = TEXT_LAYER
   end
 
-  def update(transform = Matrix.I(3))
-    if (@timer == 0)
-      if @frame < @text.length + @duration
-        @frame += 1
+  def update
+    if (@timer2 >= @wait)
+      @show = true
+      if (@timer == 0)
+        if @frame < @text.length
+          @frame += 1
+        else
+          #dialogue fully loaded
+          # @show = false
+          @sceneRef.eventHandler.onNotify({ sequenceId: @sequenceId }, :dialogueLoaded)
+        end
+        @timer = 60 / @fps
       else
-        @show = false
+        @timer -= 1
       end
-      @timer = 60 / @fps
+      if !@source.nil?
+        vec = @sceneRef.cameratransform * Vector[@source.x, @source.y, 1]
+        @x = vec[0]
+        @y = vec[1] + @extra_height_based_on_index
+      end
     else
-      @timer -= 1
-    end
-    if !@source.nil?
-      vec = transform * Vector[@source.x, @source.y, 1]
-      @x = vec[0]
-      @y = vec[1] + @extra_height_based_on_index
+      @timer2 += 1
     end
   end
 
