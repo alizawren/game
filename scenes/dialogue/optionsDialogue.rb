@@ -7,7 +7,7 @@ class OptionsDialogue
     @font = Gosu::Font.new(FONT_HEIGHT, :name => FONT_TYPE)
     @show = show
 
-    @width = @font.text_width(@choices[0]) + MARGIN * 2
+    # @width = @font.text_width(@choices[0]) + MARGIN * 2
     @height = @font.height + MARGIN * 2
 
     @frame = 0
@@ -18,15 +18,15 @@ class OptionsDialogue
       @x = source.x
       @y = source.y
     else
-      @x = 0
-      @y = 0
+      @x = 100 + MARGIN
+      @y = CANVAS_HEIGHT - 200
     end
     @z = TEXT_LAYER
   end
 
   def update
     if (@timer == 0)
-      if @frame < @text.length + duration
+      if @frame < @choices[0].length + @duration #technically would need to get longest option?
         @frame += 1
       else
         @show = false
@@ -43,41 +43,33 @@ class OptionsDialogue
       if @show
         vec = transform * Vector[@x, @y, 1]
         for i in 0..@choices.length - 1
+          puts "drawing"
           @font.draw_text(@choices[i][0, @frame], vec[0] + MARGIN, vec[1] + (i + 1) * (FONT_HEIGHT + MARGIN), @z)
+          @font.draw_text(@choices[i][0, @frame], 0 + MARGIN, (i + 1) * (FONT_HEIGHT + MARGIN), @z)
         end
       end
     else
-
       for i in 0..@choices.length - 1
-        @font.draw_text(@choices[i][0, @frame], 100+ MARGIN, CANVAS_WIDTH + (i + 1) * (FONT_HEIGHT + MARGIN), @z)
+        @font.draw_text(@choices[i][0, @frame], @x, @y + (i + 1) * (FONT_HEIGHT + MARGIN), @z)
       end
     end
   end
 
   def contains(cameratransf, x, y)
-    mouseHom = Vector[x, y, 1]
-    worldMouse = cameratransf.inverse * mouseHom
-    x = worldMouse[0]
-    y = worldMouse[1]
+    # mouseHom = Vector[x, y, 1]
+    # worldMouse = cameratransf.inverse * mouseHom
+    # x = worldMouse[0]
+    # y = worldMouse[1]
 
-    if (x <= @center[0] + @width / 2 && x >= @center[0] - @width / 2 && y <= @center[1] + @height / 2 && y >= @center[1] - @height / 2)
+    puts "mouse"
+    puts x, y
+    puts "dialogue"
+    puts @x, @y
+    puts @width, @height
+    if (x <= @x + @width && x >= @x && y <= @y + @height && y >= @y)
       return true
     else
       return false
     end
   end
-
-  # def button_down(id, close_callback)
-  #     case id
-  #     when Gosu::KB_UP
-  #         @select = (@select + @choices.length - 1) % @choices.length
-  #     when Gosu::KB_DOWN
-  #         @select = (@select + 1) % @choices.length
-  #     when Gosu::KB_RETURN, Gosu::KB_Z
-  #         case @select
-  #         when 0
-  #             SceneManager.guiPop()
-  #         end
-  #     end
-  # end
 end

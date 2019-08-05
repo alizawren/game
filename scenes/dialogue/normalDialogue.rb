@@ -1,31 +1,40 @@
 require "gosu"
 
 class NormalDialogue
-  def initialize(text, source = nil, duration = 100, fps = 20, show: true)
+  attr_reader :isOption
+
+  def initialize(text, source = nil, transform = Matrix.I(3), isOption = false, bubbleColor = BUBBLE_COLOR, i: 0, duration: 100, fps: 20, show: true)
     @source = source
     @type = "normal"
     @text = text
     @font = Gosu::Font.new(FONT_HEIGHT, :name => FONT_TYPE)
     @show = show
 
-    @width = @font.text_width(@text) + MARGIN * 2
-    @height = @font.height + MARGIN * 2
+    @bubbleColor = bubbleColor
+
+    @width = @font.text_width(@text) + BUBBLE_PADDING * 2
+    @height = @font.height + BUBBLE_PADDING * 2
+
+    @isOption = isOption
+    @i = i
+    @extra_height_based_on_index = @isOption ? (@i + 1) * (@height + BUBBLE_PADDING) : 0
 
     @frame = 0
     @duration = duration
     @fps = fps
     @timer = 60 / @fps
     if !@source.nil?
-      @x = source.x
-      @y = source.y
+      vec = transform * Vector[@source.x, @source.y, 1]
+      @x = vec[0]
+      @y = vec[1] + @extra_height_based_on_index
     else
-      @x = 0
-      @y = 0
+      @x = 100
+      @y = CANVAS_HEIGHT - 200 + @extra_height_based_on_index
     end
     @z = TEXT_LAYER
   end
 
-  def update
+  def update(transform = Matrix.I(3))
     if (@timer == 0)
       if @frame < @text.length + @duration
         @frame += 1
@@ -36,22 +45,31 @@ class NormalDialogue
     else
       @timer -= 1
     end
-    @x = @source.x
-    @y = @source.y
-  end
-
-  def draw(transform = Vector[0, 0, 0])
-    # Gosu::draw_rect(@x,@y,@width,@height,Gosu::Color::WHITE)
     if !@source.nil?
-      if @show
-        vec = transform * Vector[@x, @y, 1]
-        @font.draw_text(@text[0, @frame], vec[0] + MARGIN, vec[1] + MARGIN, @z)
-      end
-    else
-      @font.draw_text(@text[0, @frame], 100, CANVAS_HEIGHT - 200, @z)
+      vec = transform * Vector[@source.x, @source.y, 1]
+      @x = vec[0]
+      @y = vec[1] + @extra_height_based_on_index
     end
   end
 
-  # def button_down(id,close_callback)
-  # end
+  def draw
+    # Gosu::draw_rect(@x,@y,@width,@height,Gosu::Color::WHITE)
+    if !@source.nil?
+      if @show
+        # vec = transform * Vector[@x, @y, 1]
+
+        Gosu.draw_rect(@x, @y, @width, @height, @bubbleColor, @z)
+        @font.draw_text(@text[0, @frame], @x + BUBBLE_PADDING, @y + BUBBLE_PADDING, @z)
+      end
+    else
+      @font.draw_text(@text[0, @frame], @x, @y, @z)
+    end
+  end
+
+  def contains(x, y)
+    if (x < @x + @width && x > @x && y < @y + @height && y > @y)
+      return true
+    end
+    return false
+  end
 end

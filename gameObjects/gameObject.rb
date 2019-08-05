@@ -7,6 +7,7 @@ class GameObject
   attr_reader :center
   attr_reader :velocity
 
+  attr_reader :id
   attr_accessor :image
   attr_accessor :boundPolys
 
@@ -16,7 +17,8 @@ class GameObject
   attr_reader :transform
 
   # def initialize(x = 0.0, y = 0.0, width = 30, height = 30)
-  def initialize(center = Vector[0.0, 0.0], width = 30, height = 30)
+  def initialize(center = Vector[0.0, 0.0], width = 30, height = 30, id = "")
+    @id = id
     @center = center
     @velocity = Vector[0.0, 0.0]
     @angle = 0.0
@@ -32,7 +34,6 @@ class GameObject
     @z = 1
 
     @allCollidingObjects = []
-
   end
 
   def x

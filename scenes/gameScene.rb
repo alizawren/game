@@ -2,8 +2,7 @@ require "json"
 require_relative "../functions.rb"
 require_relative "./scene.rb"
 require_relative "./guis/pauseMenuGui.rb"
-require_relative "./dialogue/normalDialogue.rb"
-require_relative "./dialogue/optionsDialogue.rb"
+require_relative "./dialogue/dialogueHandler.rb"
 require_relative "../camera.rb"
 require_relative "../crosshair.rb"
 require_relative "../gameObjects/player.rb"
@@ -14,6 +13,12 @@ require_relative "../gameObjects/projectiles/bullet.rb"
 
 class GameScene < Scene
   attr_accessor :parallax
+  attr_reader :cameratransform
+  attr_accessor :dialogueHandler
+  attr_reader :objects
+  attr_reader :player
+  attr_reader :mouse_x
+  attr_reader :mouse_y
 
   def initialize(jsonfile = "scenes/scenefiles/defaultScene.json")
     @mouse_x = 0
@@ -25,7 +30,8 @@ class GameScene < Scene
     # @quadtree = Quadtree.new(0, Rectangle.new(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT))
 
     @crosshair = Crosshair.instance
-    @dialogues = []
+    # @dialogues = []
+    @dialogueHandler = DialogueHandler.new(self)
     @objects = Hash.new
 
     file = File.read(jsonfile)
@@ -237,9 +243,7 @@ class GameScene < Scene
       end
     end
 
-    for dialogue in @dialogues
-      dialogue.update()
-    end
+    @dialogueHandler.update()
 
     @crosshair.update(mouse_x, mouse_y) # might move this location
   end
@@ -261,9 +265,7 @@ class GameScene < Scene
       end
     end
 
-    for dialogue in @dialogues
-      dialogue.draw(@cameratransform)
-    end
+    @dialogueHandler.draw
 
     @crosshair.draw
   end
@@ -271,35 +273,29 @@ class GameScene < Scene
   def button_down(id, close_callback)
     case id
     when Gosu::KB_T
-      @dialogues.push(NormalDialogue.new("Thinking",@player))
+      # @dialogues.push(NormalDialogue.new("Thinking", @player))
     when Gosu::MS_LEFT
       # instead of shooting bullets, check if it's clicking on an interactable
       if (@mouse_x.nil? or @mouse_y.nil?)
         return
       end
 
-      if (!@dialogues.empty?)
-        # do stuff with choices
-        for dialogue in @dialogues
-          if (dialogue.is_a?(OptionsDialogue) and dialogue.contains(@cameratransform, @mouse_x, @mouse_y))
-            @dialogues = []
+      if (@dialogueHandler.active)
+        @dialogueHandler.button_down(id, close_callback)
+      else
+        for interactable in @objects["fixed"]
+          if interactable.contains(@cameratransform, @mouse_x, @mouse_y)
+            interactable.activate
+            return
           end
         end
-        return
-      end
 
-      for interactable in @objects["fixed"]
-        if interactable.contains(@cameratransform, @mouse_x, @mouse_y)
-          interactable.activate
-          return
+        if (@type == "gamescene")
+          old_pos = @cameratransform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
+          # old_pos = Vector[@crosshair.x, @crosshair.y]
+          bullet = Bullet.new(self, @player.center, (Vector[old_pos[0], old_pos[1]] - @player.center).normalize * BULLET_SPEED)
+          @objects["projectiles"].push(bullet)
         end
-      end
-
-      if (@type == "gamescene")
-        old_pos = @cameratransform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
-        # old_pos = Vector[@crosshair.x, @crosshair.y]
-        bullet = Bullet.new(self, @player.center, (Vector[old_pos[0], old_pos[1]] - @player.center).normalize * BULLET_SPEED)
-        @objects["projectiles"].push(bullet)
       end
     end
   end
@@ -315,31 +311,31 @@ class GameScene < Scene
     end
   end
 
-  def createDialogue(jsonfile)
-    file = File.read(jsonfile)
-    data = JSON.parse(file)
+  # def createDialogue(jsonfile)
+  #   file = File.read(jsonfile)
+  #   data = JSON.parse(file)
 
-    for val in data["sequence"]
-      for dialogue in val["dialogues"]
-        obj = nil
-        # parse source
-        source = false
-        case dialogue["source"]
-        when "player"
-          source = @player
-        end
+  #   for val in data["sequence"]
+  #     for dialogue in val["dialogues"]
+  #       obj = nil
+  #       # parse source
+  #       source = nil
+  #       case dialogue["source"]
+  #       when "player"
+  #         source = @player
+  #       end
 
-        case dialogue["type"]
-        when "normal"
-          obj = NormalDialogue.new(dialogue["text"],source)
-        when "options"
-          obj = OptionsDialogue.new(dialogue["choices"],source)
-        end
-        @dialogues.push(obj)
-      end
-      #when are we gonna shoot bullets?
-    end
-  end
+  #       case dialogue["type"]
+  #       when "normal"
+  #         obj = NormalDialogue.new(dialogue["text"], source)
+  #       when "options"
+  #         obj = OptionsDialogue.new(dialogue["choices"], source)
+  #       end
+  #       @dialogues.push(obj)
+  #     end
+  #     #when are we gonna shoot bullets?
+  #   end
+  # end
 end
 
 def overlap(obj1, obj2)

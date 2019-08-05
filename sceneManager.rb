@@ -2,24 +2,26 @@
 
 class SceneManager
   @@guiStack = [] # only use push/pop methods bruh
+  @@currScene = nil
 
-  def self.initialize
-    @currScene = nil
-  end
+  # def self.initialize
+  #   @currScene = nil
+  # end
 
   def self.update(mouse_x, mouse_y)
-    if (!@currScene.nil?)
-      @currScene.update(mouse_x, mouse_y)
+    if (!@@currScene.nil?)
+      @@currScene.update(mouse_x, mouse_y)
     end
     #we're only updating the last gui????
+    # yes
     if (@@guiStack.length > 0)
       @@guiStack[-1].update
     end
   end
 
   def self.draw
-    if (!@currScene.nil?)
-      @currScene.draw
+    if (!@@currScene.nil?)
+      @@currScene.draw
     end
     for gui in @@guiStack
       gui.draw
@@ -40,8 +42,8 @@ class SceneManager
   end
 
   def self.button_down(id, close_callback)
-    if (!@currScene.nil?)
-      @currScene.button_down(id, close_callback)
+    if (!@@currScene.nil?)
+      @@currScene.button_down(id, close_callback)
     end
     if (@@guiStack.length > 0)
       @@guiStack[-1].button_down(id, close_callback)
@@ -49,21 +51,25 @@ class SceneManager
   end
 
   def self.changeScene(newScene)
-    if (!@currScene.nil?)
-      @currScene.unload()
+    if (!@@currScene.nil?)
+      @@currScene.unload()
     end
     newScene.load()
-    @currScene = newScene
+    @@currScene = newScene
   end
 
   def self.restartScene
-    if (!@currScene.nil?)
-      @currScene.unload()
-      @currScene.load()
+    if (!@@currScene.nil?)
+      @@currScene.unload()
+      @@currScene.load()
     end
   end
 
-  def self.createDialogue(param)
-    @currScene.createDialogue(param)
+  def self.getCurrentScene
+    return @@currScene
   end
+
+  # def self.createDialogue(param)
+  #   @currScene.createDialogue(param)
+  # end
 end

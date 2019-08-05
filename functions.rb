@@ -7,5 +7,7 @@ def objActivate
 end
 
 def poolActivate
-  SceneManager.createDialogue("dialogues/pool.json")
+  # SceneManager.createDialogue("dialogues/pool.json")
+  currScene = SceneManager.getCurrentScene
+  currScene.dialogueHandler.onNotify({ jsonfile: "dialogues/pool.json" }, :createDialogue)
 end
