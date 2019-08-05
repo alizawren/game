@@ -1,9 +1,9 @@
 require "gosu"
 
-class NormalDialogue
+class Bubble
   attr_reader :isOption
 
-  def initialize(text, source = nil, transform = Matrix.I(3), isOption = false, bubbleColor = BUBBLE_COLOR, i: 0, duration: 100, fps: 20, show: true)
+  def initialize(text = "", source = nil, transform = Matrix.I(3), isOption = false, bubbleColor = BUBBLE_COLOR, i: 0, duration: 100, fps: 20, show: true)
     @source = source
     @type = "normal"
     @text = text

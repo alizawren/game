@@ -1,0 +1,34 @@
+{
+  "sequence": [
+    {
+      "id": 1,
+      "bubbles": [
+        {
+          "type": "normal",
+          "text": "Hey! I've got a question for you.",
+          "duration": 100
+        },
+        { "type": "options", "choices": [{ "text": "Okay. What is it?" }] }
+      ]
+    },
+    {
+      "id": 2,
+      "bubbles": [
+        {
+          "type": "normal",
+          "text": "Hey! I've got a question for you.",
+          "duration": 100
+        },
+        {
+          "type": "options",
+          "choices": [
+            { "text": "Yes", "nextId": 3 },
+            { "text": "No", "nextId": 4 }
+          ]
+        }
+      ]
+    },
+    { "id": 3, "bubbles": [{ "type": "normal", "text": "" }] },
+    { "id": 4, "bubbles": [{ "type": "normal", "text": "" }] }
+  ]
+}

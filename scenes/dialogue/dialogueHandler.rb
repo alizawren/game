@@ -1,6 +1,6 @@
 require_relative "../../eventHandler.rb"
-require_relative "./normalDialogue.rb"
-require_relative "./optionsDialogue.rb"
+require_relative "./bubble.rb"
+# require_relative "./optionsDialogue.rb"
 
 class DialogueHandler < EventHandler
   attr_reader :active
@@ -25,7 +25,7 @@ class DialogueHandler < EventHandler
     data = JSON.parse(file)
 
     for val in data["sequence"]
-      for dialogue in val["dialogues"]
+      for dialogue in val["bubbles"]
         obj = nil
         # parse source
         source = nil
@@ -36,12 +36,14 @@ class DialogueHandler < EventHandler
 
         case dialogue["type"]
         when "normal"
-          obj = NormalDialogue.new(dialogue["text"], source, @sceneRef.cameratransform)
+          text = !dialogue["text"].nil? ? dialogue["text"] : ""
+          obj = Bubble.new(text, source, @sceneRef.cameratransform)
           @dialogues.push(obj)
         when "options"
           for i in 0..dialogue["choices"].length - 1
             choice = dialogue["choices"][i]
-            obj = NormalDialogue.new(choice, source, @sceneRef.cameratransform, true, i: i)
+            text = !choice["text"].nil? ? choice["text"] : ""
+            obj = Bubble.new(text, source, @sceneRef.cameratransform, true, i: i)
             @dialogues.push(obj)
           end
           #   obj = OptionsDialogue.new(dialogue["choices"], source)
