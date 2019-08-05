@@ -1,5 +1,6 @@
 require "singleton"
 require "gosu"
+require "./constants.rb"
 
 class Crosshair
   attr_accessor :x
@@ -18,6 +19,6 @@ class Crosshair
   end
 
   def draw
-    @image.draw(@x - @image.width / 2, @y - @image.height / 2, 200)
+    @image.draw(@x - @image.width / 2, @y - @image.height / 2, CROSSHAIR_LAYER)
   end
 end

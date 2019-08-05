@@ -5,12 +5,13 @@
       "bubbles": [
         {
           "type": "normal",
-          "text": "Hey! I've got a question for you."
+          "text": "Hey! I've got a question for you.",
+          "isMain": true
         },
         {
           "type": "options",
           "source": "player",
-          "wait": 120,
+          "wait": "auto",
           "choices": [{ "text": "Okay. What is it?" }]
         }
       ],
@@ -27,6 +28,7 @@
         {
           "type": "options",
           "source": "player",
+          "wait": "auto",
           "choices": [
             { "text": "I think so...", "nextId": 3 },
             { "text": "I'm not at my refrigerator...", "nextId": 4 }
@@ -38,7 +40,8 @@
     },
     {
       "id": 3,
-      "bubbles": [{ "type": "normal", "text": "Oh. Okay, wrong number! Bye!" }]
+      "bubbles": [{ "type": "normal", "text": "Oh. Okay, wrong number! Bye!" }],
+      "duration": 300
     },
     {
       "id": 4,
@@ -47,7 +50,8 @@
           "type": "normal",
           "text": "Well, it isn't anymore! Wait till you see what I did to it!"
         }
-      ]
+      ],
+      "duration": 300
     },
     {
       "id": 10,

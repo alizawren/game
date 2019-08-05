@@ -11,6 +11,16 @@ class Projectile < GameObject
     hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
     @boundPolys["hit"] = hitPoly
     @sceneref = sceneref
+    @lifetime = 0
+  end
+
+  def update
+    super
+    # ensures that projectile gets deleted if it lives for too long
+    @lifetime += 1
+    if @lifetime > 100
+      @sceneref.deleteObject(self.object_id)
+    end
   end
 
   def overlap(obj2, poly, mtv = Vector[0, 0])

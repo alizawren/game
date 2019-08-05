@@ -3,13 +3,18 @@
     {
       "id": 0,
       "bubbles": [
-        { "type": "normal", "source": "player", "text": "Play some pool?" },
-        { "type": "normal", "text": "Narration" },
+        {
+          "type": "normal",
+          "text": "Play some pool?",
+          "isMain": true
+        },
         {
           "type": "options",
+          "source": "player",
           "choices": [{ "text": "No" }, { "text": "Definitely no" }]
         }
-      ]
+      ],
+      "wait": "auto"
     }
   ]
 }

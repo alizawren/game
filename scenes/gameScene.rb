@@ -19,6 +19,7 @@ class GameScene < Scene
   attr_reader :player
   attr_reader :mouse_x
   attr_reader :mouse_y
+  attr_accessor :dialogueMode
 
   def initialize(jsonfile = "scenes/scenefiles/defaultScene.json")
     @mouse_x = 0
@@ -33,6 +34,8 @@ class GameScene < Scene
     # @dialogues = []
     @eventHandler = EventHandler.new(self)
     @eventHandler.addHandler("dialogue")
+    @dialogueMode = false
+
     @objects = Hash.new
 
     file = File.read(jsonfile)
@@ -178,39 +181,41 @@ class GameScene < Scene
       @player.facing = 3
     end
     if (@type == "gamescene")
-      if Gosu.button_down? Gosu::MS_LEFT
-        # angle logic in here
-        invtransf = @cameratransform.inverse
-        hom = Vector[@player.center[0], @player.center[1], 1]
-        pcenter = @cameratransform * hom
-        angle = Gosu.angle(pcenter[0], pcenter[1], mouse_x, mouse_y) - 90
-        @player.armangle = angle
-        case angle
-        when -45..45
-          # right
-          @player.facing = 0
-        when 45..135
-          # down
-          @player.facing = 3
-        when 135..225
-          # left
-          @player.facing = 2
-        else
-          # up
-          @player.facing = 1
-        end
-        @player.state = 2
-      end
+      # if Gosu.button_down? Gosu::MS_LEFT
+      #   # angle logic in here
+      #   invtransf = @cameratransform.inverse
+      #   hom = Vector[@player.center[0], @player.center[1], 1]
+      #   pcenter = @cameratransform * hom
+      #   angle = Gosu.angle(pcenter[0], pcenter[1], mouse_x, mouse_y) - 90
+      #   @player.armangle = angle
+      #   case angle
+      #   when -45..45
+      #     # right
+      #     @player.facing = 0
+      #   when 45..135
+      #     # down
+      #     @player.facing = 3
+      #   when 135..225
+      #     # left
+      #     @player.facing = 2
+      #   else
+      #     # up
+      #     @player.facing = 1
+      #   end
+      #   @player.state = 2
+      # end
     end
     # NOTE: must make state transitions more clear, rewrite whole thing
 
     # update each object
     @objects.each_value do |objectList|
-      for i in 0..objectList.length - 1
-        if (objectList[i].is_a?(Enemy))
-          objectList[i].update(@player.center, @player.velocity)
-        else
-          objectList[i].update
+      for object in objectList
+        if !object.nil?
+          if (object.is_a?(Enemy))
+            object.update(@player.center, @player.velocity)
+          else
+            object.update
+          end
         end
       end
     end
@@ -282,11 +287,10 @@ class GameScene < Scene
       end
 
       @eventHandler.button_down(id, close_callback)
-      # PREVIOUSLY, checking if a dialogue was active was enough to restrict actions. Should rethink this
-      # if (@dialogueHandler.active)
-      #   @dialogueHandler.button_down(id, close_callback)
-      # else
 
+      if @dialogueMode
+        return
+      end
       # TODO: Ideally we don't want to loop over ALL the fixed objects and check if the player wants to interact with it
       # separate fixed from fixed interactables? Add some flag so at least they don't perform contains calculations?
       # (note: inverse matrix calculations are particularly expensive)

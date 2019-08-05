@@ -19,7 +19,7 @@ class AboutGui < MenuGui
     for i in 0..@choices.length - 1
       @font.draw_text(@choices[i], CANVAS_WIDTH / 2 - @font.text_width(@choices[i]) / 2, TEXT_Y + i * (FONT_HEIGHT + MARGIN), @z)
     end
-    text = "If you made it this far, congratulations! Oh, there's no word wrap for this, is there. Welp, here I go. Writing myself off into oblivioooooooooooooooooooooooooooooooooooooooooooooooo"
+    text = "Oh, there's no word wrap for this, is there. Welp, here I go writing myself off into oblivioooooooooooooooooooooooooooooooooooooooooooooooo"
     @font.draw_text(text, @x + MARGIN, @y + MARGIN, @z)
   end
 
