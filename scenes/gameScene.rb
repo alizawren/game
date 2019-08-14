@@ -53,7 +53,7 @@ class GameScene < Scene
       @objects["projectiles"] = []
     end
 
-    @player = Player.new(Vector[data["player"]["x"], data["player"]["y"]], @type)
+    @player = Player.new(self, Vector[data["player"]["x"], data["player"]["y"]], @type)
     @objects["player"].push(@player)
 
     addObjects(data)
@@ -122,7 +122,7 @@ class GameScene < Scene
             for node in path
               newpath.push(Vector[node["x"], node["y"]])
             end
-            obj = Enemy.new(newpath)
+            obj = Enemy.new(self,newpath)
           else
           end
 

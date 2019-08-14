@@ -14,10 +14,10 @@ IDLE_TIME = 50
 
 class Enemy < GameObject
   #start with a path the enemy should follow
-  def initialize(path = [Vector[0, 0], Vector[100, 0]])
+  def initialize(sceneref, path = [Vector[0, 0], Vector[100, 0]])
     @path = path
     @center = @path[0]
-    super(@center)
+    super(sceneref,@center)
     #starting position is the first point in the path
     @image = Gosu::Image.new("img/aSimpleSquare.png")
 

@@ -23,8 +23,8 @@ class Player < GameObject
   attr_accessor :facing
   attr_accessor :maxSpeed
 
-  def initialize(center, sceneType = "gamescene", primary = "./weapons.json")
-    super
+  def initialize(sceneref, center = Vector[0,0], sceneType = "gamescene", primary = "./weapons.json")
+    super sceneref
     @width = 128 * PLAYER_SCALE
     @height = 128 * PLAYER_SCALE
 

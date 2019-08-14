@@ -7,9 +7,9 @@ class Scene2 < ActionScene
   def load
     super
     @objects["player"].push(@player)
-    @objects["enemies"].push(Enemy.new([Vector[400, 50], Vector[450, 50]]))
+    @objects["enemies"].push(Enemy.new(self,[Vector[400, 50], Vector[450, 50]]))
     # @enemies.push(Enemy.new([Vector[300, 345], Vector[350, 345]]))
-    @objects["enemies"].push(Enemy.new([Vector[180, 400], Vector[100, 405]]))
+    @objects["enemies"].push(Enemy.new(self,[Vector[180, 400], Vector[100, 405]]))
 
     @objects["obstacles"].push(Wall.new(400, 400, 100, 50))
     # @obstacles.push(Wall.new(500,500,50,100))

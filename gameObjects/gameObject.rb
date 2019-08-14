@@ -17,7 +17,8 @@ class GameObject
   attr_reader :transform
 
   # def initialize(x = 0.0, y = 0.0, width = 30, height = 30)
-  def initialize(center = Vector[0.0, 0.0], width = 30, height = 30, id = "")
+  def initialize(sceneref, center = Vector[0.0, 0.0], width = 30, height = 30, id = "")
+    @sceneref = sceneref
     @id = id
     @center = center
     @velocity = Vector[0.0, 0.0]

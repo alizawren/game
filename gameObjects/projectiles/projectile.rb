@@ -5,7 +5,7 @@ class Projectile < GameObject
   attr_accessor :damage
 
   def initialize(sceneref, center = Vector[0, 0], velocity = Vector[0, 0], damage = 0, width = 2, height = 2)
-    super(center, width, height)
+    super(sceneref, center, width, height)
     @velocity = velocity
     @angle = Math.atan(velocity[1] / velocity[0])
     hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
