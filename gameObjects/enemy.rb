@@ -98,6 +98,9 @@ class Enemy < GameObject
     if (obj2.is_a?(Obstacle))
       force(mtv)
     end
+    if (obj2.is_a?(Projectile))
+      #kill this enemy somehow
+    end
   end
 end
 

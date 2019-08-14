@@ -13,7 +13,7 @@ require_relative "../gameObjects/projectiles/bullet.rb"
 
 class GameScene < Scene
   attr_accessor :parallax
-  attr_reader :cameratransform
+  # attr_reader :cameratransform
   attr_accessor :eventHandler
   attr_reader :objects
   attr_reader :player
@@ -26,7 +26,7 @@ class GameScene < Scene
     @mouse_y = 0
 
     @camera = Camera.new
-    @cameratransform = Matrix.I(3)
+    #@cameratransform = Matrix.I(3)
 
     # @quadtree = Quadtree.new(0, Rectangle.new(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT))
 
@@ -154,7 +154,7 @@ class GameScene < Scene
     @mouse_y = mouse_y
 
     @camera.update(@player.center, Vector[@bg.width / 2, @bg.height / 2])
-    @cameratransform = @camera.transform
+    #@cameratransform = @camera.transform
     @player.state = 0
     # WARNING: technically we don't want to allow them to use both. If they are holding left and D at the same time,
     # we don't want one to cancel out the other.
@@ -258,7 +258,8 @@ class GameScene < Scene
     # NOTE: in the future, we would want to make a bitmap class so that we could easily set their transforms
     # and call bitmap.draw instead of the below
     curr = Vector[0, 0, 1]
-    newpos = @cameratransform * curr
+    #newpos = @cameratransform * curr
+    newpos = @camera.tranform * curr
     x = newpos[0]
     y = newpos[1]
     @parallax.draw(x, y, PARALLAX_LAYER)
@@ -266,8 +267,10 @@ class GameScene < Scene
 
     @objects.each_value do |objectList|
       for object in objectList
-        object.draw(@cameratransform)
-        object.draw_frame(@cameratransform)
+        # object.draw(@cameratransform)
+        # object.draw_frame(@cameratransform)
+        object.draw(@camera.transform)
+        object.draw_frame(@camera.transform)
       end
     end
 
@@ -280,6 +283,11 @@ class GameScene < Scene
     case id
     when Gosu::KB_T
       # @dialogues.push(NormalDialogue.new("Thinking", @player))
+    when Gosu::KB_LEFT_SHIFT
+      if (@type == "gamescene")
+        #change the state to sprint
+        @player.maxSpeed = 10
+      end
     when Gosu::MS_LEFT
       # instead of shooting bullets, check if it's clicking on an interactable
       if (@mouse_x.nil? or @mouse_y.nil?)
@@ -295,17 +303,20 @@ class GameScene < Scene
       # separate fixed from fixed interactables? Add some flag so at least they don't perform contains calculations?
       # (note: inverse matrix calculations are particularly expensive)
       for interactable in @objects["fixed"]
-        if interactable.contains(@cameratransform, @mouse_x, @mouse_y)
+        # if interactable.contains(@cameratransform, @mouse_x, @mouse_y)
+        if interactable.contains(@camera.transform, @mouse_x, @mouse_y)
           interactable.activate
           return
         end
       end
 
       if (@type == "gamescene")
-        old_pos = @cameratransform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
-        # old_pos = Vector[@crosshair.x, @crosshair.y]
-        bullet = Bullet.new(self, @player.center, (Vector[old_pos[0], old_pos[1]] - @player.center).normalize * BULLET_SPEED)
-        @objects["projectiles"].push(bullet)
+        if @player.weapon.type == "ranged"
+        elsif @player.weapon.type == "melee"
+          #change the player's state to attacking or something?
+          #attach some kind of contact box to the player for the attack
+          #the contact box should have the length of the weapon and some uniform width
+        end
       end
     end
   end

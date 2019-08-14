@@ -1,0 +1,17 @@
+[
+  {
+    "id": 0,
+    "name": "Pistol",
+    "type": "ranged",
+    "clip": 8,
+    "damage": 10,
+    "projectile": "bullet"
+  },
+  {
+    "id": 1,
+    "name": "Knife",
+    "type": "melee",
+    "damage": 20,
+    "length": 10
+  }
+]

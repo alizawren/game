@@ -4,9 +4,9 @@ require_relative "../constants"
 require_relative "./gameObject.rb"
 require_relative "../animation.rb"
 require_relative "../sceneManager.rb"
-
+require_relative "./weapon.rb"
 PLAYER_SCALE = 2
-MAX_SPEED = 5
+# MAX_SPEED = 5
 ARM_RIGHT_ANCHOR = Vector[0.125, 0.45]
 ARM_LEFT_ANCHOR = Vector[0.9, 0.5]
 ARM_UP_ANCHOR = Vector[0.5, 0.9]
@@ -21,8 +21,9 @@ class Player < GameObject
   # attr_accessor :flip
   attr_accessor :armangle
   attr_accessor :facing
+  attr_accessor :maxSpeed
 
-  def initialize(center, sceneType = "gamescene")
+  def initialize(center, sceneType = "gamescene", primary = "./weapons.json")
     super
     @width = 128 * PLAYER_SCALE
     @height = 128 * PLAYER_SCALE
@@ -51,6 +52,13 @@ class Player < GameObject
     @facing = 0 # 0 for right, 1 for up, 2 for left, 3 for down
     @curr_anim = @idle_right
     @arm = nil
+
+    #physics stuff
+    @maxSpeed = 5
+    #weapon stuff
+    @primaryWeapon = Weapon.new(0) #id of primary weapon
+    @secondaryWeapon = Weapon.new(1) #id of secondary weapon
+    @currentWeapon = @primaryWeapon
   end
 
   def instantiateAnimations(sceneType)
@@ -77,28 +85,28 @@ class Player < GameObject
 
   def go_up
     newvel = Vector[@velocity[0], @velocity[1] - 2]
-    if (newvel[1] > -MAX_SPEED)
+    if (newvel[1] > -@maxSpeed)
       @velocity = newvel
     end
   end
 
   def go_down
     newvel = Vector[@velocity[0], @velocity[1] + 2]
-    if (newvel[1] < MAX_SPEED)
+    if (newvel[1] < @maxSpeed)
       @velocity = newvel
     end
   end
 
   def go_left
     newvel = Vector[@velocity[0] - 2, @velocity[1]]
-    if (newvel[0] > -MAX_SPEED)
+    if (newvel[0] > -@maxSpeed)
       @velocity = newvel
     end
   end
 
   def go_right
     newvel = Vector[@velocity[0] + 2, @velocity[1]]
-    if (newvel[0] < MAX_SPEED)
+    if (newvel[0] < @maxSpeed)
       @velocity = newvel
     end
   end
