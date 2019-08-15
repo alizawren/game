@@ -12,68 +12,103 @@ class DialogueHandler
 
     @dialogueData = nil
     @id = 0
-    @bubbles = []
+    @activeBubbleQueue = []
+    @bubbleQueue = []
   end
 
   def onNotify(dataObj, event)
     case event
     when :createDialogue
       createDialogue(dataObj)
-    when :bubbleLoaded
-      if (dataObj[:isMain])
-        for bubble in @bubbles
-          bubble.wait = 0
-        end
+    when :bubbleClicked
+      bubble = dataObj[:bubble]
+      # push the bubble back in as non option
+      newBubbleObj = Bubble.new(@sceneRef, bubble.text, bubble.source, delay: 10)
+
+      if (bubble.nextId.is_a? String)
+        func = bubble.nextId.to_sym
+        send(func)
+        endOfDialogue
+        return
+      end
+      if (bubble.nextId < 0)
+        @id += 1
       else
-        noMain = false
-        for bubble in @bubbles
-          if (bubble.wait < 0)
-            noMain = true
+        @id = bubble.nextId
+      end
+
+      @bubbleQueue.push(newBubbleObj)
+      loadNextSequence
+    when :bubbleLoaded
+      if (@activeBubbleQueue.last.kind_of?(Array))
+      end
+      if (@bubbleQueue.length > 0)
+        if (@activeBubbleQueue.length > 1)
+          oldBubble = @activeBubbleQueue.first
+          if (oldBubble.kind_of?(Array))
+            if (oldBubble.length < 1)
+            end
+            for bub in oldBubble
+              bub.deleteMe
+            end
+          else
+            oldBubble.deleteMe
           end
         end
-        for bubble in @bubbles
-          if (bubble.isMain)
-            noMain = false
-          end
-        end
-        if noMain
-          for bubble in @bubbles
-            bubble.wait = 0
-          end
-        end
+        newBubble = @bubbleQueue.shift
+        @activeBubbleQueue.push(newBubble)
       end
     when :bubbleTimedOut
-      deleteBubble(dataObj[:dialogue].object_id)
+    when :deleteFromActive
+      deleteBubble(dataObj[:bubble].object_id)
     else
     end
   end
 
   def deleteBubble(id)
-    for i in 0..@bubbles.length - 1
-      if @bubbles[i].object_id == id
-        @bubbles.delete_at(i)
-        break
+    for i in 0..@activeBubbleQueue.length - 1
+      if @activeBubbleQueue[i].is_a?(Bubble)
+        if @activeBubbleQueue[i].object_id == id
+          @activeBubbleQueue.delete_at(i)
+          return
+        end
+      else
+        for j in 0..@activeBubbleQueue[i].length - 1
+          if @activeBubbleQueue[i][j].object_id == id
+            @activeBubbleQueue.delete_at(i)
+            return
+          end
+        end
       end
     end
   end
 
   def createDialogue(dataObj)
+    @bubbleQueue = []
+    @activeBubbleQueue = []
     @sceneRef.dialogueMode = true
     file = File.read(dataObj[:jsonfile])
     data = JSON.parse(file)
     @dialogueData = data
-    nextSequence
+    loadNextSequence
   end
 
-  def nextSequence
-    @bubbles = []
+  def deleteAllActiveBubbles
+  end
+
+  def loadNextSequence
+    for oldBubble in @activeBubbleQueue
+      if (oldBubble.is_a?(Bubble))
+        oldBubble.deleteMe
+      else
+        for bub in oldBubble
+          bub.deleteMe
+        end
+      end
+    end
 
     for val in @dialogueData["sequence"]
       if (val["id"] == @id)
-        wait = val["wait"] ? val["wait"] : 0
-        if (wait == "auto")
-          wait = -1
-        end
         for bubble in val["bubbles"]
           obj = nil
           # parse source
@@ -83,38 +118,35 @@ class DialogueHandler
             source = @sceneRef.player
           end
 
-          # get wait
-          if (bubble["wait"])
-            wait = bubble["wait"]
-            if (wait == "auto")
-              wait = -1
-            end
-          end
+          bubbleDelay = bubble["delay"] ? bubble["delay"] : 10
 
-          bubbleDuration = bubble["duration"] ? bubble["duration"] : -1
           case bubble["type"]
           when "normal"
             text = !bubble["text"].nil? ? bubble["text"] : ""
-            isMain = bubble["isMain"] ? bubble["isMain"] : false
-            obj = Bubble.new(@sceneRef, text, source, val["id"], isMain, duration: bubbleDuration, wait: wait)
-            @bubbles.push(obj)
+            obj = Bubble.new(@sceneRef, text, source, delay: bubbleDelay)
+            @bubbleQueue.push(obj)
           when "options"
+            optionsArr = []
             for i in 0..bubble["choices"].length - 1
               choice = bubble["choices"][i]
               text = !choice["text"].nil? ? choice["text"] : ""
               nextId = choice["nextId"] ? choice["nextId"] : -1
-              if (choice["wait"])
-                wait = choice["wait"]
-              end
-              obj = Bubble.new(@sceneRef, text, source, val["id"], false, true, i, nextId, duration: bubbleDuration, wait: wait)
-              @bubbles.push(obj)
+              obj = Bubble.new(@sceneRef, text, source, true, i, nextId, delay: bubbleDelay)
+              optionsArr.push(obj)
             end
+            @bubbleQueue.push(optionsArr)
             #   obj = OptionsDialogue.new(bubble["choices"], source)
           end
         end
-        duration = val["duration"] ? val["duration"] : -1
+        # by default there is no timeout. specify one to time out a conversation
+        timeout = val["timeout"] ? val["timeout"] : -1
         @timeoutId = val["timeoutId"] ? val["timeoutId"] : @id + 1
-        @timer = duration
+        @timer = timeout # ?
+
+        firstBubble = @bubbleQueue.shift
+        if (!firstBubble.nil?)
+          @activeBubbleQueue.push(firstBubble)
+        end
         return
       end
     end
@@ -124,14 +156,24 @@ class DialogueHandler
   def endOfDialogue
     @dialogueData = nil
     @id = 0
-    @bubbles = []
+    @activeBubbleQueue = []
     @sceneRef.dialogueMode = false
   end
 
   def update
-    for bubble in @bubbles
-      bubble.update
+    for bubble in @activeBubbleQueue
+      if (bubble.is_a?(Bubble))
+        bubble.update
+      else
+        for bub in bubble
+          bub.update
+        end
+      end
     end
+    # TODO: we want to be able to configure the timer to turn on
+    # only after the last bubble has shown. This way we don't need
+    # to do complex calculations... (multiplying by # of bubbles in
+    # conversation, etc...)
     if (@timer == 0)
       # dialogue time out
       @id = @timeoutId
@@ -141,15 +183,25 @@ class DialogueHandler
         endOfDialogue
         return
       end
-      nextSequence
+      # TODO: there's a bug here. We need to check if there's
+      # no next ID. Currently, the value -1 is taken up to mean
+      # "use the next id".... I guess we could use -2?
+      @bubbleQueue = []
+      loadNextSequence
     elsif (@timer > 0)
       @timer -= 1
     end
   end
 
   def draw
-    for bubble in @bubbles
-      bubble.draw
+    for bubble in @activeBubbleQueue
+      if (bubble.is_a?(Bubble))
+        bubble.draw
+      else
+        for bub in bubble
+          bub.draw
+        end
+      end
     end
   end
 
@@ -163,23 +215,15 @@ class DialogueHandler
         return
       end
 
-      if (!@bubbles.empty?)
+      if (!@activeBubbleQueue.empty?)
         # do stuff with choices
-        for bubble in @bubbles
-          if (bubble.isOption and bubble.contains(mouse_x, mouse_y))
-            # onNotify({:bubble: bubble},:optionClicked)
-            if (bubble.nextId.is_a? String)
-              func = bubble.nextId.to_sym
-              send(func)
-              endOfDialogue
-              return
+        for bubble in @activeBubbleQueue
+          if (bubble.kind_of?(Array))
+            for bub in bubble
+              if (bub.contains(mouse_x, mouse_y))
+                onNotify({ bubble: bub }, :bubbleClicked)
+              end
             end
-            if (bubble.nextId < 0)
-              @id += 1
-            else
-              @id = bubble.nextId
-            end
-            nextSequence
           end
         end
       end
