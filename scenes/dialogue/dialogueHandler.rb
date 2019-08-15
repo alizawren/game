@@ -94,9 +94,6 @@ class DialogueHandler
   end
 
   def deleteAllActiveBubbles
-  end
-
-  def loadNextSequence
     for oldBubble in @activeBubbleQueue
       if (oldBubble.is_a?(Bubble))
         oldBubble.deleteMe
@@ -106,6 +103,10 @@ class DialogueHandler
         end
       end
     end
+  end
+
+  def loadNextSequence
+    deleteAllActiveBubbles
 
     for val in @dialogueData["sequence"]
       if (val["id"] == @id)
@@ -154,9 +155,9 @@ class DialogueHandler
   end
 
   def endOfDialogue
-    @dialogueData = nil
+    deleteAllActiveBubbles
     @id = 0
-    @activeBubbleQueue = []
+    @dialogueData = nil
     @sceneRef.dialogueMode = false
   end
 
@@ -176,6 +177,7 @@ class DialogueHandler
     # conversation, etc...)
     if (@timer == 0)
       # dialogue time out
+      @timer -= 1
       @id = @timeoutId
       if (@id.is_a? String)
         func = @id.to_sym
