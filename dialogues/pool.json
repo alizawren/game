@@ -5,16 +5,14 @@
       "bubbles": [
         {
           "type": "normal",
-          "text": "Play some pool?",
-          "isMain": true
+          "text": "Play some pool?"
         },
         {
           "type": "options",
           "source": "player",
           "choices": [{ "text": "No" }, { "text": "Definitely no" }]
         }
-      ],
-      "wait": "auto"
+      ]
     }
   ]
 }

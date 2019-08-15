@@ -9,6 +9,7 @@ class DialogueHandler
 
     @timer = -1
     @timeoutId = -1
+    @timeout = -1
 
     @dialogueData = nil
     @id = 0
@@ -131,18 +132,18 @@ class DialogueHandler
             for i in 0..bubble["choices"].length - 1
               choice = bubble["choices"][i]
               text = !choice["text"].nil? ? choice["text"] : ""
+              # by default nextId being -1 means it will search for immediate next id
               nextId = choice["nextId"] ? choice["nextId"] : -1
               obj = Bubble.new(@sceneRef, text, source, true, i, nextId, delay: bubbleDelay)
               optionsArr.push(obj)
             end
             @bubbleQueue.push(optionsArr)
-            #   obj = OptionsDialogue.new(bubble["choices"], source)
           end
         end
-        # by default there is no timeout. specify one to time out a conversation
-        timeout = val["timeout"] ? val["timeout"] : -1
+        # by default there is no timeout (value of -1). specify one to time out a conversation
+        @timeout = val["timeout"] ? val["timeout"] : -1
         @timeoutId = val["timeoutId"] ? val["timeoutId"] : @id + 1
-        @timer = timeout # ?
+        @timer = @timeout # TODO: turn on only after last bubble shows. if option clicked, reset
 
         firstBubble = @bubbleQueue.shift
         if (!firstBubble.nil?)
@@ -185,9 +186,6 @@ class DialogueHandler
         endOfDialogue
         return
       end
-      # TODO: there's a bug here. We need to check if there's
-      # no next ID. Currently, the value -1 is taken up to mean
-      # "use the next id".... I guess we could use -2?
       @bubbleQueue = []
       loadNextSequence
     elsif (@timer > 0)
