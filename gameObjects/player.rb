@@ -4,7 +4,7 @@ require_relative "../constants"
 require_relative "./gameObject.rb"
 require_relative "../animation.rb"
 require_relative "../sceneManager.rb"
-require_relative "./weapon.rb"
+require_relative "./weapons/weapon.rb"
 PLAYER_SCALE = 2
 # MAX_SPEED = 5
 ARM_RIGHT_ANCHOR = Vector[0.125, 0.45]
@@ -17,6 +17,7 @@ ARM_UP_TRANSF = Matrix[[1, 0, (76 - 64) * PLAYER_SCALE], [0, 1, (36 - 64) * PLAY
 ARM_DOWN_TRANSF = Matrix[[1, 0, (48 - 64) * PLAYER_SCALE], [0, 1, (34 - 64) * PLAYER_SCALE], [0, 0, 1]]
 
 class Player < GameObject
+  attr_reader :currentWeapon
   attr_accessor :state
   # attr_accessor :flip
   attr_accessor :armangle
@@ -29,9 +30,9 @@ class Player < GameObject
     @height = 128 * PLAYER_SCALE
 
     # @boundPoly = Rectangle.new(@x, @y, @width, @height)
-    hitPoly = BoundingPolygon.new(self, [Vector[-12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-12 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
+    hitPoly = BoundingPolygon.new(self,[Vector[-12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-12 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
     # walkPoly = BoundingPolygon.new(self, [Vector[-@width / 4, @height / 4], Vector[@width / 4, @height / 4], Vector[@width / 4, @height / 2], Vector[-@width / 4, @height / 2]])
-    walkPoly = BoundingPolygon.new(self, [Vector[-16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-16 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
+    walkPoly = BoundingPolygon.new(self,[Vector[-16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-16 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
     @boundPolys["hit"] = hitPoly
     @boundPolys["walk"] = walkPoly
 
@@ -59,6 +60,10 @@ class Player < GameObject
     @primaryWeapon = Weapon.new(0) #id of primary weapon
     @secondaryWeapon = Weapon.new(1) #id of secondary weapon
     @currentWeapon = @primaryWeapon
+  end
+  
+  def switchWeapon
+    currentWeapon = @currentWeapon.equal?(@primaryWeapon) ? @secondaryWeapon : @primaryWeapon
   end
 
   def instantiateAnimations(sceneType)

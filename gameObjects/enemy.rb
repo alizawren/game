@@ -11,13 +11,13 @@ ENEMY_MAX_FORCE = 10.0
 SLOWING_RADIUS = 50.0
 PURSUIT_CONST = 25
 IDLE_TIME = 50
-
+ATTACK_SPEED = 100
 class Enemy < GameObject
   #start with a path the enemy should follow
-  def initialize(sceneref, path = [Vector[0, 0], Vector[100, 0]])
+  def initialize(sceneref, path = [Vector[0, 0], Vector[100, 0]],weaponID = 0)
     @path = path
     @center = @path[0]
-    super(sceneref,@center)
+    super sceneref, @center 
     #starting position is the first point in the path
     @image = Gosu::Image.new("img/aSimpleSquare.png")
 
@@ -30,6 +30,8 @@ class Enemy < GameObject
     @state = 1 # 0 for idle, 1 for moving, 2 for pursuit
     #assign various constants
     @timer = 100
+    @attackTimer = ATTACK_SPEED
+    @weapon = Weapon.new(weaponID)
     @enemy_speed = ENEMY_MAX_SPEED
   end
 
@@ -55,6 +57,16 @@ class Enemy < GameObject
       end
     elsif (@state == 2)
       target = playerCenter + playerVelocity * PURSUIT_CONST
+      if (@attackTimer == ATTACK_SPEED)
+        @attackTimer = 0 
+        case @weapon.type 
+        when "ranged"
+          @sceneref.objects["projectiles"].push(@weapon.newProjectile(@sceneref,@center,playerCenter.normalize * BULLET_SPEED))
+        when "melee"
+          #still don't know how to do melee...
+        end
+      end
+      @attackTimer += 1
     end
 
     if (distance(playerCenter, @center) <= 150)

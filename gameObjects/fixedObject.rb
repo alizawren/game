@@ -4,9 +4,9 @@ class FixedObject < GameObject
   attr_reader :through
   attr_reader :activateFunc
 
-  def initialize(x, y, width, height, activateFunc = "", through = false)
+  def initialize(sceneref, x, y, width, height, activateFunc = "", through = false)
     center = Vector[x + width / 2, y + height / 2]
-    super(center, width, height)
+    super sceneref, center, width, height 
     vertices = [Vector[-width / 2, -height / 2], Vector[width / 2, -height / 2], Vector[width / 2, height / 2], Vector[-width / 2, height / 2]]
     vertices2 = [Vector[-width / 2, -height / 2], Vector[width / 2, -height / 2], Vector[width / 2, height / 2 - 1], Vector[-width / 2, height / 2 - 1]]
     walkPoly = BoundingPolygon.new(self, vertices)

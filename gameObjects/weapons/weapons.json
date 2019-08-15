@@ -5,7 +5,7 @@
     "type": "ranged",
     "clip": 8,
     "damage": 10,
-    "projectile": "bullet"
+    "projectile": 0
   },
   {
     "id": 1,

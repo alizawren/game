@@ -9,7 +9,6 @@ require_relative "../gameObjects/player.rb"
 require_relative "../gameObjects/enemy.rb"
 require_relative "../gameObjects/obstacles/obstacle.rb"
 require_relative "../gameObjects/fixedObject.rb"
-require_relative "../gameObjects/projectiles/bullet.rb"
 
 class GameScene < Scene
   attr_accessor :parallax
@@ -19,6 +18,7 @@ class GameScene < Scene
   attr_reader :player
   attr_reader :mouse_x
   attr_reader :mouse_y
+  attr_reader :camera
   attr_accessor :dialogueMode
 
   def initialize(jsonfile = "scenes/scenefiles/defaultScene.json")
@@ -62,10 +62,10 @@ class GameScene < Scene
     bg_width = @bg.width
     bg_height = @bg.height
     wall_thickness = 10
-    @objects["fixed"].push(FixedObject.new(0, 0, -wall_thickness, bg_height))
-    @objects["fixed"].push(FixedObject.new(0, 0, bg_width, -wall_thickness))
-    @objects["fixed"].push(FixedObject.new(bg_width, 0, wall_thickness, bg_height))
-    @objects["fixed"].push(FixedObject.new(0, bg_height, bg_width, wall_thickness))
+    @objects["fixed"].push(FixedObject.new(self,0, 0, -wall_thickness, bg_height))
+    @objects["fixed"].push(FixedObject.new(self,0, 0, bg_width, -wall_thickness))
+    @objects["fixed"].push(FixedObject.new(self,bg_width, 0, wall_thickness, bg_height))
+    @objects["fixed"].push(FixedObject.new(self,0, bg_height, bg_width, wall_thickness))
   end
 
   def unload
@@ -102,7 +102,7 @@ class GameScene < Scene
               method = val["method"]
             end
 
-            obj = FixedObject.new(val["x"], val["y"], w, h, method, through)
+            obj = FixedObject.new(self,val["x"], val["y"], w, h, method, through)
           when "polygon"
             if (val["x"].nil? or val["y"].nil? or val["vertices"].nil?)
               next
@@ -259,7 +259,7 @@ class GameScene < Scene
     # and call bitmap.draw instead of the below
     curr = Vector[0, 0, 1]
     #newpos = @cameratransform * curr
-    newpos = @camera.tranform * curr
+    newpos = @camera.transform * curr
     x = newpos[0]
     y = newpos[1]
     @parallax.draw(x, y, PARALLAX_LAYER)
@@ -311,11 +311,13 @@ class GameScene < Scene
       end
 
       if (@type == "gamescene")
-        if @player.weapon.type == "ranged"
-        elsif @player.weapon.type == "melee"
-          #change the player's state to attacking or something?
-          #attach some kind of contact box to the player for the attack
-          #the contact box should have the length of the weapon and some uniform width
+        case @player.currentWeapon.type
+        when "ranged"
+          oldpos = @camera.transform.inverse * Vector[@crosshair.x,@crosshair.y,1]
+          projectile = @player.currentWeapon.newProjectile(self,@player.center,(Vector[oldpos[0], oldpos[1]] - @player.center).normalize * BULLET_SPEED)
+          @objects["projectiles"].push(projectile)
+        when "melee"
+          #somehow handle melee attacks :P
         end
       end
     end

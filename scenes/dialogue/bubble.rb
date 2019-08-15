@@ -30,7 +30,7 @@ class Bubble
     @fps = fps
     @timer = 60 / @fps
     if !@source.nil?
-      vec = @sceneRef.cameratransform * Vector[@source.x, @source.y, 1]
+      vec = @sceneRef.camera.transform * Vector[@source.x, @source.y, 1]
       @x = vec[0] + BUBBLE_OFFSET_X
       @y = vec[1] + @extra_height_based_on_index + BUBBLE_OFFSET_Y
     else
@@ -64,7 +64,7 @@ class Bubble
       @timer -= 1
     end
     if !@source.nil?
-      vec = @sceneRef.cameratransform * Vector[@source.x, @source.y, 1]
+      vec = @sceneRef.camera.transform * Vector[@source.x, @source.y, 1]
       @x = vec[0] + BUBBLE_OFFSET_X
       @y = vec[1] + @extra_height_based_on_index + BUBBLE_OFFSET_Y
     end

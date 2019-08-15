@@ -4,8 +4,8 @@ require_relative "../gameObject.rb"
 class Obstacle < GameObject
   attr_reader :activateFunc # TEMPORARY
 
-  def initialize(center, vertices)
-    super(center)
+  def initialize(sceneref,center, vertices)
+    super sceneref, center 
 
     #calculates the vertices and calls on superclass constructor
     hitPoly = BoundingPolygon.new(self, vertices)

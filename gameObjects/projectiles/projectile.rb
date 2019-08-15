@@ -4,8 +4,16 @@ require_relative "../gameObject.rb"
 class Projectile < GameObject
   attr_accessor :damage
 
-  def initialize(sceneref, center = Vector[0, 0], velocity = Vector[0, 0], damage = 0, width = 2, height = 2)
-    super(sceneref, center, width, height)
+  def initialize(sceneref, id, center = Vector[0, 0], velocity = Vector[0, 0])
+    @id = id 
+    file = File.read("gameObjects/projectiles/projectiles.json")
+    data = JSON.parse(file)
+    @name = data[id]["name"]
+    @damage = data[id]["damage"]
+    width = data[id]["width"]
+    height = data[id]["height"]
+
+    super sceneref, center, width, height 
     @velocity = velocity
     @angle = Math.atan(velocity[1] / velocity[0])
     hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
