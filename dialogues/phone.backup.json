@@ -7,92 +7,110 @@
           "type": "normal",
           "source": "player",
           "text": "Scia and Aer LLC. How can I help you?",
-          "delay": 0
+          "wait": 0,
+          "duration": 100
         },
         {
           "type": "normal",
-          "text": "Listen, uh... you guys kill people, right?"
+          "text": "Listen, uh... you guys kill people, right?",
+          "wait": 160,
+          "duration": -1
         },
         {
           "type": "options",
           "source": "player",
+          "wait": 360,
           "choices": [
-            { "text": "Yes.", "nextId": 3 },
-            { "text": "Depends on who's asking.", "nextId": 5 }
+            { "text": "Yes.", "nextId": 1 },
+            { "text": "Depends on who's asking.", "nextId": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "bubbles": [
+        {
+          "type": "normal",
+          "text": "Okay, just had to make sure before I called the police on you.",
+          "isMain": true
+        },
+        {
+          "type": "options",
+          "source": "player",
+          "wait": "auto",
+          "choices": [
+            { "text": "What?!", "nextId": 3 },
+            { "text": "Not if I call them first.", "nextId": 4 }
           ]
         }
       ],
-      "timeout": 700,
-      "timeoutId": 9
+      "duration": 400,
+      "timeoutId": 10
+    },
+    {
+      "id": 2,
+      "bubbles": [
+        { "type": "normal", "text": "I've got a high profile target for you." },
+        {
+          "type": "options",
+          "source": "player",
+          "choices": [{ "text": "Ok, I'm on it.", "nextId": "startLevel" }],
+          "wait": "auto"
+        }
+      ],
+      "duration": -1
     },
     {
       "id": 3,
       "bubbles": [
         {
           "type": "normal",
-          "text": "Okay, just had to make sure before I called the police on you."
+          "text": "Yup, that's right. Game over!"
+        }
+      ],
+      "duration": 300,
+      "timeoutId": "gameOver"
+    },
+    {
+      "id": 4,
+      "bubbles": [
+        {
+          "type": "normal",
+          "text": "What, you don't have any evidence.",
+          "isMain": true
         },
         {
-          "type": "options",
+          "type": "normal",
           "source": "player",
-          "choices": [
-            { "text": "What?!", "nextId": 6 },
-            { "text": "Not if I call them first.", "nextId": 7 }
-          ]
+          "text": "Well... neither do you.",
+          "wait": "auto"
         }
-      ]
+      ],
+      "duration": 500,
+      "timeoutId": 5
     },
     {
       "id": 5,
       "bubbles": [
-        { "type": "normal", "text": "I've got a high profile target for you." },
-        {
-          "type": "options",
-          "source": "player",
-          "choices": [{ "text": "Ok, I'm on it.", "nextId": "startLevel" }]
-        }
-      ]
-    },
-    {
-      "id": 6,
-      "bubbles": [
         {
           "type": "normal",
-          "text": "Yup, that's right. Game over!"
+          "text": "Um... guess that's a good point. Okay, bye now.",
+          "isMain": true
         }
       ],
-      "timeout": 200,
-      "timeoutId": "gameOver"
-    },
-    {
-      "id": 7,
-      "bubbles": [
-        {
-          "type": "normal",
-          "text": "What, you don't have any evidence."
-        },
-        {
-          "type": "normal",
-          "source": "player",
-          "text": "Well... neither do you."
-        },
-        {
-          "type": "normal",
-          "text": "Um... guess that's a good point. Okay, bye now."
-        }
-      ],
-      "timeout": 700,
+      "duration": 300,
       "timeoutId": -1
     },
     {
-      "id": 9,
+      "id": 10,
       "bubbles": [
         {
           "type": "normal",
           "text": "Hello?"
         }
       ],
-      "timeout": 200,
+      "duration": 200,
       "timeoutId": 20
     },
     {
@@ -103,6 +121,7 @@
           "text": "Okay, well, bye."
         }
       ],
+      "duration": 200,
       "timeoutId": -1
     }
   ]

@@ -3,22 +3,20 @@ require "gosu"
 class Bubble
   attr_reader :isOption
   attr_reader :nextId
-  attr_accessor :wait
-  attr_reader :isMain
+  attr_reader :text
+  attr_reader :source
+  attr_reader :delay
 
-  def initialize(sceneRef, text = "", source = nil, sequenceId = 0, isMain = false, isOption = false, i = 0, nextId = -1, bubbleColor: BUBBLE_COLOR, duration: -1, wait: 0, fps: 30, show: false)
+  def initialize(sceneRef, text = "", source = nil, isOption = false, i = 0, nextId = -1, bubbleColor: BUBBLE_COLOR, delay: 10, fps: 30)
     @sceneRef = sceneRef
     @source = source
     @type = "normal"
     @text = text
-    @sequenceId = sequenceId
     @font = Gosu::Font.new(FONT_HEIGHT, :name => FONT_TYPE)
-    @show = show
+    @show = true
 
     @width = @font.text_width(@text) + BUBBLE_PADDING * 2
     @height = @font.height + BUBBLE_PADDING * 2
-
-    @isMain = isMain
 
     # options stuff
     @isOption = isOption
@@ -27,11 +25,10 @@ class Bubble
     @nextId = nextId
 
     @frame = 0
-    @duration = duration
-    @wait = @isMain ? 0 : wait # if -1, doesn't show. Note that being the main bubble overrides wait
+    @delay = delay
+    @loaded = false
     @fps = fps
     @timer = 60 / @fps
-    @timer2 = 0 # TEMPORARY, we really want just one timer
     if !@source.nil?
       vec = @sceneRef.cameratransform * Vector[@source.x, @source.y, 1]
       @x = vec[0] + BUBBLE_OFFSET_X
@@ -43,31 +40,57 @@ class Bubble
     @z = TEXT_LAYER
 
     @bubbleColor = @isOption ? BUBBLE_COLOR_OPTION : bubbleColor
+    @deleteAnimOn = false
+
+    @delete_t = 0
+    @delete_vector = []
   end
 
   def update
-    if (@timer2 >= @wait && @wait >= 0)
-      @show = true
-      if (@timer == 0)
-        @frame += 1
-        if @frame >= @text.length
-          #dialogue fully loaded
-          @sceneRef.eventHandler.onNotify({ isMain: @isMain }, :bubbleLoaded)
+    if (@timer == 0)
+      @frame += 1
+      if @frame >= @text.length + @delay && !@loaded
+        #dialogue fully loaded
+        if (!@deleteAnimOn)
+          @sceneRef.eventHandler.onNotify({ bubble: self }, :bubbleLoaded)
+          @loaded = true
         end
-        if @frame >= @duration and @duration > 0
-          @sceneRef.eventHandler.onNotify({ dialogue: self }, :bubbleTimedOut)
-        end
-        @timer = 60 / @fps
-      else
-        @timer -= 1
       end
-      if !@source.nil?
-        vec = @sceneRef.cameratransform * Vector[@source.x, @source.y, 1]
-        @x = vec[0] + BUBBLE_OFFSET_X
-        @y = vec[1] + @extra_height_based_on_index + BUBBLE_OFFSET_Y
-      end
+      # if @frame >= @duration and @duration > 0
+      #   @sceneRef.eventHandler.onNotify({ dialogue: self }, :bubbleTimedOut)
+      # end
+      @timer = 60 / @fps
     else
-      @timer2 += 1
+      @timer -= 1
+    end
+    if !@source.nil?
+      vec = @sceneRef.cameratransform * Vector[@source.x, @source.y, 1]
+      @x = vec[0] + BUBBLE_OFFSET_X
+      @y = vec[1] + @extra_height_based_on_index + BUBBLE_OFFSET_Y
+    end
+
+    if (@deleteAnimOn)
+      if (@delete_t >= 1)
+        @sceneRef.eventHandler.onNotify({ bubble: self }, :deleteFromActive)
+      else
+        @delete_t += 0.06
+        # if we're deleting, play our lil animation (quadratic bezier curve)
+        newVector = (1 - @delete_t) ** 2 * @delete_vector[0] + 2 * (1 - @delete_t) * @delete_t * @delete_vector[1] + @delete_t ** 2 * @delete_vector[2]
+
+        @x = newVector[0]
+        @y = newVector[1]
+
+        @bubbleColor = Gosu::Color.new(255 * (1 - @delete_t), @bubbleColor.red, @bubbleColor.green, @bubbleColor.blue)
+      end
+    end
+  end
+
+  def deleteMe
+    # only run this once
+    if (!@deleteAnimOn)
+      @deleteAnimOn = true
+      # instantiate a vector for the bubble to follow
+      @delete_vector = [Vector[@x, @y], Vector[@x, @y - 10], Vector[@x, @y + 30]]
     end
   end
 
@@ -75,6 +98,14 @@ class Bubble
     if !@show
       return
     end
+
+    # if @deleteAnimOn
+    #   if (@height <= 0)
+    #     @sceneRef.eventHandler.onNotify({ bubble: self }, :deleteFromActive)
+    #   else
+    #     @height -= 1
+    #   end
+    # end
     if !@source.nil?
       Gosu.draw_rect(@x, @y, @width, @height, @bubbleColor, @z)
       @font.draw_text(@text[0, @frame], @x + BUBBLE_PADDING, @y + BUBBLE_PADDING, @z)
@@ -85,6 +116,9 @@ class Bubble
   end
 
   def contains(x, y)
+    if (@deleteAnimOn)
+      return false
+    end
     if (x < @x + @width && x > @x && y < @y + @height && y > @y)
       return true
     end
