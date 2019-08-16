@@ -19,7 +19,11 @@ class GameObject
   # def initialize(x = 0.0, y = 0.0, width = 30, height = 30)
   def initialize(sceneref, center = Vector[0.0, 0.0], width = 30, height = 30, id = "")
     @sceneref = sceneref
-    @id = id
+    if (id.length > 0)
+      @id = id
+    else
+      @id = self.object_id
+    end
     @center = center
     @velocity = Vector[0.0, 0.0]
     @angle = 0.0
@@ -69,7 +73,11 @@ class GameObject
     y = newpos[1]
 
     if (!@image.nil?)
-      @image.draw(x - @width / 2, y - @height / 2, @z)
+      # @image.draw(x - @width / 2, y - @height / 2, @z)
+      color = Gosu::Color::WHITE
+      x = x - @width / 2
+      y = y - @height / 2
+      @image.draw_as_quad(x, y, color, x + @width, y, color, x + @width, y + @height, color, x, y + @height, color, @z)
       # @image.draw(@center[0], @center[1], @z)
     end
   end

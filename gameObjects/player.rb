@@ -24,15 +24,15 @@ class Player < GameObject
   attr_accessor :facing
   attr_accessor :maxSpeed
 
-  def initialize(sceneref, center = Vector[0,0], sceneType = "gamescene", primary = "./weapons.json")
-    super sceneref
+  def initialize(sceneref, center = Vector[0, 0], sceneType = "gamescene", primary = "./weapons.json")
+    super sceneref, center
     @width = 128 * PLAYER_SCALE
     @height = 128 * PLAYER_SCALE
 
     # @boundPoly = Rectangle.new(@x, @y, @width, @height)
-    hitPoly = BoundingPolygon.new(self,[Vector[-12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-12 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
+    hitPoly = BoundingPolygon.new(self, [Vector[-12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-12 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
     # walkPoly = BoundingPolygon.new(self, [Vector[-@width / 4, @height / 4], Vector[@width / 4, @height / 4], Vector[@width / 4, @height / 2], Vector[-@width / 4, @height / 2]])
-    walkPoly = BoundingPolygon.new(self,[Vector[-16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-16 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
+    walkPoly = BoundingPolygon.new(self, [Vector[-16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-16 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
     @boundPolys["hit"] = hitPoly
     @boundPolys["walk"] = walkPoly
 
@@ -46,7 +46,7 @@ class Player < GameObject
     @arm_transform = ARM_RIGHT_TRANSF
     @armanchor = ARM_RIGHT_ANCHOR
 
-    @shadow = Gosu::Image.new("img/scia/scia_shadow.bmp")
+    @shadow = Gosu::Image.new("img/scia/scia_shadow.bmp", :retro => true)
 
     @state = 0 # 0 for idle, 1 for walking, 2 for shooting (tentative)
     # @flip = 0 # 0 for facing right, 1 for facing left
@@ -61,7 +61,7 @@ class Player < GameObject
     @secondaryWeapon = Weapon.new(1) #id of secondary weapon
     @currentWeapon = @primaryWeapon
   end
-  
+
   def switchWeapon
     currentWeapon = @currentWeapon.equal?(@primaryWeapon) ? @secondaryWeapon : @primaryWeapon
   end

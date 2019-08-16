@@ -4,15 +4,26 @@ class FixedObject < GameObject
   attr_reader :through
   attr_reader :activateFunc
 
-  def initialize(sceneref, x, y, width, height, activateFunc = "", through = false)
+  def initialize(sceneref, x, y, width, height, id = "", imgsrc = nil, activateFunc = "", through = false, scale: 1)
     center = Vector[x + width / 2, y + height / 2]
-    super sceneref, center, width, height 
+    super sceneref, center, width, height
     vertices = [Vector[-width / 2, -height / 2], Vector[width / 2, -height / 2], Vector[width / 2, height / 2], Vector[-width / 2, height / 2]]
     vertices2 = [Vector[-width / 2, -height / 2], Vector[width / 2, -height / 2], Vector[width / 2, height / 2 - 1], Vector[-width / 2, height / 2 - 1]]
     walkPoly = BoundingPolygon.new(self, vertices)
     hitPoly = BoundingPolygon.new(self, vertices2)
     @boundPolys["hit"] = hitPoly
     @boundPolys["walk"] = walkPoly
+
+    if (id.length > 0)
+      @id = id
+    else
+      @id = self.object_id
+    end
+    
+    if (!imgsrc.nil?)
+      @image = Gosu::Image.new(imgsrc, :retro => true)
+    end
+    @scale = scale
 
     @activateFunc = activateFunc
     @through = through

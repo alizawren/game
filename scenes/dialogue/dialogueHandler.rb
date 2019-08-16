@@ -12,6 +12,7 @@ class DialogueHandler
     @timeout = -1
 
     @dialogueData = nil
+    @dialogueId = ""
     @id = 0
     @activeBubbleQueue = []
     @bubbleQueue = []
@@ -24,7 +25,11 @@ class DialogueHandler
     when :bubbleClicked
       bubble = dataObj[:bubble]
       # push the bubble back in as non option
-      newBubbleObj = Bubble.new(@sceneRef, bubble.text, bubble.source, delay: 10)
+      text = bubble.text
+      if (bubble.fullText and bubble.fullText.length > 0)
+        text = bubble.fullText
+      end
+      newBubbleObj = Bubble.new(@sceneRef, text, bubble.source, delay: 10)
 
       if (bubble.nextId.is_a? String)
         func = bubble.nextId.to_sym
@@ -32,18 +37,23 @@ class DialogueHandler
         endOfDialogue
         return
       end
-      if (bubble.nextId < 0)
-        @id += 1
-      else
-        @id = bubble.nextId
-      end
+      @id = bubble.nextId
 
       @bubbleQueue.push(newBubbleObj)
       loadNextSequence
     when :bubbleLoaded
-      if (@activeBubbleQueue.last.kind_of?(Array))
-      end
+      bubble = dataObj[:bubble]
       if (@bubbleQueue.length > 0)
+        # if the next bubble comes from the same source, delete this one on load
+        nextBubble = @bubbleQueue.first
+        if (nextBubble.kind_of?(Array))
+          if (bubble.source.id == nextBubble.first.source.id)
+            bubble.deleteMe
+          end
+        elsif (bubble.source.id == nextBubble.source.id)
+          bubble.deleteMe
+        end
+
         if (@activeBubbleQueue.length > 1)
           oldBubble = @activeBubbleQueue.first
           if (oldBubble.kind_of?(Array))
@@ -109,6 +119,10 @@ class DialogueHandler
   def loadNextSequence
     deleteAllActiveBubbles
 
+    if (@dialogueData["dialogueId"])
+      @dialogueId = @dialogueData["dialogueId"]
+    end
+
     for val in @dialogueData["sequence"]
       if (val["id"] == @id)
         for bubble in val["bubbles"]
@@ -118,6 +132,16 @@ class DialogueHandler
           case bubble["source"]
           when "player"
             source = @sceneRef.player
+          else
+            @sceneRef.objects.each_value do |objectList|
+              for srcObj in objectList
+                if !srcObj.nil? && !bubble["source"].nil?
+                  if (srcObj.id == bubble["source"])
+                    source = srcObj
+                  end
+                end
+              end
+            end
           end
 
           bubbleDelay = bubble["delay"] ? bubble["delay"] : 10
@@ -132,17 +156,18 @@ class DialogueHandler
             for i in 0..bubble["choices"].length - 1
               choice = bubble["choices"][i]
               text = !choice["text"].nil? ? choice["text"] : ""
+              fullText = !choice["fullText"].nil? ? choice["fullText"] : ""
               # by default nextId being -1 means it will search for immediate next id
               nextId = choice["nextId"] ? choice["nextId"] : -1
-              obj = Bubble.new(@sceneRef, text, source, true, i, nextId, delay: bubbleDelay)
+              obj = Bubble.new(@sceneRef, text, source, true, i, nextId, delay: bubbleDelay, fullText: fullText)
               optionsArr.push(obj)
             end
             @bubbleQueue.push(optionsArr)
           end
         end
-        # by default there is no timeout (value of -1). specify one to time out a conversation
+        # by default there is no timeout (value of -1). specify one to time out a conversation. TODO: make a default timeout of 100 or something
         @timeout = val["timeout"] ? val["timeout"] : -1
-        @timeoutId = val["timeoutId"] ? val["timeoutId"] : @id + 1
+        @timeoutId = val["timeoutId"] ? val["timeoutId"] : -1
         @timer = @timeout # TODO: turn on only after last bubble shows. if option clicked, reset
 
         firstBubble = @bubbleQueue.shift

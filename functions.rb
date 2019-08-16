@@ -21,3 +21,7 @@ end
 def gameOver
   SceneManager.changeScene(MainMenu.new)
 end
+
+def aerConvo
+  SceneManager.getCurrentScene.eventHandler.onNotify({ jsonfile: "dialogues/aer.json" }, :createDialogue)
+end

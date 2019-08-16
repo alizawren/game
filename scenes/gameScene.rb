@@ -62,10 +62,10 @@ class GameScene < Scene
     bg_width = @bg.width
     bg_height = @bg.height
     wall_thickness = 10
-    @objects["fixed"].push(FixedObject.new(self,0, 0, -wall_thickness, bg_height))
-    @objects["fixed"].push(FixedObject.new(self,0, 0, bg_width, -wall_thickness))
-    @objects["fixed"].push(FixedObject.new(self,bg_width, 0, wall_thickness, bg_height))
-    @objects["fixed"].push(FixedObject.new(self,0, bg_height, bg_width, wall_thickness))
+    @objects["fixed"].push(FixedObject.new(self, 0, 0, -wall_thickness, bg_height))
+    @objects["fixed"].push(FixedObject.new(self, 0, 0, bg_width, -wall_thickness))
+    @objects["fixed"].push(FixedObject.new(self, bg_width, 0, wall_thickness, bg_height))
+    @objects["fixed"].push(FixedObject.new(self, 0, bg_height, bg_width, wall_thickness))
   end
 
   def unload
@@ -102,7 +102,16 @@ class GameScene < Scene
               method = val["method"]
             end
 
-            obj = FixedObject.new(self,val["x"], val["y"], w, h, method, through)
+            id = ""
+            if val["id"]
+              id = val["id"]
+            end
+            imgsrc = nil
+            if val["imgsrc"]
+              imgsrc = val["imgsrc"]
+            end
+
+            obj = FixedObject.new(self, val["x"], val["y"], w, h, id, imgsrc, method, through)
           when "polygon"
             if (val["x"].nil? or val["y"].nil? or val["vertices"].nil?)
               next
@@ -122,7 +131,7 @@ class GameScene < Scene
             for node in path
               newpath.push(Vector[node["x"], node["y"]])
             end
-            obj = Enemy.new(self,newpath)
+            obj = Enemy.new(self, newpath)
           else
           end
 
@@ -267,10 +276,8 @@ class GameScene < Scene
 
     @objects.each_value do |objectList|
       for object in objectList
-        # object.draw(@cameratransform)
-        # object.draw_frame(@cameratransform)
         object.draw(@camera.transform)
-        object.draw_frame(@camera.transform)
+        # object.draw_frame(@camera.transform)
       end
     end
 
@@ -313,8 +320,8 @@ class GameScene < Scene
       if (@type == "gamescene")
         case @player.currentWeapon.type
         when "ranged"
-          oldpos = @camera.transform.inverse * Vector[@crosshair.x,@crosshair.y,1]
-          projectile = @player.currentWeapon.newProjectile(self,@player.center,(Vector[oldpos[0], oldpos[1]] - @player.center).normalize * BULLET_SPEED)
+          oldpos = @camera.transform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
+          projectile = @player.currentWeapon.newProjectile(self, @player.center, (Vector[oldpos[0], oldpos[1]] - @player.center).normalize * BULLET_SPEED)
           @objects["projectiles"].push(projectile)
         when "melee"
           #somehow handle melee attacks :P

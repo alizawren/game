@@ -8,6 +8,31 @@
       { "type": "fixed", "x": 0, "y": 0, "width": "bgwidth", "height": 140 },
       { "type": "fixed", "x": 65, "y": 70, "width": 90, "height": 100 },
       {
+        "type": "fixed",
+        "id": "aer",
+        "x": 500,
+        "y": 20,
+        "width": 256,
+        "height": 256,
+        "imgsrc": "img/aer/aer_cut_sprite_down.bmp",
+        "scale": 2,
+        "boundPolys": {
+          "hit": [
+            { "x": -20, "y": -80 },
+            { "x": 20, "y": -80 },
+            { "x": 20, "y": 70 },
+            { "x": -20, "y": 70 }
+          ],
+          "walk": [
+            { "x": -20, "y": 70 },
+            { "x": 20, "y": 70 },
+            { "x": 20, "y": 90 },
+            { "x": -20, "y": 90 }
+          ]
+        },
+        "method": "aerConvo"
+      },
+      {
         "type": "polygon",
         "x": 230,
         "y": 170,
