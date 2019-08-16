@@ -47,10 +47,10 @@ class DialogueHandler
         # if the next bubble comes from the same source, delete this one on load
         nextBubble = @bubbleQueue.first
         if (nextBubble.kind_of?(Array))
-          if (bubble.source.id == nextBubble.first.source.id)
+          if (bubble.source == nextBubble.first.source)
             bubble.deleteMe
           end
-        elsif (bubble.source.id == nextBubble.source.id)
+        elsif (bubble.source == nextBubble.source)
           bubble.deleteMe
         end
 
