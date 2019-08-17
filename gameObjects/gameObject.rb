@@ -15,6 +15,7 @@ class GameObject
   attr_reader :width
   attr_reader :height
   attr_reader :transform
+  attr_reader :halfsize
 
   # def initialize(x = 0.0, y = 0.0, width = 30, height = 30)
   def initialize(sceneref, center = Vector[0.0, 0.0], width = 30, height = 30, id = "")
@@ -29,7 +30,7 @@ class GameObject
     @angle = 0.0
     @width = width
     @height = height
-
+    @halfsize = Vector[width/2,height/2]
     @transform = Matrix.I(3) # 3x3 to account for translation
 
     @boundPolys = Hash.new
@@ -88,6 +89,6 @@ class GameObject
     end
   end
 
-  def overlap(obj2, poly, mtv = Vector[0, 0])
+  def overlap(obj2, poly, overlap = Vector[0, 0])
   end
 end

@@ -1,17 +1,15 @@
-[
-  {
-    "id": 0,
+{
+  "Pistol": {
     "name": "Pistol",
     "type": "ranged",
     "clip": 8,
     "damage": 10,
-    "projectile": 0
+    "projectile": "Bullet"
   },
-  {
-    "id": 1,
+  "Knife": {
     "name": "Knife",
     "type": "melee",
     "damage": 20,
     "length": 10
   }
-]
+}

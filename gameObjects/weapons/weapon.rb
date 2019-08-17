@@ -1,7 +1,6 @@
 require "json"
 require_relative "../projectiles/projectile.rb"
 class Weapon
-  attr_reader :id
   attr_reader :name
   attr_reader :type
   attr_reader :damage
@@ -9,21 +8,17 @@ class Weapon
   attr_reader :projectile
   attr_accessor :ammo
   
-  def initialize(id)
-    @id = id
+  def initialize(name)
     file = File.read("gameObjects/weapons/weapons.json")
     data = JSON.parse(file)
 
-    @name = data[id]["name"]
-    @type = data[id]["type"]
-    @damage = data[id]["damage"]
+    @name = name
+    @type = data[name]["type"]
+    @damage = data[name]["damage"]
     if @type == "ranged"
       @clip = clip
       @ammo = ammo
-      @projectile = data[id]["projectile"]
+      @projectile = data[name]["projectile"]
     end
-  end
-  def newProjectile(sceneref,center,velocity)
-    return Projectile.new(sceneref,@projectile,center,velocity)
   end
 end

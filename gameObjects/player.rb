@@ -32,9 +32,12 @@ class Player < GameObject
     @id = "player"
 
     # @boundPoly = Rectangle.new(@x, @y, @width, @height)
-    hitPoly = BoundingPolygon.new(self, [Vector[-12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-12 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
+    hitPoly = BoundingPolygon.new(self, Vector[0,6*PLAYER_SCALE],24*PLAYER_SCALE,78*PLAYER_SCALE)
+    #Vector[[Vector[-12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-12 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
     # walkPoly = BoundingPolygon.new(self, [Vector[-@width / 4, @height / 4], Vector[@width / 4, @height / 4], Vector[@width / 4, @height / 2], Vector[-@width / 4, @height / 2]])
-    walkPoly = BoundingPolygon.new(self, [Vector[-16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-16 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
+    #[Vector[-16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-16 * PLAYER_SCALE, 48 * PLAYER_SCALE]]
+    walkPoly = BoundingPolygon.new(self, Vector[0,42*PLAYER_SCALE],32*PLAYER_SCALE,12*PLAYER_SCALE)
+    
     @boundPolys["hit"] = hitPoly
     @boundPolys["walk"] = walkPoly
 
@@ -59,12 +62,12 @@ class Player < GameObject
     #physics stuff
     @maxSpeed = 5
     #weapon stuff
-    @primaryWeapon = Weapon.new(0) #id of primary weapon
-    @secondaryWeapon = Weapon.new(1) #id of secondary weapon
+    @primaryWeapon = Weapon.new("Pistol") #id of primary weapon
+    @secondaryWeapon = Weapon.new("Knife") #id of secondary weapon
     @currentWeapon = @primaryWeapon
   end
 
-  def switchWeapon
+  def switchWeapons
     currentWeapon = @currentWeapon.equal?(@primaryWeapon) ? @secondaryWeapon : @primaryWeapon
   end
 
@@ -203,7 +206,7 @@ class Player < GameObject
     end
   end
 
-  def overlap(obj2, poly, mtv = Vector[0, 0])
+  def overlap(obj2, poly, overlap = Vector[0, 0])
     case poly
     when "hit"
       if (obj2.is_a?(Enemy))
@@ -215,7 +218,43 @@ class Player < GameObject
       end
     when "walk"
       if (obj2.is_a?(FixedObject) && !obj2.through)
-        force(mtv)
+        #first handle the case where the objects are only touching edges
+        if (overlap[0] == 0)
+          if (obj2.center[0] > @center[0])
+            # puts("touch right")
+            @velocity[0] = @velocity[0] > 0 ? 0 : @velocity[0]
+          else 
+            # puts("touch left")
+            @velocity[0] = @velocity[0] < 0 ? 0 : @velocity[0]
+          end
+        elsif (overlap[1] == 0)
+          if (obj2.center[1] > @center[1])
+            # puts("touch down")
+            @velocity[1] = @velocity[1] > 0 ? 0 : @velocity[1]
+          else 
+            # puts("touch up")
+            @velocity[1] = @velocity[1] < 0 ? 0 : @velocity[1]
+          end
+        elsif (overlap[0]).abs <= (overlap[1]).abs 
+          @center[0] += overlap[0]
+          if(overlap[0] < 0)
+            # puts("overlap right")
+            @velocity[0] = @velocity[0] > 0 ? 0 : @velocity[0]
+          else
+            # puts("overlap left")
+            @velocity[0] = @velocity[0] < 0 ? 0 : @velocity[0]
+          end
+        else
+          # puts(overlap)
+          @center[1] += overlap[1]
+          if (overlap[1] < 0)
+            # puts("overlap down")
+            @velocity[1] = @velocity[1] > 0 ? 0 : @velocity[1]
+          else
+            # puts("overlap up")
+            @velocity[1] = @velocity[1] < 0 ? 0 : @velocity[1]
+          end
+        end
       end
     when "walkhit"
       # check when hitting hit poly

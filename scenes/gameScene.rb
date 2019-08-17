@@ -139,7 +139,7 @@ class GameScene < Scene
               for vertex in polys
                 vertices.push(Vector[vertex["x"], vertex["y"]])
               end
-              boundPoly = BoundingPolygon.new(obj, vertices)
+              boundPoly = BoundingPolygon.new(obj)
               obj.boundPolys[poly] = boundPoly
             end
           end
@@ -275,7 +275,7 @@ class GameScene < Scene
     @objects.each_value do |objectList|
       for object in objectList
         object.draw(@camera.transform)
-        # object.draw_frame(@camera.transform)
+        object.draw_frame(@camera.transform)
       end
     end
 
@@ -286,8 +286,8 @@ class GameScene < Scene
 
   def button_down(id, close_callback)
     case id
-    when Gosu::KB_T
-      # @dialogues.push(NormalDialogue.new("Thinking", @player))
+    when Gosu::KB_E
+      @player.switchWeapons
     when Gosu::KB_LEFT_SHIFT
       if (@type == "gamescene")
         #change the state to sprint
@@ -319,7 +319,7 @@ class GameScene < Scene
         case @player.currentWeapon.type
         when "ranged"
           oldpos = @camera.transform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
-          projectile = @player.currentWeapon.newProjectile(self, @player.center, (Vector[oldpos[0], oldpos[1]] - @player.center).normalize * BULLET_SPEED)
+          projectile = Projectile.new(self, @player.currentWeapon.projectile,@player.center, (Vector[oldpos[0], oldpos[1]] - @player.center).normalize * BULLET_SPEED)
           @objects["projectiles"].push(projectile)
         when "melee"
           #somehow handle melee attacks :P
@@ -341,27 +341,27 @@ class GameScene < Scene
 end
 
 def overlap(obj1, obj2)
-  mtv = Hash.new
-  mtvHit = findOverlap(obj1.boundPolys["hit"], obj2.boundPolys["hit"])
-  if (mtvHit)
+  overlap = Hash.new
+  overlapHit = findOverlap(obj1.boundPolys["hit"], obj2.boundPolys["hit"])
+  if (overlapHit)
     #call overlap on both objects if they overlap?
     #so they can handle it themselves?
-    obj1.overlap(obj2, "hit", mtvHit.v)
+    obj1.overlap(obj2, "hit", overlapHit)
     # obj2.overlap(obj1, "hit", mtvHit.v)
-    mtv["hit"] = mtvHit
+    overlap["hit"] = overlapHit
   end
-  mtvWalk = findOverlap(obj1.boundPolys["walk"], obj2.boundPolys["walk"])
-  if (mtvWalk)
-    obj1.overlap(obj2, "walk", mtvWalk.v)
+  overlapWalk = findOverlap(obj1.boundPolys["walk"], obj2.boundPolys["walk"])
+  if (overlapWalk)
+    obj1.overlap(obj2, "walk", overlapWalk)
     # obj2.overlap(obj1, "walk", mtvWalk.v)
-    mtv["walk"] = mtvWalk
+    overlap["walk"] = overlapWalk
   end
 
-  mtvWalkHit = findOverlap(obj1.boundPolys["walk"], obj2.boundPolys["hit"])
-  if (mtvWalkHit)
-    obj1.overlap(obj2, "walkhit", mtvWalkHit.v)
-    mtv["walkhit"] = mtvWalkHit
+  overlapWalkHit = findOverlap(obj1.boundPolys["walk"], obj2.boundPolys["hit"])
+  if (overlapWalkHit)
+    obj1.overlap(obj2, "walkhit", overlapWalkHit)
+    overlap["walkhit"] = overlapWalkHit
   end
 
-  return mtv
+  return overlap
 end
