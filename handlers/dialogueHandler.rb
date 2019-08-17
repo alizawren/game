@@ -1,7 +1,6 @@
-# require_relative "../../eventHandler.rb"
-require_relative "./bubble.rb"
-require_relative "../../functions.rb"
-# require_relative "./optionsDialogue.rb"
+require "set"
+require_relative "../bubble.rb"
+require_relative "../functions.rb"
 
 class DialogueHandler
   def initialize(sceneRef)
@@ -101,6 +100,24 @@ class DialogueHandler
     file = File.read(dataObj[:jsonfile])
     data = JSON.parse(file)
     @dialogueData = data
+
+    # send a notification that these are the sources we should focus on
+    sources = Set[]
+    if (@dialogueData["sources"])
+      for srcid in @dialogueData["sources"]
+        @sceneRef.objects.each_value do |objectList|
+          for srcObj in objectList
+            if !srcObj.nil?
+              if (srcObj.id == srcid)
+                sources.add(srcObj)
+              end
+            end
+          end
+        end
+      end
+    end
+    @sceneRef.eventHandler.onNotify({ objects: sources }, :focusObjects)
+
     loadNextSequence
   end
 
@@ -174,6 +191,7 @@ class DialogueHandler
         if (!firstBubble.nil?)
           @activeBubbleQueue.push(firstBubble)
         end
+
         return
       end
     end
@@ -182,8 +200,10 @@ class DialogueHandler
 
   def endOfDialogue
     deleteAllActiveBubbles
+    @sceneRef.eventHandler.onNotify({ dialogueId: @dialogueId }, :dialogueEnded)
     @id = 0
     @dialogueData = nil
+    @dialogueId = ""
     @sceneRef.dialogueMode = false
   end
 
@@ -246,6 +266,7 @@ class DialogueHandler
           if (bubble.kind_of?(Array))
             for bub in bubble
               if (bub.contains(mouse_x, mouse_y))
+                # could change to @sceneRef.eventHandler.onNotify
                 onNotify({ bubble: bub }, :bubbleClicked)
               end
             end

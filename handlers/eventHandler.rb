@@ -1,4 +1,5 @@
-require_relative "scenes/dialogue/dialogueHandler.rb"
+require_relative "./dialogueHandler.rb"
+require_relative "./cameraHandler.rb"
 
 # an Event listener class. Should be inherited to define methods
 class EventHandler
@@ -35,6 +36,8 @@ class EventHandler
     case type
     when "dialogue"
       @handlers.push(DialogueHandler.new(@sceneRef))
+    when "camera"
+      @handlers.push(CameraHandler.new(@sceneRef))
     end
   end
 

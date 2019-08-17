@@ -2,7 +2,7 @@ require "json"
 require_relative "../functions.rb"
 require_relative "./scene.rb"
 require_relative "./guis/pauseMenuGui.rb"
-require_relative "../eventHandler.rb"
+require_relative "../handlers/eventHandler.rb"
 require_relative "../camera.rb"
 require_relative "../crosshair.rb"
 require_relative "../gameObjects/player.rb"
@@ -12,13 +12,12 @@ require_relative "../gameObjects/fixedObject.rb"
 
 class GameScene < Scene
   attr_accessor :parallax
-  # attr_reader :cameratransform
   attr_accessor :eventHandler
   attr_reader :objects
   attr_reader :player
   attr_reader :mouse_x
   attr_reader :mouse_y
-  attr_reader :camera
+  attr_accessor :camera
   attr_accessor :dialogueMode
 
   def initialize(jsonfile = "scenes/scenefiles/defaultScene.json")
@@ -26,14 +25,13 @@ class GameScene < Scene
     @mouse_y = 0
 
     @camera = Camera.new
-    #@cameratransform = Matrix.I(3)
 
     # @quadtree = Quadtree.new(0, Rectangle.new(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT))
 
     @crosshair = Crosshair.instance
-    # @dialogues = []
     @eventHandler = EventHandler.new(self)
     @eventHandler.addHandler("dialogue")
+    @eventHandler.addHandler("camera")
     @dialogueMode = false
 
     @objects = Hash.new

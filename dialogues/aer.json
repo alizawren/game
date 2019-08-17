@@ -1,5 +1,6 @@
 {
   "dialogueId": "aer",
+  "sources": ["aer", "player"],
   "sequence": [
     {
       "id": 0,
