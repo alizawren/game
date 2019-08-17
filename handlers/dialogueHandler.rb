@@ -15,6 +15,8 @@ class DialogueHandler
     @id = 0
     @activeBubbleQueue = []
     @bubbleQueue = []
+
+    @endFlag
   end
 
   def onNotify(dataObj, event)
@@ -68,9 +70,17 @@ class DialogueHandler
         newBubble = @bubbleQueue.shift
         @activeBubbleQueue.push(newBubble)
       end
-    when :bubbleTimedOut
     when :deleteFromActive
       deleteBubble(dataObj[:bubble].object_id)
+      if @endFlag
+        @sceneRef.eventHandler.onNotify({ dialogueId: @dialogueId }, :dialogueEnded)
+        @endFlag = false
+      end
+    when :dialogueEnded
+      @id = 0
+      @dialogueData = nil
+      @dialogueId = ""
+      @sceneRef.dialogueMode = false
     else
     end
   end
@@ -161,7 +171,7 @@ class DialogueHandler
             end
           end
 
-          bubbleDelay = bubble["delay"] ? bubble["delay"] : 10
+          bubbleDelay = bubble["delay"] ? bubble["delay"] : 20
 
           case bubble["type"]
           when "normal"
@@ -200,11 +210,7 @@ class DialogueHandler
 
   def endOfDialogue
     deleteAllActiveBubbles
-    @sceneRef.eventHandler.onNotify({ dialogueId: @dialogueId }, :dialogueEnded)
-    @id = 0
-    @dialogueData = nil
-    @dialogueId = ""
-    @sceneRef.dialogueMode = false
+    @endFlag = true
   end
 
   def update

@@ -10,8 +10,10 @@ class CameraHandler
     when :focusObjects
       objects = dataObj[:objects]
 
-      @sceneRef.camera.focusObjects = objects
-      @sceneRef.camera.state = 2
+      if (objects.length > 0)
+        @sceneRef.camera.focusObjects = objects
+        @sceneRef.camera.state = 2
+      end
       # TODO: state should be 1, a transition state
     when :dialogueEnded
       @sceneRef.camera.state = 0

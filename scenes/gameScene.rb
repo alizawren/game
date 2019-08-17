@@ -275,7 +275,7 @@ class GameScene < Scene
     @objects.each_value do |objectList|
       for object in objectList
         object.draw(@camera.transform)
-        # object.draw_frame(@camera.transform)
+        object.draw_frame(@camera.transform)
       end
     end
 
