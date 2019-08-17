@@ -8,11 +8,7 @@ class Bubble
   attr_reader :delay
   attr_reader :fullText
 
-<<<<<<< HEAD
   def initialize(sceneRef, text = "", source = nil, isOption = false, i = 0, nextId = -1, bubbleColor: BUBBLE_COLOR, delay: 20, fps: 45, fullText: "")
-=======
-  def initialize(sceneRef, text = "", source = nil, isOption = false, i = 0, nextId = -1, bubbleColor: BUBBLE_COLOR, delay: 10, fps: 60, fullText: "")
->>>>>>> 15e1fd13137d93a29fc97625cc849490d5ec96fe
     @sceneRef = sceneRef
     @source = source
     @type = "normal"
