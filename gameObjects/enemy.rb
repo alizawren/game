@@ -14,7 +14,7 @@ IDLE_TIME = 50
 ATTACK_SPEED = 100
 class Enemy < GameObject
   #start with a path the enemy should follow
-  def initialize(sceneref, path = [Vector[0, 0], Vector[100, 0]],weaponID = 0)
+  def initialize(sceneref, path = [Vector[0, 0], Vector[100, 0]],weaponID = "Pistol")
     @path = path
     @center = @path[0]
     super sceneref, @center 
@@ -23,7 +23,9 @@ class Enemy < GameObject
 
     #we'll do textures later,
     #they're just rectangles for now
-    hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
+    # hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
+    hitPoly = BoundingPolygon.new(self, Vector[0,0],@width,@height)
+
     @boundPolys["hit"] = hitPoly
 
     @currNode = 1 # which node on path
@@ -61,7 +63,8 @@ class Enemy < GameObject
         @attackTimer = 0 
         case @weapon.type 
         when "ranged"
-          @sceneref.objects["projectiles"].push(@weapon.newProjectile(@sceneref,@center,(playerCenter-@center).normalize * BULLET_SPEED))
+          projectile = Projectile.new(@sceneref, @weapon.projectile,@center,(playerCenter-@center).normalize * BULLET_SPEED)
+          @sceneref.objects["projectiles"].push(projectile)
         when "melee"
           #still don't know how to do melee...
         end
@@ -98,7 +101,7 @@ class Enemy < GameObject
     super()
   end
 
-  def overlap(obj2, poly, mtv = Vector[0, 0])
+  def overlap(obj2, poly, overlap = Vector[0, 0])
     # case poly
     # when "hit"
     # when "walk"
@@ -108,7 +111,42 @@ class Enemy < GameObject
     # end
     boundPolys["hit"].color = Gosu::Color::RED
     if (obj2.is_a?(Obstacle))
-      force(mtv)
+      if (overlap[0] == 0)
+        if (obj2.center[0] > @center[0])
+          # puts("touch right")
+          @velocity[0] = @velocity[0] > 0 ? 0 : @velocity[0]
+        else 
+          # puts("touch left")
+          @velocity[0] = @velocity[0] < 0 ? 0 : @velocity[0]
+        end
+      elsif (overlap[1] == 0)
+        if (obj2.center[1] > @center[1])
+          # puts("touch down")
+          @velocity[1] = @velocity[1] > 0 ? 0 : @velocity[1]
+        else 
+          # puts("touch up")
+          @velocity[1] = @velocity[1] < 0 ? 0 : @velocity[1]
+        end
+      elsif (overlap[0]).abs <= (overlap[1]).abs 
+        @center[0] += overlap[0]
+        if(overlap[0] < 0)
+          # puts("overlap right")
+          @velocity[0] = @velocity[0] > 0 ? 0 : @velocity[0]
+        else
+          # puts("overlap left")
+          @velocity[0] = @velocity[0] < 0 ? 0 : @velocity[0]
+        end
+      else
+        # puts(overlap)
+        @center[1] += overlap[1]
+        if (overlap[1] < 0)
+          # puts("overlap down")
+          @velocity[1] = @velocity[1] > 0 ? 0 : @velocity[1]
+        else
+          # puts("overlap up")
+          @velocity[1] = @velocity[1] < 0 ? 0 : @velocity[1]
+        end
+      end
     end
     if (obj2.is_a?(Projectile))
       #kill this enemy somehow

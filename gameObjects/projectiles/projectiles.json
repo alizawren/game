@@ -1,9 +1,7 @@
-[
-  {
-    "id": 0,
-    "name": "Bullet",
+{
+  "Bullet": {
     "damage": 10,
     "width": 2,
     "height": 2
   }
-]
+}

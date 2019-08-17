@@ -9,8 +9,12 @@ class CameraHandler
     case event
     when :focusObjects
       objects = dataObj[:objects]
+<<<<<<< HEAD
 
       if (objects.length > 0)
+=======
+      if objects.length > 0
+>>>>>>> 15e1fd13137d93a29fc97625cc849490d5ec96fe
         @sceneRef.camera.focusObjects = objects
         @sceneRef.camera.state = 2
       end
