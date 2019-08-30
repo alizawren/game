@@ -63,8 +63,9 @@ class Enemy < GameObject
         @attackTimer = 0 
         case @weapon.type 
         when "ranged"
-          projectile = Projectile.new(@sceneref, @weapon.projectile,@center,(playerCenter-@center).normalize * BULLET_SPEED)
-          @sceneref.objects["projectiles"].push(projectile)
+          # projectile = Projectile.new(@sceneref, @weapon.projectile,@center,(playerCenter-@center).normalize * BULLET_SPEED)
+          # @sceneref.objects["projectiles"].push(projectile)
+          # @weapon.hitscan(@center,playerCenter,@sceneref.objects,[self])
         when "melee"
           #still don't know how to do melee...
         end

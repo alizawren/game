@@ -43,14 +43,13 @@ class GameScene < Scene
 
     @parallax = Gosu::Image.new(data["parallax"], :tileable => true)
     @bg = Gosu::Image.new(data["bg"], :tileable => true)
-
+    @hitscans = []
     @objects["player"] = []
     @objects["fixed"] = []
     if (@type == "gamescene")
       @objects["enemies"] = []
-      @objects["projectiles"] = []
+      # @objects["projectiles"] = []
     end
-
     @player = Player.new(self, Vector[data["player"]["x"], data["player"]["y"]], @type)
     @objects["player"].push(@player)
 
@@ -226,7 +225,6 @@ class GameScene < Scene
         end
       end
     end
-
     # @objects.each_value do |objectList|
     #   for i in 0..objectList.length - 1
     #     #now check collisions
@@ -278,7 +276,13 @@ class GameScene < Scene
         object.draw_frame(@camera.transform)
       end
     end
-
+    for hit in @hitscans
+      p1 = @camera.transform * Vector[hit[0][0],hit[0][1],1]
+      p2 = @camera.transform * Vector[hit[1][0],hit[1][1],1]
+      Gosu.draw_line(p1[0],p1[1],Gosu::Color::WHITE,p2[0],p2[1],Gosu::Color::WHITE,99)
+      Gosu.draw_rect(p2[0],p2[1],5,5,Gosu::Color::RED,98)
+    end
+    # @hitscans = []
     @eventHandler.draw
 
     @crosshair.draw
@@ -318,9 +322,20 @@ class GameScene < Scene
       if (@type == "gamescene")
         case @player.currentWeapon.type
         when "ranged"
-          oldpos = @camera.transform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
-          projectile = Projectile.new(self, @player.currentWeapon.projectile,@player.center, (Vector[oldpos[0], oldpos[1]] - @player.center).normalize * BULLET_SPEED)
-          @objects["projectiles"].push(projectile)
+          # oldpos = @camera.transform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
+          # projectile = Projectile.new(self, @player.currentWeapon.projectile,@player.center, (Vector[oldpos[0], oldpos[1]] - @player.center).normalize * BULLET_SPEED)
+          # @objects["projectiles"].push(projectile)
+
+          #moving on from projectiles
+          target3 = @camera.transform.inverse * Vector[@crosshair.x,@crosshair.y,1]
+          target = Vector[target3[0],target3[1]]
+          collisionPoint = @player.currentWeapon.hitscan(@player.center,target,@objects,[@player])
+          if(!collisionPoint.nil?)
+            @hitscans.push([@player.center,collisionPoint])
+          else 
+            p2 = ((target-@player.center).normalize()*@player.currentWeapon.range)
+            @hitscans.push([@player.center, p2])
+          end
         when "melee"
           #somehow handle melee attacks :P
         end
@@ -330,7 +345,7 @@ class GameScene < Scene
 
   def deleteObject(objid)
     @objects.each_value do |objectList|
-      for i in 0..objectList.length - 1
+      objectList.each_index do |i|
         if objectList[i].object_id == objid
           objectList.delete_at(i)
           return

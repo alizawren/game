@@ -22,6 +22,18 @@ class BoundingPolygon
   def center3
     return Vector[@center[0],@center[1],1]
   end
+  def topleft
+    return Vector[@center[0]-width/2,@center[1]-height/2]
+  end
+  def topright
+    return Vector[@center[0]+width/2,@center[1]-height/2]
+  end
+  def bottomleft
+    return Vector[@center[0]-width/2,@center[1]+height/2]
+  end
+  def bottomright
+    return Vector[@center[0]+width/2,@center[1]+height/2]
+  end
   def update
     @center = @obj.center+@relativeCenter
     #do some kind of rotation/transformation of the halfsize
@@ -29,7 +41,7 @@ class BoundingPolygon
   end
   def draw(transf)
     vertices = [Vector[@center[0]-@halfsize[0],@center[1]-@halfsize[1]],Vector[@center[0]+@halfsize[0],@center[1]-@halfsize[1]],Vector[@center[0]+@halfsize[0],@center[1]+@halfsize[1]],Vector[@center[0]-@halfsize[0],@center[1]+@halfsize[1]]]
-    for i in 0..vertices.length - 1
+    vertices.each_index do |i|
       currV = nil
       nextV = nil
       if (i == vertices.length - 1)

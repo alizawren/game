@@ -157,7 +157,7 @@ class Bubble
 
     Gosu.draw_rect(@x, @y, @width, @height, @bubbleColor, @z)
 
-    for lineIndex in 0..@textLines.length - 1
+    @textLines.each_index do |lineIndex|
       line = @textLines[lineIndex]
       if @lineFrame > lineIndex
         # Gosu.draw_rect(@x, @y + lineIndex * (@font.height + BUBBLE_PADDING), @maxWidth + 2 * BUBBLE_PADDING, @lineHeight, @bubbleColor, @z)

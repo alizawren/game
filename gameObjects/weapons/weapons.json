@@ -4,7 +4,7 @@
     "type": "ranged",
     "clip": 8,
     "damage": 10,
-    "projectile": "Bullet"
+    "range": 1000
   },
   "Knife": {
     "name": "Knife",

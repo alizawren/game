@@ -86,14 +86,14 @@ class DialogueHandler
   end
 
   def deleteBubble(id)
-    for i in 0..@activeBubbleQueue.length - 1
+    @activeBubbleQueue.each_index do |i|
       if @activeBubbleQueue[i].is_a?(Bubble)
         if @activeBubbleQueue[i].object_id == id
           @activeBubbleQueue.delete_at(i)
           return
         end
       else
-        for j in 0..@activeBubbleQueue[i].length - 1
+        @activeBubbleQueue[i].each_index do |j|
           if @activeBubbleQueue[i][j].object_id == id
             @activeBubbleQueue.delete_at(i)
             return
@@ -180,7 +180,7 @@ class DialogueHandler
             @bubbleQueue.push(obj)
           when "options"
             optionsArr = []
-            for i in 0..bubble["choices"].length - 1
+            bubble["choices"].each_index do |i|
               choice = bubble["choices"][i]
               text = !choice["text"].nil? ? choice["text"] : ""
               fullText = !choice["fullText"].nil? ? choice["fullText"] : ""
