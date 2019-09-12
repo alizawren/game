@@ -135,12 +135,11 @@ class GameScene < Scene
           end
 
           if (!obj.nil? and !val["boundPolys"].nil?)
-            val["boundPolys"].each do |poly, polys|
-              vertices = []
-              for vertex in polys
-                vertices.push(Vector[vertex["x"], vertex["y"]])
-              end
-              boundPoly = BoundingPolygon.new(obj)
+            val["boundPolys"].each do |poly, info|
+              polyCenter = Vector[info["x"], info["y"]]
+              polyWidth = info["width"]
+              polyHeight = info["height"]
+              boundPoly = BoundingPolygon.new(obj, polyCenter, polyWidth, polyHeight)
               obj.boundPolys[poly] = boundPoly
             end
           end
@@ -259,7 +258,7 @@ class GameScene < Scene
     @objects.each_value do |objectList|
       for object in objectList
         object.draw(cameraInvert, @camera.scale)
-        # object.draw_frame(cameraInvert, @camera.scale)
+        object.draw_frame(cameraInvert, @camera.scale)
       end
     end
     for hit in @hitscans

@@ -32,8 +32,8 @@ class MainMenuGui < MenuGui
     when Gosu::KB_RETURN, Gosu::KB_Z
       case @select
       when 0
-        # SceneManager.changeScene(GameScene.new("scenes/scenefiles/scene1.json"))
-        SceneManager.changeScene(GameScene.new("scenes/scenefiles/scene2.json"))
+        SceneManager.changeScene(GameScene.new("scenes/scenefiles/scene1.json"))
+        # SceneManager.changeScene(GameScene.new("scenes/scenefiles/scene2.json"))
       when 1
         SceneManager.guiPush(AboutGui.new)
       when 3

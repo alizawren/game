@@ -17,18 +17,8 @@
         "height": 128,
         "imgsrc": "img/aer/aer_cut_sprite_down.bmp",
         "boundPolys": {
-          "hit": [
-            { "x": -20, "y": -80 },
-            { "x": 20, "y": -80 },
-            { "x": 20, "y": 70 },
-            { "x": -20, "y": 70 }
-          ],
-          "walk": [
-            { "x": -20, "y": 70 },
-            { "x": 20, "y": 70 },
-            { "x": 20, "y": 90 },
-            { "x": -20, "y": 90 }
-          ]
+          "hit": { "x": 0, "y": 2, "width": 20, "height": 75 },
+          "walk": { "x": 0, "y": 40, "width": 25, "height": 15 }
         },
         "method": "aerConvo"
       },
@@ -53,18 +43,8 @@
         "height": 60,
         "img": "img/pooltable.png",
         "boundPolys": {
-          "hit": [
-            { "x": -50, "y": -30 },
-            { "x": 50, "y": -30 },
-            { "x": 50, "y": 0 },
-            { "x": -50, "y": 0 }
-          ],
-          "walk": [
-            { "x": -50, "y": -5 },
-            { "x": 50, "y": -5 },
-            { "x": 50, "y": 30 },
-            { "x": -50, "y": 30 }
-          ]
+          "hit": { "x": 0, "y": -15, "width": 100, "height": 30 },
+          "walk": { "x": 0, "y": 12.5, "width": 100, "height": 35 }
         },
         "method": "poolActivate"
       },

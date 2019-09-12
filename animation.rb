@@ -16,7 +16,6 @@ class Animation
   def update
     if (@timer == 0)
       @frame = (@frame + 1) % @img_array.length
-      puts @frame
       @timer = 60 / @fps
     else
       @timer -= 1
@@ -37,7 +36,6 @@ class Animation
   end
 
   def draw_as_quad(x1, y1, color1, x2, y2, color2, x3, y3, color3, x4, y4, color4, z)
-    puts @frame
     @img_array[@frame].draw_as_quad(x1, y1, color1, x2, y2, color2, x3, y3, color3, x4, y4, color4, z)
   end
 end

@@ -32,7 +32,7 @@ class Enemy < GameObject
     instantiateAnimations("gamescene")
 
     # @image = Gosu::Image.new("img/aSimpleSquare.png")
-    @curr_anim = @idle_right
+    @curr_anim = @idle_left
     @shadow = Gosu::Image.new("img/scia/scia_shadow.bmp", :retro => true)
 
     @z = ENEMY_LAYER
@@ -71,7 +71,7 @@ class Enemy < GameObject
   def update(playerCenter = Vector[0, 0], playerVelocity = Vector[0, 0])
     target = nil
 
-    if ((@velocity[0]).abs >= 0 || (@velocity[1]).abs >= 0)
+    if ((@velocity[0]).abs >= 0.5 || (@velocity[1]).abs >= 0.5)
       @curr_anim = @walking_left
     else
       @curr_anim = @idle_left
@@ -137,6 +137,8 @@ class Enemy < GameObject
     @velocity = newvel
 
     super()
+
+    @curr_anim.update
   end
 
   def draw(translate, scale)

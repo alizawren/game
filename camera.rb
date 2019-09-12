@@ -46,7 +46,7 @@ class Camera
       @pos = avgVec
     end
 
-    # make sure our specified position is placed at the center
+    # make sure our specified position is placed at the center of the canvas
     @pos = Vector[@pos[0] - (CANVAS_WIDTH / 2), @pos[1] - (CANVAS_HEIGHT / 2)]
   end
 end
