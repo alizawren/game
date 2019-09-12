@@ -2,6 +2,7 @@ require "matrix"
 require_relative "../rectangle.rb"
 require_relative "../constants"
 require_relative "./gameObject.rb"
+require_relative "../animation.rb"
 
 #enemy constants
 ENEMY_MAX_SPEED = 1.5
@@ -12,21 +13,29 @@ SLOWING_RADIUS = 50.0
 PURSUIT_CONST = 25
 IDLE_TIME = 50
 ATTACK_SPEED = 100
+
 class Enemy < GameObject
   #start with a path the enemy should follow
-  def initialize(sceneref, path = [Vector[0, 0], Vector[100, 0]],weaponID = "Pistol")
+  def initialize(sceneref, path = [Vector[0, 0], Vector[100, 0]], weaponID = "Pistol")
     @path = path
-    @center = @path[0]
-    super sceneref, @center 
     #starting position is the first point in the path
-    @image = Gosu::Image.new("img/aSimpleSquare.png")
+    @center = @path[0]
+    super sceneref, @center
 
     #we'll do textures later,
     #they're just rectangles for now
     # hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
-    hitPoly = BoundingPolygon.new(self, Vector[0,0],@width,@height)
+    hitPoly = BoundingPolygon.new(self, Vector[0, 0], @width, @height)
 
     @boundPolys["hit"] = hitPoly
+
+    instantiateAnimations("gamescene")
+
+    # @image = Gosu::Image.new("img/aSimpleSquare.png")
+    @curr_anim = @idle_right
+    @shadow = Gosu::Image.new("img/scia/scia_shadow.bmp", :retro => true)
+
+    @z = ENEMY_LAYER
 
     @currNode = 1 # which node on path
     @state = 1 # 0 for idle, 1 for moving, 2 for pursuit
@@ -35,6 +44,28 @@ class Enemy < GameObject
     @attackTimer = ATTACK_SPEED
     @weapon = Weapon.new(weaponID)
     @enemy_speed = ENEMY_MAX_SPEED
+  end
+
+  def instantiateAnimations(sceneType)
+    file = File.read("gameObjects/soldierAnims.json")
+    data_hash = JSON.parse(file)
+
+    @idle_up = Animation.new(data_hash[sceneType]["idle"]["up"], @width, @height, retro: true)
+    @idle_right = Animation.new(data_hash[sceneType]["idle"]["right"], @width, @height, retro: true)
+    @idle_left = Animation.new(data_hash[sceneType]["idle"]["left"], @width, @height, retro: true)
+    @idle_down = Animation.new(data_hash[sceneType]["idle"]["down"], @width, @height, retro: true)
+
+    @walking_up = Animation.new(data_hash[sceneType]["walking"]["up"], @width, @height, retro: true)
+    @walking_right = Animation.new(data_hash[sceneType]["walking"]["right"], @width, @height, retro: true)
+    @walking_left = Animation.new(data_hash[sceneType]["walking"]["left"], @width, @height, retro: true)
+    @walking_down = Animation.new(data_hash[sceneType]["walking"]["down"], @width, @height, retro: true)
+
+    if (data_hash[sceneType]["shoot"])
+      @shoot_right = Animation.new(data_hash[sceneType]["shoot"]["right"], @width, @height)
+      @shoot_left = Animation.new(data_hash[sceneType]["shoot"]["left"], @width, @height)
+      @shoot_up = Animation.new(data_hash[sceneType]["shoot"]["up"], @width, @height)
+      @shoot_down = Animation.new(data_hash[sceneType]["shoot"]["down"], @width, @height)
+    end
   end
 
   def update(playerCenter = Vector[0, 0], playerVelocity = Vector[0, 0])
@@ -60,8 +91,8 @@ class Enemy < GameObject
     elsif (@state == 2)
       target = playerCenter + playerVelocity * PURSUIT_CONST
       if (@attackTimer == ATTACK_SPEED)
-        @attackTimer = 0 
-        case @weapon.type 
+        @attackTimer = 0
+        case @weapon.type
         when "ranged"
           # projectile = Projectile.new(@sceneref, @weapon.projectile,@center,(playerCenter-@center).normalize * BULLET_SPEED)
           # @sceneref.objects["projectiles"].push(projectile)
@@ -102,6 +133,20 @@ class Enemy < GameObject
     super()
   end
 
+  def draw(translate, scale)
+    # note: in the future, make things more consistent so we don't have to recalculate this and can just call super
+    pos = @center * scale + translate
+    x = pos[0]
+    y = pos[1]
+    w = @width * scale
+    h = @height * scale
+
+    color = OPAQUE
+    shadowColor = SHADOW_COLOR
+    @curr_anim.draw_as_quad(x - w / 2, y - h / 2, color, x + w / 2, y - h / 2, color, x + w / 2, y + h / 2, color, x - w / 2, y + h / 2, color, @z)
+    @shadow.draw_as_quad(x - w / 2, y - h / 2, shadowColor, x + w / 2, y - h / 2, shadowColor, x + w / 2, y + h / 2, shadowColor, x - w / 2, y + h / 2, shadowColor, SHADOW_LAYER)
+  end
+
   def overlap(obj2, poly, overlap = Vector[0, 0])
     # case poly
     # when "hit"
@@ -116,7 +161,7 @@ class Enemy < GameObject
         if (obj2.center[0] > @center[0])
           # puts("touch right")
           @velocity[0] = @velocity[0] > 0 ? 0 : @velocity[0]
-        else 
+        else
           # puts("touch left")
           @velocity[0] = @velocity[0] < 0 ? 0 : @velocity[0]
         end
@@ -124,13 +169,13 @@ class Enemy < GameObject
         if (obj2.center[1] > @center[1])
           # puts("touch down")
           @velocity[1] = @velocity[1] > 0 ? 0 : @velocity[1]
-        else 
+        else
           # puts("touch up")
           @velocity[1] = @velocity[1] < 0 ? 0 : @velocity[1]
         end
-      elsif (overlap[0]).abs <= (overlap[1]).abs 
+      elsif (overlap[0]).abs <= (overlap[1]).abs
         @center[0] += overlap[0]
-        if(overlap[0] < 0)
+        if (overlap[0] < 0)
           # puts("overlap right")
           @velocity[0] = @velocity[0] > 0 ? 0 : @velocity[0]
         else

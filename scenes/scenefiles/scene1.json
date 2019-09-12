@@ -1,21 +1,21 @@
 {
   "type": "cutscene",
-  "parallax": "img/space.png",
+  "parallax": "img/parallax.png",
+  "scale": 2,
   "bg": "img/tempbg.png",
-  "player": { "id": "scia", "x": 120, "y": 380 },
+  "player": { "id": "scia", "x": 60, "y": 190 },
   "objects": {
     "fixed": [
-      { "type": "fixed", "x": 0, "y": 0, "width": "bgwidth", "height": 140 },
-      { "type": "fixed", "x": 65, "y": 70, "width": 90, "height": 100 },
+      { "type": "fixed", "x": 0, "y": 0, "width": "bgwidth", "height": 70 },
+      { "type": "fixed", "x": 35, "y": 45, "width": 45, "height": 50 },
       {
         "type": "fixed",
         "id": "aer",
-        "x": 500,
-        "y": 20,
-        "width": 256,
-        "height": 256,
+        "x": 250,
+        "y": 10,
+        "width": 128,
+        "height": 128,
         "imgsrc": "img/aer/aer_cut_sprite_down.bmp",
-        "scale": 2,
         "boundPolys": {
           "hit": [
             { "x": -20, "y": -80 },
@@ -34,36 +34,36 @@
       },
       {
         "type": "polygon",
-        "x": 230,
-        "y": 170,
+        "x": 110,
+        "y": 85,
         "vertices": [
           { "x": 0, "y": 0 },
-          { "x": 0, "y": -80 },
-          { "x": 70, "y": -80 },
-          { "x": 70, "y": 60 },
-          { "x": -180, "y": 60 },
-          { "x": -180, "y": 0 }
+          { "x": 0, "y": -40 },
+          { "x": 35, "y": -40 },
+          { "x": 35, "y": 30 },
+          { "x": -90, "y": 30 },
+          { "x": -90, "y": 0 }
         ]
       },
       {
         "type": "fixed",
-        "x": 360,
-        "y": 305,
-        "width": 200,
-        "height": 120,
+        "x": 180,
+        "y": 150,
+        "width": 100,
+        "height": 60,
         "img": "img/pooltable.png",
         "boundPolys": {
           "hit": [
-            { "x": -100, "y": -60 },
-            { "x": 100, "y": -60 },
-            { "x": 100, "y": 0 },
-            { "x": -100, "y": 0 }
+            { "x": -50, "y": -30 },
+            { "x": 50, "y": -30 },
+            { "x": 50, "y": 0 },
+            { "x": -50, "y": 0 }
           ],
           "walk": [
-            { "x": -100, "y": -10 },
-            { "x": 100, "y": -10 },
-            { "x": 100, "y": 60 },
-            { "x": -100, "y": 60 }
+            { "x": -50, "y": -5 },
+            { "x": 50, "y": -5 },
+            { "x": 50, "y": 30 },
+            { "x": -50, "y": 30 }
           ]
         },
         "method": "poolActivate"
@@ -74,10 +74,10 @@
       },
       {
         "type": "fixed",
-        "x": 180,
-        "y": 180,
-        "width": 40,
-        "height": 40,
+        "x": 90,
+        "y": 90,
+        "width": 20,
+        "height": 20,
         "method": "phoneActivate"
       }
     ]

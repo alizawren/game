@@ -18,7 +18,7 @@ class GameObject
   attr_reader :halfsize
 
   # def initialize(x = 0.0, y = 0.0, width = 30, height = 30)
-  def initialize(sceneref, center = Vector[0.0, 0.0], width = 30, height = 30, id = "")
+  def initialize(sceneref, center = Vector[0.0, 0.0], width = 128, height = 128, id = "")
     @sceneref = sceneref
     if (id.length > 0)
       @id = id
@@ -28,14 +28,12 @@ class GameObject
     @center = center
     @velocity = Vector[0.0, 0.0]
     @angle = 0.0
-    @width = width
-    @height = height
-    @halfsize = Vector[width/2,height/2]
+    @width = width # should be constant
+    @height = height # should be constant
+    @halfsize = Vector[width / 2, height / 2] # should be constant
     @transform = Matrix.I(3) # 3x3 to account for translation
 
     @boundPolys = Hash.new
-
-    # @image = Gosu::Image.new("img/aSimpleSquare.png")
 
     @z = 1
 
@@ -67,25 +65,25 @@ class GameObject
     end
   end
 
-  def draw(transf = Matrix.I(3))
-    curr = Vector[@center[0], @center[1], 1]
-    newpos = transf * @transform * curr
-    x = newpos[0]
-    y = newpos[1]
+  def draw(translate, scale)
+    pos = @center * scale + translate
+    x = pos[0]
+    y = pos[1]
+    w = @width * scale
+    h = @height * scale
 
     if (!@image.nil?)
-      # @image.draw(x - @width / 2, y - @height / 2, @z)
       color = Gosu::Color::WHITE
-      x = x - @width / 2
-      y = y - @height / 2
-      @image.draw_as_quad(x, y, color, x + @width, y, color, x + @width, y + @height, color, x, y + @height, color, @z)
-      # @image.draw(@center[0], @center[1], @z)
+
+      @image.draw_as_quad(x - w / 2, y - h / 2, color, x + w / 2, y - h / 2, color, x + w / 2, y + h / 2, color, x - w / 2, y + h / 2, color, @z)
     end
   end
 
-  def draw_frame(transf = Matrix.I(3))
+  def draw_frame(translate, scale)
     @boundPolys.each_value do |value|
-      value.draw(transf)
+      newScale = scale * 1 # since the objects themselves don't have scales, we simply pass on the parameter
+      newTrans = @center * scale + translate
+      value.draw(newTrans, newScale)
     end
   end
 

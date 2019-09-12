@@ -1,6 +1,7 @@
 {
   "type": "gamescene",
   "parallax": "img/space.png",
+  "scale": 2,
   "bg": "img/bluebg.png",
   "player": { "id": "scia", "x": 120, "y": 120 },
   "objects": {
