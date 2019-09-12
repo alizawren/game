@@ -8,9 +8,9 @@ class Camera
   attr_accessor :state
   attr_accessor :focusObjects
 
-  def initialize(scale)
+  def initialize(scale, playerCenter)
     # @transform = Matrix.I(3)
-    @pos = nil
+    @pos = playerCenter
     @scale = scale
     # 0 for default (avg of player and bg), 1 for follow path (transition), 2 for focus on objects
     @state = 0
@@ -24,8 +24,10 @@ class Camera
   def update(playerCenter, mouse)
     case @state
     when 0 # default, average of player and bg.
-      # note, player's coordinates are in world while mouse are in camera
-      @pos = (playerCenter + mouse) / 2
+      # note, player's coordinates are in world while mouse are in camera, so we transform player
+      # NOTE: right now there is jumpiness!!!!
+      playerPos = playerCenter * @scale + @pos
+      @pos = (playerPos + mouse) / 2
     when 1 # follow a path to focus on objects
       # TODO: not working yet, don't set state to 1
       if @t >= 1
@@ -44,8 +46,7 @@ class Camera
       @pos = avgVec
     end
 
-    # adjust position for canvas
+    # make sure our specified position is placed at the center
     @pos = Vector[@pos[0] - (CANVAS_WIDTH / 2), @pos[1] - (CANVAS_HEIGHT / 2)]
-    # @transform = Matrix[[1, 0, CANVAS_WIDTH / 2 - @pos[0]], [0, 1, CANVAS_HEIGHT / 2 - @pos[1]], [0, 0, 1]]
   end
 end

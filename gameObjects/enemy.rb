@@ -71,6 +71,12 @@ class Enemy < GameObject
   def update(playerCenter = Vector[0, 0], playerVelocity = Vector[0, 0])
     target = nil
 
+    if ((@velocity[0]).abs >= 0 || (@velocity[1]).abs >= 0)
+      @curr_anim = @walking_left
+    else
+      @curr_anim = @idle_left
+    end
+
     if (@state == 0)
       # stay in place for some time
       target = @center

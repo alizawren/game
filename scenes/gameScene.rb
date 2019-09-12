@@ -41,8 +41,7 @@ class GameScene < Scene
 
     @parallax = Gosu::Image.new(data["parallax"], :tileable => true)
     @bg = Gosu::Image.new(data["bg"], :tileable => true)
-    scale = !data["scale"].nil? ? data["scale"] : 2
-    @camera = Camera.new(scale)
+
     @hitscans = []
     @objects["player"] = []
     @objects["fixed"] = []
@@ -52,6 +51,9 @@ class GameScene < Scene
     end
     @player = Player.new(self, Vector[data["player"]["x"], data["player"]["y"]], @type)
     @objects["player"].push(@player)
+
+    scale = !data["scale"].nil? ? data["scale"] : 2
+    @camera = Camera.new(scale, @player.center)
 
     addObjects(data)
 
@@ -108,7 +110,7 @@ class GameScene < Scene
               imgsrc = val["imgsrc"]
             end
 
-            obj = FixedObject.new(self, val["x"], val["y"], w, h, id, imgsrc, method, through)
+            obj = FixedObject.new(self, val["x"], val["y"], w, h, imgsrc, id, method, through)
           when "polygon"
             if (val["x"].nil? or val["y"].nil? or val["vertices"].nil?)
               next
@@ -159,7 +161,6 @@ class GameScene < Scene
     @mouse_x = mouse_x
     @mouse_y = mouse_y
 
-    @camera.update(@player.center, Vector[@mouse_x, @mouse_y])
     #@cameratransform = @camera.transform
     @player.state = 0
     # WARNING: technically we don't want to allow them to use both. If they are holding left and D at the same time,
@@ -243,39 +244,29 @@ class GameScene < Scene
     @eventHandler.update()
 
     @crosshair.update(mouse_x, mouse_y) # might move this location
+
+    @camera.update(@player.center, Vector[@mouse_x, @mouse_y])
   end
 
   def draw
-    translate = -@camera.pos # get camera's coordinates and invert them
+    cameraInvert = -@camera.pos # get camera's coordinates and invert them
 
     # bg drawn at world's 0,0
     @parallax.draw(0, 0, PARALLAX_LAYER)
-    @bg.draw(translate[0], translate[1], BG_LAYER, @camera.scale, @camera.scale)
+    @bg.draw(cameraInvert[0], cameraInvert[1], BG_LAYER, @camera.scale, @camera.scale)
 
     # calculate each object's true position and draw it.
     @objects.each_value do |objectList|
       for object in objectList
-        x = object.center[0]
-        y = object.center[1]
-
-        # transform coordinates by camera properties
-        x *= @camera.scale
-        x += translate[0]
-        y *= @camera.scale
-        y += translate[1]
-
-        # object.draw(x, y, @camera.scale)
-        object.draw(translate, @camera.scale)
-
-        object.draw_frame(translate, @camera.scale)
+        object.draw(cameraInvert, @camera.scale)
+        # object.draw_frame(cameraInvert, @camera.scale)
       end
     end
     for hit in @hitscans
-      # SORRY LUKE I DON'T KNOW HOW THIS WORKS YET SO I'M REMOVING IT
-      # p1 = @camera.transform * Vector[hit[0][0], hit[0][1], 1]
-      # p2 = @camera.transform * Vector[hit[1][0], hit[1][1], 1]
-      # Gosu.draw_line(p1[0], p1[1], Gosu::Color::WHITE, p2[0], p2[1], Gosu::Color::WHITE, 99)
-      # Gosu.draw_rect(p2[0], p2[1], 5, 5, Gosu::Color::RED, 98)
+      p1 = Vector[hit[0][0], hit[0][1]] * @camera.scale + cameraInvert
+      p2 = Vector[hit[1][0], hit[1][1]] * @camera.scale + cameraInvert
+      Gosu.draw_line(p1[0], p1[1], Gosu::Color::WHITE, p2[0], p2[1], Gosu::Color::WHITE, 99)
+      Gosu.draw_rect(p2[0], p2[1], 5, 5, Gosu::Color::RED, 98)
     end
     # @hitscans = []
     @eventHandler.draw
@@ -298,6 +289,9 @@ class GameScene < Scene
         return
       end
 
+      cameraInvert = -@camera.pos # get camera's coordinates and invert them
+      mouse_world = (Vector[@mouse_x, @mouse_y] - cameraInvert) / @camera.scale
+
       @eventHandler.button_down(id, close_callback)
 
       if @dialogueMode
@@ -307,9 +301,7 @@ class GameScene < Scene
       # separate fixed from fixed interactables? Add some flag so at least they don't perform contains calculations?
       # (note: inverse matrix calculations are particularly expensive)
       for interactable in @objects["fixed"]
-        mouse_x_world = @mouse_x - @camera.pos / @camera.scale
-        mouse_y_world = @mouse_y - @camera.pos / @camera.scale
-        if interactable.contains(mouse_x_world, mouse_y_world)
+        if interactable.contains(mouse_world[0], mouse_world[1])
           interactable.activate
           return
         end
@@ -323,19 +315,19 @@ class GameScene < Scene
           # @objects["projectiles"].push(projectile)
 
           #moving on from projectiles
-          # target3 = @camera.transform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
-          # target = Vector[target3[0], target3[1]]
-          # collisionPoint = @player.currentWeapon.hitscan(@player.center, target, @objects, [@player])
-          # if (!collisionPoint.nil?)
-          #   @hitscans.push([@player.center, collisionPoint])
-          # else
-          #   p2 = ((target - @player.center).normalize() * @player.currentWeapon.range)
-          #   @hitscans.push([@player.center, p2])
-          # end
+          collisionPoint = @player.currentWeapon.hitscan(@player.center, mouse_world, @objects, [@player])
+          if (!collisionPoint.nil?)
+            @hitscans.push([@player.center, collisionPoint])
+          else
+            p2 = ((mouse_world - @player.center).normalize() * @player.currentWeapon.range)
+            @hitscans.push([@player.center, p2])
+          end
         when "melee"
           #somehow handle melee attacks :P
         end
       end
+
+      @objects["fixed"].push(FixedObject.new(self, mouse_world[0] - 15 / 2, mouse_world[1] - 15 / 2, 15, 15, "img/aSimpleSquare.png"))
     end
   end
 

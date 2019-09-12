@@ -4,7 +4,7 @@ class FixedObject < GameObject
   attr_reader :through
   attr_reader :activateFunc
 
-  def initialize(sceneref, x, y, width, height, id = "", imgsrc = nil, activateFunc = "", through = false)
+  def initialize(sceneref, x, y, width, height, imgsrc = nil, id = "",activateFunc = "", through = false)
     center = Vector[x + width / 2, y + height / 2]
     super sceneref, center, width, height
 

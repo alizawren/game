@@ -41,7 +41,8 @@ class Bubble
     @fps = fps
     @timer = 60 / @fps
     if !@source.nil?
-      vec = @sceneRef.camera.transform * Vector[@source.x, @source.y, 1]
+      cameraInvert = -@sceneRef.camera.pos
+      vec = @source.center * @sceneRef.camera.scale + cameraInvert
       @x = vec[0] + BUBBLE_OFFSET_X
       @y = vec[1] + @extra_height_based_on_index + BUBBLE_OFFSET_Y
     else
@@ -119,7 +120,8 @@ class Bubble
       @timer -= 1
     end
     if !@source.nil?
-      vec = @sceneRef.camera.transform * Vector[@source.x, @source.y, 1]
+      cameraInvert = -@sceneRef.camera.pos
+      vec = @source.center * @sceneRef.camera.scale + cameraInvert
       @x = vec[0] + BUBBLE_OFFSET_X
       @y = vec[1] + @extra_height_based_on_index + BUBBLE_OFFSET_Y
     end
@@ -155,16 +157,19 @@ class Bubble
       return
     end
 
-    Gosu.draw_rect(@x, @y, @width, @height, @bubbleColor, @z)
+    pos = Vector[@x, @y]
+    # pos = pos * @sceneRef.camera.scale + @sceneRef.camera.pos
+
+    Gosu.draw_rect(pos[0], pos[1], @width, @height, @bubbleColor, @z)
 
     @textLines.each_index do |lineIndex|
       line = @textLines[lineIndex]
       if @lineFrame > lineIndex
         # Gosu.draw_rect(@x, @y + lineIndex * (@font.height + BUBBLE_PADDING), @maxWidth + 2 * BUBBLE_PADDING, @lineHeight, @bubbleColor, @z)
-        @font.draw_text(line, @x + BUBBLE_PADDING, @y + BUBBLE_PADDING + lineIndex * (@font.height + BUBBLE_PADDING), @z)
+        @font.draw_text(line, pos[0] + BUBBLE_PADDING, pos[1] + BUBBLE_PADDING + lineIndex * (@font.height + BUBBLE_PADDING), @z)
       elsif @lineFrame == lineIndex
         # Gosu.draw_rect(@x, @y + lineIndex * (@font.height + BUBBLE_PADDING), [@font.text_width(line[0, @drawFrame]), @maxWidth].min + BUBBLE_PADDING * 2, @lineHeight, @bubbleColor, @z)
-        @font.draw_text(line[0, @drawFrame], @x + BUBBLE_PADDING, @y + BUBBLE_PADDING + lineIndex * (@font.height + BUBBLE_PADDING), @z)
+        @font.draw_text(line[0, @drawFrame], pos[0] + BUBBLE_PADDING, pos[1] + BUBBLE_PADDING + lineIndex * (@font.height + BUBBLE_PADDING), @z)
       end
     end
   end
