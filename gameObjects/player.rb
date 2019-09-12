@@ -58,7 +58,7 @@ class Player < GameObject
     @arm = nil
 
     #physics stuff
-    @maxSpeed = 4
+    @maxSpeed = 3
     #weapon stuff
     @primaryWeapon = Weapon.new("Pistol") #id of primary weapon
     @secondaryWeapon = Weapon.new("Knife") #id of secondary weapon

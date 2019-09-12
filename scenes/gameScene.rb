@@ -160,7 +160,6 @@ class GameScene < Scene
     @mouse_x = mouse_x
     @mouse_y = mouse_y
 
-    #@cameratransform = @camera.transform
     @player.state = 0
     # WARNING: technically we don't want to allow them to use both. If they are holding left and D at the same time,
     # we don't want one to cancel out the other.

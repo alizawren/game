@@ -35,7 +35,7 @@ class Camera
       else
         @t += 0.06
         newVec = (1 - @t) ** 2 * @path[0] + 2 * (1 - @t) * @t * @path[1] + @t ** 2 * @path[2]
-        @pos = Vector[newVec[0], newVec[1]]
+        @pos = newVec
       end
     when 2 # focus on average of objects
       avgVec = Vector[0, 0]
