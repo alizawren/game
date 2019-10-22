@@ -324,8 +324,6 @@ class GameScene < Scene
           #somehow handle melee attacks :P
         end
       end
-
-      @objects["fixed"].push(FixedObject.new(self, mouse_world[0] - 15 / 2, mouse_world[1] - 15 / 2, 15, 15, "img/aSimpleSquare.png"))
     end
   end
 

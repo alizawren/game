@@ -10,7 +10,7 @@ class Crosshair
   def initialize
     @x = 0
     @y = 0
-    @image = Gosu::Image.new("img/aSimpleSquare.png")
+    @image = Gosu::Image.new("img/crosshair.png")
   end
 
   def update(mouse_x, mouse_y)

@@ -8,7 +8,7 @@ class Bubble
   attr_reader :delay
   attr_reader :fullText
 
-  def initialize(sceneRef, text = "", source = nil, isOption = false, i = 0, nextId = -1, bubbleColor: BUBBLE_COLOR, delay: 20, fps: 45, fullText: "")
+  def initialize(sceneRef, text = "", source = nil, isOption = false, i = 0, nextId = -1, bubbleColor: BUBBLE_COLOR, icon: "img/icons/talk icon2.png", delay: 20, fps: 45, fullText: "")
     @sceneRef = sceneRef
     @source = source
     @type = "normal"
@@ -46,12 +46,15 @@ class Bubble
       @x = vec[0] + BUBBLE_OFFSET_X
       @y = vec[1] + @extra_height_based_on_index + BUBBLE_OFFSET_Y
     else
-      @x = 100
-      @y = CANVAS_HEIGHT - 200 + @extra_height_based_on_index
+      @x = MAIN_BUBBLE_OFFSET_X
+      @y = MAIN_BUBBLE_OFFSET_Y + @extra_height_based_on_index
     end
     @z = TEXT_LAYER
 
     @bubbleColor = @isOption ? BUBBLE_COLOR_OPTION : bubbleColor
+    @opacity = 255
+    @icon = @source.nil? ? Gosu::Image.new(icon, :tileable => true, :retro => true) : nil
+
     @deleteAnimOn = false
 
     @delete_t = 0
@@ -138,7 +141,8 @@ class Bubble
         @y = newVector[1]
         # TODO: vector should not be transformed by camera. Should be transformed afterwards
 
-        @bubbleColor = Gosu::Color.new(255 * (1 - @delete_t), @bubbleColor.red, @bubbleColor.green, @bubbleColor.blue)
+        @opacity = 255 * (1 - @delete_t)
+        @bubbleColor = Gosu::Color.new(@opacity, @bubbleColor.red, @bubbleColor.green, @bubbleColor.blue)
       end
     end
   end
@@ -171,6 +175,10 @@ class Bubble
         # Gosu.draw_rect(@x, @y + lineIndex * (@font.height + BUBBLE_PADDING), [@font.text_width(line[0, @drawFrame]), @maxWidth].min + BUBBLE_PADDING * 2, @lineHeight, @bubbleColor, @z)
         @font.draw_text(line[0, @drawFrame], pos[0] + BUBBLE_PADDING, pos[1] + BUBBLE_PADDING + lineIndex * (@font.height + BUBBLE_PADDING), @z)
       end
+    end
+
+    if !@icon.nil?
+      @icon.draw(ICON_OFFSET_X, ICON_OFFSET_Y, @z, 2, 2, Gosu::Color.new(@opacity, 255, 255, 255))
     end
   end
 

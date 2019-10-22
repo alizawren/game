@@ -176,7 +176,8 @@ class DialogueHandler
           case bubble["type"]
           when "normal"
             text = !bubble["text"].nil? ? bubble["text"] : ""
-            obj = Bubble.new(@sceneRef, text, source, delay: bubbleDelay)
+            icon = !bubble["icon"].nil? ? bubble["icon"] : "img/icons/talk icon2.png"
+            obj = Bubble.new(@sceneRef, text, source, delay: bubbleDelay, icon: icon)
             @bubbleQueue.push(obj)
           when "options"
             optionsArr = []
