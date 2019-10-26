@@ -10,18 +10,17 @@ Inside of the game directory, run 'ruby main.rb'.
 
 ### Priority
 
-- Data driven animation system with state machines
-- A renderer?
-- Fix collisions lol
-- Dialogue (duh)
-- Level design
+* Data driven animation system with state machines
+* Level design
+* Gameplay mechanics
+* Build GUIs off of data
 
 ### Less important
 
-- GUI Stack (done, but could use some cleanup)
-- Camera movement (done, but transformations not yet universal (?))
-- Scene graph
+* GUI Stack (done, but could use some cleanup)
+* Camera movement (done, but transformations not yet universal (?))
+* Scene graph
 
-- quadtree not working
+* quadtree not working
 
 Ruby method arg reference https://www.rubyguides.com/2018/06/rubys-method-arguments/

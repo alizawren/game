@@ -150,6 +150,8 @@ class DialogueHandler
       @dialogueId = @dialogueData["dialogueId"]
     end
 
+    icon = !@dialogueData["icon"].nil? ? @dialogueData["icon"] : "img/icons/info_icon.png"
+
     for val in @dialogueData["sequence"]
       if (val["id"] == @id)
         for bubble in val["bubbles"]
@@ -176,7 +178,9 @@ class DialogueHandler
           case bubble["type"]
           when "normal"
             text = !bubble["text"].nil? ? bubble["text"] : ""
-            icon = !bubble["icon"].nil? ? bubble["icon"] : "img/icons/talk icon2.png"
+            if (bubble["icon"])
+              icon = bubble["icon"]
+            end
             obj = Bubble.new(@sceneRef, text, source, delay: bubbleDelay, icon: icon)
             @bubbleQueue.push(obj)
           when "options"

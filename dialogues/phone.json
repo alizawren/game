@@ -1,5 +1,6 @@
 {
   "dialogueId": "phone",
+  "icon": "img/icons/mystery_icon.png",
   "sequence": [
     {
       "id": 0,
@@ -9,52 +10,63 @@
           "source": "player",
           "text": "Scia and Aer LLC. How can I help you?",
           "delay": 0
-        },
-        {
+        }, {
           "type": "normal",
           "text": "Listen, uh... you guys kill people, right?"
-        },
-        {
+        }, {
           "type": "options",
           "source": "player",
           "choices": [
-            { "text": "Yes.", "nextId": 3 },
-            { "text": "Depends on who's asking.", "nextId": 5 }
+            {
+              "text": "Yes.",
+              "nextId": 3
+            }, {
+              "text": "Depends on who's asking.",
+              "nextId": 5
+            }
           ]
         }
       ],
       "timeout": 700,
       "timeoutId": 9
-    },
-    {
+    }, {
       "id": 3,
       "bubbles": [
         {
           "type": "normal",
           "text": "Okay, just had to make sure before I called the police on you."
-        },
-        {
+        }, {
           "type": "options",
           "source": "player",
           "choices": [
-            { "text": "What?!", "nextId": 6 },
-            { "text": "Not if I call them first.", "nextId": 7 }
+            {
+              "text": "What?!",
+              "nextId": 6
+            }, {
+              "text": "Not if I call them first.",
+              "nextId": 7
+            }
           ]
         }
       ]
-    },
-    {
+    }, {
       "id": 5,
       "bubbles": [
-        { "type": "normal", "text": "I've got a high profile target for you." },
         {
+          "type": "normal",
+          "text": "I've got a high profile target for you."
+        }, {
           "type": "options",
           "source": "player",
-          "choices": [{ "text": "Ok, I'm on it.", "nextId": "startLevel" }]
+          "choices": [
+            {
+              "text": "Ok, I'm on it.",
+              "nextId": "startLevel"
+            }
+          ]
         }
       ]
-    },
-    {
+    }, {
       "id": 6,
       "bubbles": [
         {
@@ -64,28 +76,24 @@
       ],
       "timeout": 200,
       "timeoutId": "gameOver"
-    },
-    {
+    }, {
       "id": 7,
       "bubbles": [
         {
           "type": "normal",
           "text": "What, you don't have any evidence."
-        },
-        {
+        }, {
           "type": "normal",
           "source": "player",
           "text": "Well... neither do you."
-        },
-        {
+        }, {
           "type": "normal",
           "text": "Um... guess that's a good point. Okay, bye now."
         }
       ],
       "timeout": 700,
       "timeoutId": -1
-    },
-    {
+    }, {
       "id": 9,
       "bubbles": [
         {
@@ -95,8 +103,7 @@
       ],
       "timeout": 200,
       "timeoutId": 20
-    },
-    {
+    }, {
       "id": 20,
       "bubbles": [
         {

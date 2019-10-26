@@ -1,0 +1,244 @@
+{
+  "dialogueId": "phone",
+  "sequence": [
+    {
+      "id": 0,
+      "bubbles": [
+        {
+          "type": "normal",
+          "source": "player",
+          "text": "Hello?",
+          "delay": 0
+        }, {
+          "icon": "img/icons/mystery_icon.png",
+          "type": "normal",
+          "text": "Hey, numbnuts."
+        }, {
+          "type": "normal",
+          "source": "player",
+          "text": "Oh great. Toshi? What do you want?"
+        }, {
+          "icon": "img/icons/toshi_icon.png",
+          "type": "normal",
+          "text": "Wow, rude A.F. That's not how you speak to someone who still has blackmail material on you."
+        }, {
+          "type": "normal",
+          "source": "player",
+          "text": "We're mutually blackmailing each other, so it doesn't count."
+        }, {
+          "type": "normal",
+          "source": "player",
+          "text": "Anyway, do you need something?"
+        }, {
+          "icon": "img/icons/toshi_icon.png",
+          "type": "normal",
+          "text": "Not really. I wouldn't choose an insecure method of communication for anything important."
+        }, {
+          "type": "options",
+          "source": "player",
+          "choices": [
+            {
+              "text": "Ok goodbye then",
+              "nextId": -1
+            }, {
+              "text": "You just wanted to chat?",
+              "fullText": "Aw, no way. You're lonely, so you just wanted to chat?",
+              "nextId": 1
+            }
+          ]
+        }
+      ]
+    }, {
+      "id": 1,
+      "bubbles": [
+        {
+          "icon": "img/icons/toshi_icon.png",
+          "type": "normal",
+          "text": "More like, annoy you and waste your time."
+        }, {
+          "type": "options",
+          "source": "player",
+          "choices": [
+            {
+              "text": "Ok goodbye then",
+              "nextId": -1
+            }, {
+              "text": "This is a murder hotline",
+              "fullText": "That's nice and all, but this is my work number. If you don't have a job for me, you're going to have to reach me after hours.",
+              "nextId": 2,
+              "delay": 30
+            }
+          ]
+        }
+      ]
+    }, {
+      "id": 2,
+      "bubbles": [
+        {
+          "icon": "img/icons/toshi_icon.png",
+          "type": "normal",
+          "text": "Fine, fine. The truth is, there's this guy who pisses me off, and I want him dead.",
+          "delay": 35
+        }, {
+          "icon": "img/icons/toshi_icon.png",
+          "type": "normal",
+          "text": "He goes by the name Hotspot--at least that's his streamer name. Kind of dumb if you ask me, but not as dumb as his real name.",
+          "delay": 35
+        }, {
+          "icon": "img/icons/toshi_icon.png",
+          "type": "normal",
+          "text": "Anyway, he spends most of his time in an elite, guarded internet cafe. I'll message you the address securely.",
+          "delay": 35
+        }, {
+          "icon": "img/icons/toshi_icon.png",
+          "type": "normal",
+          "text": "You gotta be careful--he's hotheaded and won't back down without a fight. His goons will also try to stop you.",
+          "delay": 35
+        }, {
+          "icon": "img/icons/toshi_icon.png",
+          "type": "normal",
+          "text": "But I know it's nothing you can't handle. I'll pay you the full amount upfront.",
+          "delay": 30
+        }, {
+          "icon": "img/icons/toshi_icon.png",
+          "type": "normal",
+          "text": "Oh and for your information, I don't find this to be something important, which is why I've called this line."
+        }, {
+          "type": "options",
+          "source": "player",
+          "choices": [
+            {
+              "text": "Sure, I'll do it.",
+              "nextId": "startLevel"
+            }, {
+              "text": "Sounds important to me",
+              "fullText": "I dunno, sounds to me like you might have a vendetta against this guy. What's your gripe with him?",
+              "nextId": 3
+            }
+          ]
+        }
+      ]
+    }, {
+      "id": 3,
+      "bubbles": [
+        {
+          "type": "normal",
+          "icon": "img/icons/toshi_icon.png",
+          "text": "What, do you need me to provide a reason for why I want him dead? Maybe fill out a worksheet first?",
+          "delay": 30
+        }, {
+          "type": "normal",
+          "source": "player",
+          "text": "I'm only curious. I'm asking as a friend."
+        }, {
+          "type": "normal",
+          "icon": "img/icons/toshi_icon.png",
+          "text": "I hope that means I get a friend discount."
+        }, {
+          "type": "normal",
+          "icon": "img/icons/toshi_icon.png",
+          "text": "Well, he fucked up and made one of my hacks public."
+        }, {
+          "type": "normal",
+          "icon": "img/icons/toshi_icon.png",
+          "text": "It can't be traced back to me, but letting him screw up once is more than enough."
+        }, {
+          "type": "normal",
+          "icon": "img/icons/toshi_icon.png",
+          "text": "So yeah, aside from being a total dickwad for stealing my code and preventing me from reusing that hack, he's a liability, and he needs to be eliminated."
+        }, {
+          "type": "options",
+          "source": "player",
+          "choices": [
+            {
+              "text": "Spicy",
+              "fullText": "Excellent. That's the kind of story I was looking for.",
+              "nextId": 5
+            }, {
+              "text": "Sounds petty",
+              "fullText": "I say this as a friend, Toshi... it sounds like you're overreacting a bit.",
+              "nextId": 6
+            }
+          ]
+        }
+      ]
+    }, {
+      "id": 5,
+      "bubbles": [
+        {
+          "type": "normal",
+          "icon": "img/icons/toshi_icon.png",
+          "text": "Yeah, so are you satisfied?"
+        }, {
+          "type": "normal",
+          "source": "player",
+          "text": "Quite."
+        }, {
+          "type": "normal",
+          "icon": "img/icons/toshi_icon.png",
+          "text": "Listen, just do this one thing for me and I'll stop leasing your processing power to other hackers."
+        }, {
+          "type": "normal",
+          "source": "player",
+          "text": "... Excuse me?"
+        }, {
+          "type": "normal",
+          "icon": "img/icons/info_icon.png",
+          "text": "*click*",
+          "delay": 50
+        }, {
+          "type": "normal",
+          "source": "player",
+          "text": "Aargh! I hate them so much!"
+        }, {
+          "type": "normal",
+          "source": "aer",
+          "text": "I-I'm sure they were just joking?"
+        }, {
+          "type": "options",
+          "source": "player",
+          "choices": [
+            {
+              "text": "Whatever. Let's just do the job",
+              "nextId": "startLevel"
+            }
+          ]
+        }
+      ]
+    }, {
+      "id": 6,
+      "bubbles": [
+        {
+          "type": "normal",
+          "icon": "img/icons/toshi_icon.png",
+          "text": "So... you're not gonna do the job?"
+        }, {
+          "type": "normal",
+          "source": "player",
+          "text": "What can I say? I handle jobs on a case-by-case basis."
+        }, {
+          "type": "normal",
+          "icon": "img/icons/toshi_icon.png",
+          "text": "Are you being serious right now?"
+        }, {
+          "type": "normal",
+          "source": "player",
+          "text": "Nah, I'm just messing with you."
+        }, {
+          "type": "normal",
+          "icon": "img/icons/toshi_icon.png",
+          "text": "Ugh! So annoying. Forget what I said about payment upfront. Just go and kill him already."
+        }, {
+          "type": "options",
+          "source": "player",
+          "choices": [
+            {
+              "text": "I'm on it",
+              "nextId": "startLevel"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

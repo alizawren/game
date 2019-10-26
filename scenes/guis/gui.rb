@@ -16,6 +16,7 @@ class Gui
     @y = y
     @width = width
     @height = height
+    @z = GUI_LAYER
 
     # default font
     @font = Gosu::Font.new(FONT_HEIGHT, :name => FONT_TYPE)

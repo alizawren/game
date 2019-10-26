@@ -102,6 +102,14 @@
         "width": 18,
         "height": 18,
         "method": "phoneActivate"
+      }, {
+        "type": "fixed",
+        "x": 127,
+        "y": 285,
+        "width": 67,
+        "height": 25,
+        "img": "img/aSimpleSquare.png",
+        "method": "arsenalActivate"
       }
     ]
   }

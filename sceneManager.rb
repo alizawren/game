@@ -29,16 +29,22 @@ class SceneManager
   end
 
   def self.guiPush(gui)
-    gui.z = @@guiStack.length
+    gui.z = GUI_LAYER + @@guiStack.length
     @@guiStack.push(gui)
   end
 
   def self.guiPop
     @@guiStack.pop()
+    if (!@@currScene.nil? and @@guiStack.length == 0)
+      @@currScene.eventHandler.onNotify({}, :guiClose)
+    end
   end
 
   def self.guiClear
     @@guiStack = []
+    if (!@@currScene.nil? and @@currScene.is_a?(GameScene))
+      @@currScene.eventHandler.onNotify({}, :guiClose)
+    end
   end
 
   def self.button_down(id, close_callback)

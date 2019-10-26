@@ -19,6 +19,7 @@ class GameScene < Scene
   attr_reader :mouse_y
   attr_accessor :camera
   attr_accessor :dialogueMode
+  attr_accessor :guiMode
 
   def initialize(jsonfile = "scenes/scenefiles/defaultScene.json")
     @mouse_x = 0
@@ -30,7 +31,9 @@ class GameScene < Scene
     @eventHandler = EventHandler.new(self)
     @eventHandler.addHandler("dialogue")
     @eventHandler.addHandler("camera")
+    @eventHandler.addHandler("gui")
     @dialogueMode = false
+    @guiMode = false
 
     @objects = Hash.new
 
@@ -161,56 +164,59 @@ class GameScene < Scene
     @mouse_y = mouse_y
 
     @player.state = 0
-    # WARNING: technically we don't want to allow them to use both. If they are holding left and D at the same time,
-    # we don't want one to cancel out the other.
-    if Gosu.button_down? Gosu::KB_A or Gosu.button_down? Gosu::KB_LEFT
-      @player.go_left
-      @player.state = 1
-      # @player.flip = 1
-      @player.facing = 2
+    if (!@guiMode)
+      # WARNING: technically we don't want to allow them to use both. If they are holding left and D at the same time,
+      # we don't want one to cancel out the other.
+      if Gosu.button_down? Gosu::KB_A or Gosu.button_down? Gosu::KB_LEFT
+        @player.go_left
+        @player.state = 1
+        # @player.flip = 1
+        @player.facing = 2
+      end
+      if Gosu.button_down? Gosu::KB_D or Gosu.button_down? Gosu::KB_RIGHT
+        @player.go_right
+        @player.state = 1
+        # @player.flip = 0
+        @player.facing = 0
+      end
+      if Gosu.button_down? Gosu::KB_W or Gosu.button_down? Gosu::KB_UP
+        @player.go_up
+        @player.state = 1
+        @player.facing = 1
+      end
+      if Gosu.button_down? Gosu::KB_S or Gosu.button_down? Gosu::KB_DOWN
+        @player.go_down
+        @player.state = 1
+        @player.facing = 3
+      end
+
+      if (@type == "gamescene")
+        # if Gosu.button_down? Gosu::MS_LEFT
+        #   # angle logic in here
+        #   invtransf = @cameratransform.inverse
+        #   hom = Vector[@player.center[0], @player.center[1], 1]
+        #   pcenter = @cameratransform * hom
+        #   angle = Gosu.angle(pcenter[0], pcenter[1], mouse_x, mouse_y) - 90
+        #   @player.armangle = angle
+        #   case angle
+        #   when -45..45
+        #     # right
+        #     @player.facing = 0
+        #   when 45..135
+        #     # down
+        #     @player.facing = 3
+        #   when 135..225
+        #     # left
+        #     @player.facing = 2
+        #   else
+        #     # up
+        #     @player.facing = 1
+        #   end
+        #   @player.state = 2
+        # end
+      end
+      # NOTE: must make state transitions more clear, rewrite whole thing
     end
-    if Gosu.button_down? Gosu::KB_D or Gosu.button_down? Gosu::KB_RIGHT
-      @player.go_right
-      @player.state = 1
-      # @player.flip = 0
-      @player.facing = 0
-    end
-    if Gosu.button_down? Gosu::KB_W or Gosu.button_down? Gosu::KB_UP
-      @player.go_up
-      @player.state = 1
-      @player.facing = 1
-    end
-    if Gosu.button_down? Gosu::KB_S or Gosu.button_down? Gosu::KB_DOWN
-      @player.go_down
-      @player.state = 1
-      @player.facing = 3
-    end
-    if (@type == "gamescene")
-      # if Gosu.button_down? Gosu::MS_LEFT
-      #   # angle logic in here
-      #   invtransf = @cameratransform.inverse
-      #   hom = Vector[@player.center[0], @player.center[1], 1]
-      #   pcenter = @cameratransform * hom
-      #   angle = Gosu.angle(pcenter[0], pcenter[1], mouse_x, mouse_y) - 90
-      #   @player.armangle = angle
-      #   case angle
-      #   when -45..45
-      #     # right
-      #     @player.facing = 0
-      #   when 45..135
-      #     # down
-      #     @player.facing = 3
-      #   when 135..225
-      #     # left
-      #     @player.facing = 2
-      #   else
-      #     # up
-      #     @player.facing = 1
-      #   end
-      #   @player.state = 2
-      # end
-    end
-    # NOTE: must make state transitions more clear, rewrite whole thing
 
     # update each object
     @objects.each_value do |objectList|

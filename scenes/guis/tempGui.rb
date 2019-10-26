@@ -4,10 +4,10 @@ require_relative "../gameScene.rb"
 
 # NOTE: we want to be able to specify GUIs with data files as well
 
-class MainMenuGui < MenuGui
+class TempGui < MenuGui
   def initialize
-    super
-    @choices = ["Play", "About", "What", "Exit"]
+    super(100, 30)
+    @choices = ["Gun", "Knife", "Exit"]
   end
 
   def update
@@ -22,6 +22,8 @@ class MainMenuGui < MenuGui
     for i in 0..@choices.length - 1
       @font.draw_text(@choices[i], CANVAS_WIDTH / 2 - @font.text_width(@choices[i]) / 2, TEXT_Y + i * (FONT_HEIGHT + MARGIN), @z)
     end
+    text = "Time to pick who has what weapon for the mission :D this GUi doesn't make any sense tho"
+    @font.draw_text(text, @x + MARGIN, @y + MARGIN, @z)
     # @selector.draw
   end
 
@@ -34,15 +36,13 @@ class MainMenuGui < MenuGui
     when Gosu::KB_RETURN, Gosu::KB_Z
       case @select
       when 0
-        SceneManager.changeScene(GameScene.new("scenes/scenefiles/scene1.json"))
-        # SceneManager.changeScene(GameScene.new("scenes/scenefiles/scene2.json"))
+        currScene.player.currentWeapon.type = "gun"
       when 1
-        SceneManager.guiPush(AboutGui.new)
-      when 3
-        close_callback.call
-        # close
+        currScene.player.currentWeapon.type = "melee"
+        SceneManager.guiPop()
       else
       end
+      SceneManager.guiPop()
     end
   end
 end

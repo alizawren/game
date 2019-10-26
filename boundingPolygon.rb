@@ -62,12 +62,12 @@ class BoundingPolygon
 
     # just need to draw 4 lines
     # top
-    Gosu.draw_line(v1[0], v1[1], @color, v2[0], v2[1], @color, 100)
+    Gosu.draw_line(v1[0], v1[1], @color, v2[0], v2[1], @color, DEBUG_LAYER)
     # right
-    Gosu.draw_line(v2[0], v2[1], @color, v3[0], v3[1], @color, 100)
+    Gosu.draw_line(v2[0], v2[1], @color, v3[0], v3[1], @color, DEBUG_LAYER)
     # bottom
-    Gosu.draw_line(v3[0], v3[1], @color, v4[0], v4[1], @color, 100)
+    Gosu.draw_line(v3[0], v3[1], @color, v4[0], v4[1], @color, DEBUG_LAYER)
     # left
-    Gosu.draw_line(v4[0], v4[1], @color, v1[0], v1[1], @color, 100)
+    Gosu.draw_line(v4[0], v4[1], @color, v1[0], v1[1], @color, DEBUG_LAYER)
   end
 end
