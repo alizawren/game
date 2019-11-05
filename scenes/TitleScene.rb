@@ -6,10 +6,13 @@ require_relative "./guis/mainMenuGui.rb"
 
 TEXT_Y = 400
 
-class MainMenu < Scene
+class TitleScene < Scene
   attr_accessor :background_image
 
-  def load
+  def initialize
+    super
+    SceneManager.clear
+
     @background_image = Gosu::Image.new("img/space.png", :tileable => true)
     @title = Gosu::Image.from_text("A Game? Perhaps?", FONT_HEIGHT * 2)
 
@@ -21,6 +24,4 @@ class MainMenu < Scene
     @title.draw(0, 0, 0)
   end
 
-  def button_down(id, close_callback)
-  end
 end

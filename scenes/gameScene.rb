@@ -22,10 +22,10 @@ class GameScene < Scene
   attr_accessor :guiMode
 
   def initialize(jsonfile = "scenes/scenefiles/defaultScene.json")
+    SceneManager.clear
+
     @mouse_x = 0
     @mouse_y = 0
-
-    # @quadtree = Quadtree.new(0, Rectangle.new(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT))
 
     @crosshair = Crosshair.instance
     @eventHandler = EventHandler.new(self)
@@ -33,7 +33,6 @@ class GameScene < Scene
     @eventHandler.addHandler("camera")
     @eventHandler.addHandler("gui")
     @dialogueMode = false
-    @guiMode = false
 
     @objects = Hash.new
 
@@ -42,8 +41,8 @@ class GameScene < Scene
 
     @type = data["type"]
 
-    @parallax = Gosu::Image.new(data["parallax"], :tileable => true)
-    @bg = Gosu::Image.new(data["bg"], :tileable => true)
+    @parallax = Gosu::Image.new(data["parallax"], :tileable => true, :retro => true)
+    @bg = Gosu::Image.new(data["bg"], :tileable => false, :retro => true)
 
     @hitscans = []
     @objects["player"] = []
@@ -59,20 +58,7 @@ class GameScene < Scene
     @camera = Camera.new(scale, @player.center)
 
     addObjects(data)
-
-    # first we always need walls to prevent character from walking outside of real bg
-    bg_width = @bg.width
-    bg_height = @bg.height
-    wall_thickness = 10
-    @objects["fixed"].push(FixedObject.new(self, 0, 0, -wall_thickness, bg_height))
-    @objects["fixed"].push(FixedObject.new(self, 0, 0, bg_width, -wall_thickness))
-    @objects["fixed"].push(FixedObject.new(self, bg_width, 0, wall_thickness, bg_height))
-    @objects["fixed"].push(FixedObject.new(self, 0, bg_height, bg_width, wall_thickness))
-  end
-
-  def unload
-    super
-    @quadtree = nil
+    addWalls
   end
 
   def addObjects(data)
@@ -113,7 +99,12 @@ class GameScene < Scene
               imgsrc = val["imgsrc"]
             end
 
-            obj = FixedObject.new(self, val["x"], val["y"], w, h, imgsrc, id, method, through)
+            z = nil
+            if val["z"]
+              z = val["z"]
+            end
+
+            obj = FixedObject.new(self, val["x"], val["y"], w, h, imgsrc, id, method, through, z)
           when "polygon"
             if (val["x"].nil? or val["y"].nil? or val["vertices"].nil?)
               next
@@ -159,7 +150,19 @@ class GameScene < Scene
     end
   end
 
+  def addWalls
+    # first we always need walls to prevent character from walking outside of real bg
+    bg_width = @bg.width
+    bg_height = @bg.height
+    wall_thickness = 10
+    @objects["fixed"].push(FixedObject.new(self, 0, 0, -wall_thickness, bg_height))
+    @objects["fixed"].push(FixedObject.new(self, 0, 0, bg_width, -wall_thickness))
+    @objects["fixed"].push(FixedObject.new(self, bg_width, 0, wall_thickness, bg_height))
+    @objects["fixed"].push(FixedObject.new(self, 0, bg_height, bg_width, wall_thickness))
+  end
+
   def update(mouse_x, mouse_y)
+    super
     @mouse_x = mouse_x
     @mouse_y = mouse_y
 
@@ -247,7 +250,7 @@ class GameScene < Scene
 
     @eventHandler.update()
 
-    @crosshair.update(mouse_x, mouse_y) # might move this location
+    @crosshair.update(@mouse_x, @mouse_y) # might move this location
 
     @camera.update(@player.center, Vector[@mouse_x, @mouse_y])
   end
@@ -257,7 +260,13 @@ class GameScene < Scene
 
     # bg drawn at world's 0,0
     @parallax.draw(0, 0, PARALLAX_LAYER)
-    @bg.draw(cameraInvert[0], cameraInvert[1], BG_LAYER, @camera.scale, @camera.scale)
+    x1 = cameraInvert[0]
+    y1 = cameraInvert[1]
+    x2 = x1 + @camera.scale * @bg.width
+    y2 = y1 + @camera.scale * @bg.height
+    white = Gosu::Color::WHITE
+    # @bg.draw(cameraInvert[0], cameraInvert[1], BG_LAYER, @camera.scale, @camera.scale)
+    @bg.draw_as_quad(x1, y1, white, x2, y1, white, x2, y2, white, x1, y2, white, BG_LAYER)
 
     # calculate each object's true position and draw it.
     @objects.each_value do |objectList|

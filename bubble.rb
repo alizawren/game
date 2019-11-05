@@ -8,7 +8,7 @@ class Bubble
   attr_reader :delay
   attr_reader :fullText
 
-  def initialize(sceneRef, text = "", source = nil, isOption = false, i = 0, nextId = -1, bubbleColor: BUBBLE_COLOR, icon: "img/icons/info_icon.png", delay: 20, fps: 45, fullText: "")
+  def initialize(sceneRef, text = "", source = nil, isOption = false, i = 0, nextId = -1, bubbleColor: BUBBLE_COLOR, icon: nil, delay: 20, fps: 45, fullText: "")
     @sceneRef = sceneRef
     @source = source
     @type = "normal"
@@ -17,6 +17,7 @@ class Bubble
     @isOption = isOption
     @show = true
     @fullText = fullText
+    @icon = icon
 
     # @width = @font.text_width(@text) + BUBBLE_PADDING * 2
     @maxWidth = @isOption ? DEFAULT_OPTION_BUBBLE_WIDTH : DEFAULT_BUBBLE_WIDTH
@@ -53,12 +54,17 @@ class Bubble
 
     @bubbleColor = @isOption ? BUBBLE_COLOR_OPTION : bubbleColor
     @opacity = 255
-    @icon = @source.nil? ? Gosu::Image.new(icon, :tileable => true, :retro => true) : nil
 
     @deleteAnimOn = false
 
     @delete_t = 0
     @delete_vector = []
+  end
+
+  def active
+    if !@icon.nil?
+      @sceneRef.eventHandler.onNotify({ icon: @icon }, :changeIcon)
+    end
   end
 
   def numLines(text, maxWidth)
@@ -177,9 +183,9 @@ class Bubble
       end
     end
 
-    if !@icon.nil?
-      @icon.draw(ICON_OFFSET_X, ICON_OFFSET_Y, @z, 2, 2, Gosu::Color.new(@opacity, 255, 255, 255))
-    end
+    # if !@icon.nil?
+    #   @icon.draw(ICON_OFFSET_X, ICON_OFFSET_Y, @z, 2, 2, Gosu::Color.new(@opacity, 255, 255, 255))
+    # end
   end
 
   def contains(x, y)

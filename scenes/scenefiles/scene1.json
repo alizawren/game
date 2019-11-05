@@ -72,7 +72,7 @@
         ]
       }, {
         "type": "fixed",
-        "x": 180,
+        "x": 178,
         "y": 150,
         "width": 100,
         "height": 60,
@@ -110,6 +110,23 @@
         "height": 25,
         "img": "img/aSimpleSquare.png",
         "method": "arsenalActivate"
+      }, {
+        "type": "fixed",
+        "x": 48,
+        "y": 310,
+        "width": 40,
+        "height": 25,
+        "img": "img/aSimpleSquare.png",
+        "method": "startLevel"
+      }, {
+        "type": "fixed",
+        "through": true,
+        "x": 185,
+        "y": 0,
+        "width": 80,
+        "height": 300,
+        "img": "img/ceiling_lamps.png",
+        "z": 1000
       }
     ]
   }

@@ -7,8 +7,7 @@
         {
           "type": "normal",
           "source": "player",
-          "text": "Hello?",
-          "delay": 0
+          "text": "Hello?"
         }, {
           "icon": "img/icons/mystery_icon.png",
           "type": "normal",
@@ -32,7 +31,7 @@
         }, {
           "icon": "img/icons/toshi_icon.png",
           "type": "normal",
-          "text": "Not really. I wouldn't choose an insecure method of communication for anything important."
+          "text": "... Not really. I wouldn't choose an insecure method of communication for anything important."
         }, {
           "type": "options",
           "source": "player",
@@ -54,7 +53,7 @@
         {
           "icon": "img/icons/toshi_icon.png",
           "type": "normal",
-          "text": "More like, annoy you and waste your time."
+          "text": "... More like, annoy you and waste your time."
         }, {
           "type": "options",
           "source": "player",
@@ -77,12 +76,16 @@
         {
           "icon": "img/icons/toshi_icon.png",
           "type": "normal",
-          "text": "Fine, fine. The truth is, there's this guy who pisses me off, and I want him dead.",
+          "text": "Fine."
+        }, {
+          "icon": "img/icons/toshi_icon.png",
+          "type": "normal",
+          "text": "The truth is, there's this guy who pisses me off, and I want him dead.",
           "delay": 35
         }, {
           "icon": "img/icons/toshi_icon.png",
           "type": "normal",
-          "text": "He goes by the name Hotspot--at least that's his streamer name. Kind of dumb if you ask me, but not as dumb as his real name.",
+          "text": "He goes by the name Hotspot. Well, that's his streamer name. Kind of dumb, but not as dumb as his real name.",
           "delay": 35
         }, {
           "icon": "img/icons/toshi_icon.png",
@@ -92,12 +95,12 @@
         }, {
           "icon": "img/icons/toshi_icon.png",
           "type": "normal",
-          "text": "You gotta be careful--he's hotheaded and won't back down without a fight. His goons will also try to stop you.",
+          "text": "You should be careful. He's hotheaded and won't back down without a fight. His goons will also try to stop you.",
           "delay": 35
         }, {
           "icon": "img/icons/toshi_icon.png",
           "type": "normal",
-          "text": "But I know it's nothing you can't handle. I'll pay you the full amount upfront.",
+          "text": "But I trust you guys. I'll pay you the full amount upfront.",
           "delay": 30
         }, {
           "icon": "img/icons/toshi_icon.png",
@@ -109,7 +112,7 @@
           "choices": [
             {
               "text": "Sure, I'll do it.",
-              "nextId": "startLevel"
+              "nextId": 4
             }, {
               "text": "Sounds important to me",
               "fullText": "I dunno, sounds to me like you might have a vendetta against this guy. What's your gripe with him?",
@@ -152,7 +155,7 @@
           "choices": [
             {
               "text": "Spicy",
-              "fullText": "Excellent. That's the kind of story I was looking for.",
+              "fullText": "Wow, Toshi. I didn't even know you had it in you.",
               "nextId": 5
             }, {
               "text": "Sounds petty",
@@ -163,17 +166,26 @@
         }
       ]
     }, {
-      "id": 5,
+      "id": 4,
       "bubbles": [
         {
           "type": "normal",
           "icon": "img/icons/toshi_icon.png",
-          "text": "Yeah, so are you satisfied?"
+          "text": "Thanks. I knew I could count on you.",
+          "delay": 30
         }, {
           "type": "normal",
-          "source": "player",
-          "text": "Quite."
-        }, {
+          "icon": "img/icons/info_icon.png",
+          "text": "Leave HQ to start your mission.",
+          "delay": 30
+        }
+      ],
+      "timeoutId": -1,
+      "timeout": 400
+    }, {
+      "id": 5,
+      "bubbles": [
+        {
           "type": "normal",
           "icon": "img/icons/toshi_icon.png",
           "text": "Listen, just do this one thing for me and I'll stop leasing your processing power to other hackers."
@@ -195,16 +207,14 @@
           "source": "aer",
           "text": "I-I'm sure they were just joking?"
         }, {
-          "type": "options",
-          "source": "player",
-          "choices": [
-            {
-              "text": "Whatever. Let's just do the job",
-              "nextId": "startLevel"
-            }
-          ]
+          "type": "normal",
+          "icon": "img/icons/info_icon.png",
+          "text": "Leave HQ to start your mission.",
+          "delay": 30
         }
-      ]
+      ],
+      "timeoutId": -1,
+      "timeout": 940
     }, {
       "id": 6,
       "bubbles": [
@@ -227,18 +237,16 @@
         }, {
           "type": "normal",
           "icon": "img/icons/toshi_icon.png",
-          "text": "Ugh! So annoying. Forget what I said about payment upfront. Just go and kill him already."
+          "text": "... So annoying. Forget what I said about payment upfront. Just go and kill him already."
         }, {
-          "type": "options",
-          "source": "player",
-          "choices": [
-            {
-              "text": "I'm on it",
-              "nextId": "startLevel"
-            }
-          ]
+          "type": "normal",
+          "icon": "img/icons/info_icon.png",
+          "text": "Leave HQ to start your mission.",
+          "delay": 30
         }
-      ]
+      ],
+      "timeoutId": -1,
+      "timeout": 1000
     }
   ]
 }

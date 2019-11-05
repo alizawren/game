@@ -18,7 +18,7 @@ class GameObject
   attr_reader :halfsize
 
   # def initialize(x = 0.0, y = 0.0, width = 30, height = 30)
-  def initialize(sceneref, center = Vector[0.0, 0.0], width = 128, height = 128, id = "")
+  def initialize(sceneref, center = Vector[0.0, 0.0], width = 128, height = 128, id = "", z = OBJECT_LAYER)
     @sceneref = sceneref
     if (id.length > 0)
       @id = id
@@ -35,7 +35,7 @@ class GameObject
 
     @boundPolys = Hash.new
 
-    @z = 1
+    @z = z
 
     @allCollidingObjects = []
   end
@@ -76,6 +76,7 @@ class GameObject
       color = Gosu::Color::WHITE
 
       @image.draw_as_quad(x - w / 2, y - h / 2, color, x + w / 2, y - h / 2, color, x + w / 2, y + h / 2, color, x - w / 2, y + h / 2, color, @z)
+      # @image.draw(x - w / 2, y - h / 2, @z, scale, scale)
     end
   end
 

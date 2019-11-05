@@ -2,11 +2,10 @@ require_relative "./menuGui.rb"
 require_relative "./aboutGui.rb"
 require_relative "../gameScene.rb"
 
-# NOTE: we want to be able to specify GUIs with data files as well
-
-class TempGui < MenuGui
+class ArsenalGui < MenuGui
   def initialize
     super(100, 30)
+
     @choices = ["Gun", "Knife", "Exit"]
   end
 
@@ -19,6 +18,7 @@ class TempGui < MenuGui
 
   def draw
     super
+
     for i in 0..@choices.length - 1
       @font.draw_text(@choices[i], CANVAS_WIDTH / 2 - @font.text_width(@choices[i]) / 2, TEXT_Y + i * (FONT_HEIGHT + MARGIN), @z)
     end
@@ -36,13 +36,10 @@ class TempGui < MenuGui
     when Gosu::KB_RETURN, Gosu::KB_Z
       case @select
       when 0
-        currScene.player.currentWeapon.type = "gun"
       when 1
-        currScene.player.currentWeapon.type = "melee"
-        SceneManager.guiPop()
       else
+        SceneManager.guiPop
       end
-      SceneManager.guiPop()
     end
   end
 end

@@ -43,7 +43,7 @@ class Camera
         avgVec += obj.center
       end
       avgVec /= @focusObjects.length
-      @pos = avgVec
+      @pos = avgVec * @scale
     end
 
     # make sure our specified position is placed at the center of the canvas

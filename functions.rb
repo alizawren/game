@@ -1,26 +1,26 @@
-require_relative "./scenes/guis/tempGui.rb"
+require_relative "./scenes/guis/arsenalGui.rb"
 
 def phoneActivate
   # SceneManager.changeScene(GameScene.new("scenes/scenefiles/scene2.json"))
-  SceneManager.getCurrentScene.eventHandler.onNotify({ jsonfile: "dialogues/phone2.json" }, :createDialogue)
+  SceneManager.scene.eventHandler.onNotify({ jsonfile: "dialogues/phone2.json" }, :createDialogue)
 end
 
 def objActivate
-  currScene = SceneManager.getCurrentScene
+  currScene = SceneManager.scene
   currScene.eventHandler.onNotify({ jsonfile: "dialogues/level1.json" }, :createDialogue)
 end
 
 def poolActivate
   # SceneManager.createDialogue("dialogues/pool.json")
-  currScene = SceneManager.getCurrentScene
+  currScene = SceneManager.scene
   currScene.eventHandler.onNotify({ jsonfile: "dialogues/pool.json" }, :createDialogue)
 end
 
 def arsenalActivate
   # create a GUI for the arsenal
-  SceneManager.guiPush(TempGui.new)
-  currScene = SceneManager.getCurrentScene
-  currScene.eventHandler.onNotify({}, :guiOpen)
+  SceneManager.guiPush(ArsenalGui.new)
+  # currScene = SceneManager.getCurrentScene
+  # currScene.eventHandler.onNotify({}, :guiOpen)
 end
 
 def startLevel
@@ -32,5 +32,5 @@ def gameOver
 end
 
 def aerConvo
-  SceneManager.getCurrentScene.eventHandler.onNotify({ jsonfile: "dialogues/aer.json" }, :createDialogue)
+  SceneManager.scene.eventHandler.onNotify({ jsonfile: "dialogues/aer.json" }, :createDialogue)
 end
