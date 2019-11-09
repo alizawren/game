@@ -16,12 +16,11 @@ NOTE: You won't be able to run the game without assets, which are currently stor
 * Level design
 * Gameplay mechanics
 * Build GUIs
+* Improve camera movement
 
 ### Less important
 
-* GUI Stack (done, but could use some cleanup)
-* Camera movement (done, but transformations not yet universal (?))
-* Scene graph
+* Scene graph - a few months later and I have no idea what I mean by this
 
 * quadtree not working
 
