@@ -119,14 +119,13 @@
         "img": "img/aSimpleSquare.png",
         "method": "startLevel"
       }, {
-        "type": "fixed",
+        "type": "float",
         "through": true,
         "x": 185,
         "y": 0,
         "width": 80,
         "height": 300,
-        "img": "img/ceiling_lamps.png",
-        "z": 1000
+        "img": "img/ceiling_lamps.png"
       }
     ]
   }

@@ -21,7 +21,7 @@ class MenuGui < Gui
   def draw
     super
     for i in 0..@choices.length - 1
-      @font.draw_text(@choices[i], CANVAS_WIDTH / 2 - @font.text_width(@choices[i]) / 2, TEXT_Y + i * (FONT_HEIGHT + MARGIN), @z)
+      @font.draw_text(@choices[i], CANVAS_WIDTH / 2 - @font.text_width(@choices[i]) / 2, TEXT_Y + i * (@font.height + MARGIN), @z)
     end
 
     @selector.draw(@selector.x, @selector.y, @z + 1)

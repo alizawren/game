@@ -18,7 +18,7 @@ class GameObject
   attr_reader :halfsize
 
   # def initialize(x = 0.0, y = 0.0, width = 30, height = 30)
-  def initialize(sceneref, center = Vector[0.0, 0.0], width = 128, height = 128, id = "", z = OBJECT_LAYER)
+  def initialize(sceneref, center = Vector[0.0, 0.0], width = 128, height = 128, id = "")
     @sceneref = sceneref
     if (id.length > 0)
       @id = id

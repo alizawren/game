@@ -9,6 +9,7 @@ require_relative "../gameObjects/player.rb"
 require_relative "../gameObjects/enemy.rb"
 require_relative "../gameObjects/obstacles/obstacle.rb"
 require_relative "../gameObjects/fixedObject.rb"
+require_relative "../gameObjects/floatObject.rb"
 
 class GameScene < Scene
   attr_accessor :parallax
@@ -99,12 +100,33 @@ class GameScene < Scene
               imgsrc = val["imgsrc"]
             end
 
-            z = nil
-            if val["z"]
-              z = val["z"]
+            obj = FixedObject.new(self, val["x"], val["y"], w, h, imgsrc, id, method, through)
+          when "float"
+            w = val["width"]
+            h = val["height"]
+            if (val["width"] == "bgwidth")
+              w = @bg.width
+            end
+            if (val["height"] == "bgheight")
+              h = @bg.height
             end
 
-            obj = FixedObject.new(self, val["x"], val["y"], w, h, imgsrc, id, method, through, z)
+            through = val["through"]
+            method = ""
+            if val["method"]
+              method = val["method"]
+            end
+
+            id = ""
+            if val["id"]
+              id = val["id"]
+            end
+            imgsrc = nil
+            if val["imgsrc"]
+              imgsrc = val["imgsrc"]
+            end
+
+            obj = FloatObject.new(self, val["x"], val["y"], w, h, imgsrc, id, method, through)
           when "polygon"
             if (val["x"].nil? or val["y"].nil? or val["vertices"].nil?)
               next
@@ -167,59 +189,8 @@ class GameScene < Scene
     @mouse_y = mouse_y
 
     @player.state = 0
-    if (!@guiMode)
-      # WARNING: technically we don't want to allow them to use both. If they are holding left and D at the same time,
-      # we don't want one to cancel out the other.
-      if Gosu.button_down? Gosu::KB_A or Gosu.button_down? Gosu::KB_LEFT
-        @player.go_left
-        @player.state = 1
-        # @player.flip = 1
-        @player.facing = 2
-      end
-      if Gosu.button_down? Gosu::KB_D or Gosu.button_down? Gosu::KB_RIGHT
-        @player.go_right
-        @player.state = 1
-        # @player.flip = 0
-        @player.facing = 0
-      end
-      if Gosu.button_down? Gosu::KB_W or Gosu.button_down? Gosu::KB_UP
-        @player.go_up
-        @player.state = 1
-        @player.facing = 1
-      end
-      if Gosu.button_down? Gosu::KB_S or Gosu.button_down? Gosu::KB_DOWN
-        @player.go_down
-        @player.state = 1
-        @player.facing = 3
-      end
 
-      if (@type == "gamescene")
-        # if Gosu.button_down? Gosu::MS_LEFT
-        #   # angle logic in here
-        #   invtransf = @cameratransform.inverse
-        #   hom = Vector[@player.center[0], @player.center[1], 1]
-        #   pcenter = @cameratransform * hom
-        #   angle = Gosu.angle(pcenter[0], pcenter[1], mouse_x, mouse_y) - 90
-        #   @player.armangle = angle
-        #   case angle
-        #   when -45..45
-        #     # right
-        #     @player.facing = 0
-        #   when 45..135
-        #     # down
-        #     @player.facing = 3
-        #   when 135..225
-        #     # left
-        #     @player.facing = 2
-        #   else
-        #     # up
-        #     @player.facing = 1
-        #   end
-        #   @player.state = 2
-        # end
-      end
-      # NOTE: must make state transitions more clear, rewrite whole thing
-    end
+    processInput
 
     # update each object
     @objects.each_value do |objectList|
@@ -255,6 +226,60 @@ class GameScene < Scene
     @camera.update(@player.center, Vector[@mouse_x, @mouse_y])
   end
 
+  def processInput
+    # WARNING: technically we don't want to allow them to use both. If they are holding left and D at the same time,
+    # we don't want one to cancel out the other.
+    if Gosu.button_down? Gosu::KB_A or Gosu.button_down? Gosu::KB_LEFT
+      @player.go_left
+      @player.state = 1
+      # @player.flip = 1
+      @player.facing = 2
+    end
+    if Gosu.button_down? Gosu::KB_D or Gosu.button_down? Gosu::KB_RIGHT
+      @player.go_right
+      @player.state = 1
+      # @player.flip = 0
+      @player.facing = 0
+    end
+    if Gosu.button_down? Gosu::KB_W or Gosu.button_down? Gosu::KB_UP
+      @player.go_up
+      @player.state = 1
+      @player.facing = 1
+    end
+    if Gosu.button_down? Gosu::KB_S or Gosu.button_down? Gosu::KB_DOWN
+      @player.go_down
+      @player.state = 1
+      @player.facing = 3
+    end
+
+    if (@type == "gamescene")
+      # if Gosu.button_down? Gosu::MS_LEFT
+      #   # angle logic in here
+      #   invtransf = @cameratransform.inverse
+      #   hom = Vector[@player.center[0], @player.center[1], 1]
+      #   pcenter = @cameratransform * hom
+      #   angle = Gosu.angle(pcenter[0], pcenter[1], mouse_x, mouse_y) - 90
+      #   @player.armangle = angle
+      #   case angle
+      #   when -45..45
+      #     # right
+      #     @player.facing = 0
+      #   when 45..135
+      #     # down
+      #     @player.facing = 3
+      #   when 135..225
+      #     # left
+      #     @player.facing = 2
+      #   else
+      #     # up
+      #     @player.facing = 1
+      #   end
+      #   @player.state = 2
+      # end
+    end
+    # NOTE: must make state transitions more clear, rewrite whole thing
+  end
+
   def draw
     cameraInvert = -@camera.pos # get camera's coordinates and invert them
 
@@ -272,7 +297,7 @@ class GameScene < Scene
     @objects.each_value do |objectList|
       for object in objectList
         object.draw(cameraInvert, @camera.scale)
-        object.draw_frame(cameraInvert, @camera.scale)
+        # object.draw_frame(cameraInvert, @camera.scale)
       end
     end
     for hit in @hitscans

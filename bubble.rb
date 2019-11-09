@@ -1,4 +1,5 @@
 require "gosu"
+require_relative "./WordWrap.rb"
 
 class Bubble
   attr_reader :isOption
@@ -61,27 +62,6 @@ class Bubble
     @delete_vector = []
   end
 
-  def active
-    if !@icon.nil?
-      @sceneRef.eventHandler.onNotify({ icon: @icon }, :changeIcon)
-    end
-  end
-
-  def numLines(text, maxWidth)
-    i = 0
-    j = 1
-    numLines = 1
-    while j < text.length
-      currTextWidth = @font.text_width(text[i, j])
-      if currTextWidth >= maxWidth
-        i = j
-        numLines += 1
-      end
-      j += 1
-    end
-    return numLines
-  end
-
   def breakIntoLines(text, maxWidth)
     lines = []
     widths = []
@@ -101,6 +81,12 @@ class Bubble
     widths.push(@font.text_width(currText))
     @maxWidth = widths.max
     return lines
+  end
+
+  def active
+    if !@icon.nil?
+      @sceneRef.eventHandler.onNotify({ icon: @icon }, :changeIcon)
+    end
   end
 
   def update
