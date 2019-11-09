@@ -1,4 +1,4 @@
-![Preview](/preview.PNG)
+![Preview](/preview.PNG) ![Preview2](/preview2.png)
 
 # Install Instructions
 
@@ -13,7 +13,7 @@ Inside of the game directory, run 'ruby main.rb'.
 * Data driven animation system with state machines
 * Level design
 * Gameplay mechanics
-* Build GUIs off of data
+* Build GUIs
 
 ### Less important
 
