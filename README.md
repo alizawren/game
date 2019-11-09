@@ -6,6 +6,8 @@ Make sure you have Ruby installed. (Google 'install Ruby' for this.) Once Ruby i
 
 Inside of the game directory, run 'ruby main.rb'.
 
+NOTE: You won't be able to run the game without assets, which are currently stored privately.
+
 ## Todo list
 
 ### Priority
