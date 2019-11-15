@@ -1,4 +1,4 @@
-![Preview](/preview.PNG) ![Preview2](/preview2.png)
+![Preview](/preview.gif) ![Preview2](/preview2.png)
 
 # Install Instructions
 
