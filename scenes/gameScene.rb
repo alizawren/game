@@ -223,6 +223,7 @@ class GameScene < Scene
 
     @crosshair.update(@mouse_x, @mouse_y) # might move this location
 
+    @camera.setPos(@player.center, Vector[@mouse_x, @mouse_y])
     @camera.update(@player.center, Vector[@mouse_x, @mouse_y])
   end
 
@@ -231,7 +232,7 @@ class GameScene < Scene
     # we don't want one to cancel out the other.
     if Gosu.button_down? Gosu::KB_A or Gosu.button_down? Gosu::KB_LEFT
       @player.go_left
-      @player.state = 1
+      @player.state = 1 # need more states to distinguish horizontal from vertical movement
       # @player.flip = 1
       @player.facing = 2
     end

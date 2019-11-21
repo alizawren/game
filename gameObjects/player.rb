@@ -92,36 +92,34 @@ class Player < GameObject
   end
 
   def go_up
-    newvel = Vector[@velocity[0], @velocity[1] - 2]
-    if (newvel[1] > -@maxSpeed)
-      @velocity = newvel
+    if (@velocity[1] - 2 > -@maxSpeed)
+      @velocity[1] -= 2
     end
   end
 
   def go_down
-    newvel = Vector[@velocity[0], @velocity[1] + 2]
-    if (newvel[1] < @maxSpeed)
-      @velocity = newvel
+    if (@velocity[1] + 2 < @maxSpeed)
+      @velocity[1] += 2
     end
   end
 
   def go_left
-    newvel = Vector[@velocity[0] - 2, @velocity[1]]
-    if (newvel[0] > -@maxSpeed)
-      @velocity = newvel
+    if (@velocity[0] - 2 > -@maxSpeed)
+      @velocity[0] -= 2
     end
   end
 
   def go_right
-    newvel = Vector[@velocity[0] + 2, @velocity[1]]
-    if (newvel[0] < @maxSpeed)
-      @velocity = newvel
+    if (@velocity[0] + 2 < @maxSpeed)
+      @velocity[0] += 2
     end
   end
 
   def update
     @center = @center + @velocity
-    @velocity = @velocity * 0.8
+    if (@state != 1) # need more states to distinguish horizontal from vertical movement
+      @velocity = @velocity * 0.8
+    end
     @boundPolys.each_value do |value|
       value.update
     end
@@ -198,8 +196,8 @@ class Player < GameObject
 
     color = OPAQUE
     shadowColor = SHADOW_COLOR
-    @curr_anim.draw_as_quad(x - w / 2, y - h / 2, color, x + w / 2, y - h / 2, color, x + w / 2, y + h / 2, color, x - w / 2, y + h / 2, color, @z)
     @shadow.draw_as_quad(x - w / 2, y - h / 2, shadowColor, x + w / 2, y - h / 2, shadowColor, x + w / 2, y + h / 2, shadowColor, x - w / 2, y + h / 2, shadowColor, SHADOW_LAYER)
+    @curr_anim.draw_as_quad(x - w / 2, y - h / 2, color, x + w / 2, y - h / 2, color, x + w / 2, y + h / 2, color, x - w / 2, y + h / 2, color, @z)
 
     # TODO: arm logic
     # armpos = pos + @armpos
