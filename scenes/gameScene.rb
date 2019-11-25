@@ -19,6 +19,7 @@ class GameScene < Scene
   attr_reader :mouse_y
   attr_accessor :camera
   attr_accessor :dialogueMode
+  attr_accessor :hitscans
 
   def initialize(jsonfile = "scenes/scenefiles/defaultScene.json")
     @mouse_x = 0
@@ -277,10 +278,10 @@ class GameScene < Scene
       end
     end
     for hit in @hitscans
-      p1 = @camera.transform * Vector[hit[0][0],hit[0][1],1]
-      p2 = @camera.transform * Vector[hit[1][0],hit[1][1],1]
-      Gosu.draw_line(p1[0],p1[1],Gosu::Color::WHITE,p2[0],p2[1],Gosu::Color::WHITE,99)
-      Gosu.draw_rect(p2[0],p2[1],5,5,Gosu::Color::RED,98)
+      p1 = @camera.transform * Vector[hit[0][0], hit[0][1], 1]
+      p2 = @camera.transform * Vector[hit[1][0], hit[1][1], 1]
+      Gosu.draw_line(p1[0], p1[1], Gosu::Color::WHITE, p2[0], p2[1], Gosu::Color::WHITE, 99)
+      Gosu.draw_rect(p2[0], p2[1], 5, 5, Gosu::Color::RED, 98)
     end
     # @hitscans = []
     @eventHandler.draw
@@ -322,18 +323,13 @@ class GameScene < Scene
       if (@type == "gamescene")
         case @player.currentWeapon.type
         when "ranged"
-          # oldpos = @camera.transform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
-          # projectile = Projectile.new(self, @player.currentWeapon.projectile,@player.center, (Vector[oldpos[0], oldpos[1]] - @player.center).normalize * BULLET_SPEED)
-          # @objects["projectiles"].push(projectile)
-
-          #moving on from projectiles
-          target3 = @camera.transform.inverse * Vector[@crosshair.x,@crosshair.y,1]
-          target = Vector[target3[0],target3[1]]
-          collisionPoint = @player.currentWeapon.hitscan(@player.center,target,@objects,[@player])
-          if(!collisionPoint.nil?)
-            @hitscans.push([@player.center,collisionPoint])
-          else 
-            p2 = ((target-@player.center).normalize()*@player.currentWeapon.range)
+          target3 = @camera.transform.inverse * Vector[@crosshair.x, @crosshair.y, 1]
+          target = Vector[target3[0], target3[1]]
+          collisionPoint = hitscan(@player.center, target, [@player])
+          if (!collisionPoint.nil?)
+            @hitscans.push([@player.center, collisionPoint])
+          else
+            p2 = ((target - @player.center).normalize() * @player.currentWeapon.range)
             @hitscans.push([@player.center, p2])
           end
         when "melee"
@@ -351,6 +347,84 @@ class GameScene < Scene
           return
         end
       end
+    end
+  end
+
+  def hitscan(source, target, ignore = [])
+    p1 = source
+
+    hit = ((target - p1).normalize() * @range)
+    p2 = Vector[hit[0] + p1[0], hit[1] + p1[1]]
+    cp = []
+    @objects.each_value do |objectType|
+      objectType.each do |obj|
+        if !ignore.include?(obj)
+          poly = obj.boundPolys["hit"]
+          if (!poly.nil?)
+            collisionPoint = lineRectCollision(p1, p2, poly.topleft, poly.topright, poly.bottomright, poly.bottomleft)
+            if !collisionPoint.nil?
+              cp.push(collisionPoint)
+
+              # obj.overlap("Bullet","hit")
+              # return(collisionPoint)
+            end
+          end
+        end
+      end
+    end
+    closest = cp[0]
+    for point in cp
+      if (point - p1).magnitude < (closest - p1).magnitude
+        closest = point
+      end
+    end
+    return(closest)
+  end
+end
+
+def lineRectCollision(l1, l2, r1, r2, r3, r4)
+  cp1 = lineLineCollision(l1, l2, r1, r2)
+  cp2 = lineLineCollision(l1, l2, r2, r3)
+  cp3 = lineLineCollision(l1, l2, r3, r4)
+  cp4 = lineLineCollision(l1, l2, r4, r1)
+  cp = []
+  if (!cp1.nil?)
+    cp.push(cp1)
+  end
+  if (!cp2.nil?)
+    cp.push(cp2)
+  end
+  if (!cp3.nil?)
+    cp.push(cp3)
+  end
+  if (!cp4.nil?)
+    cp.push(cp4)
+  end
+  if cp.length == 0
+    return
+  end
+  closest = cp[0]
+  for point in cp
+    if (point - l1).magnitude < (closest - l1).magnitude
+      closest = point
+    end
+  end
+  return(closest)
+end
+
+def lineLineCollision(p1, p2, p3, p4)
+  den = (p4[1] - p3[1]) * (p2[0] - p1[0]) - (p4[0] - p3[0]) * (p2[1] - p1[1])
+  num1 = (p4[0] - p3[0]) * (p1[1] - p3[1]) - (p4[1] - p3[1]) * (p1[0] - p3[0])
+  num2 = (p2[0] - p1[0]) * (p1[1] - p3[1]) - (p2[1] - p1[1]) * (p1[0] - p3[0])
+  if (den == 0)
+    if (num1 == 0 && num2 == 0)
+      return(p2)
+    end
+  else
+    uA = num1 / den
+    uB = num2 / den
+    if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1)
+      return(Vector[p1[0] + (uA * (p2[0] - p1[0])), p1[1] + (uA * (p2[1] - p1[1]))])
     end
   end
 end

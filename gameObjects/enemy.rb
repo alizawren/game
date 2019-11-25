@@ -12,19 +12,20 @@ SLOWING_RADIUS = 50.0
 PURSUIT_CONST = 25
 IDLE_TIME = 50
 ATTACK_SPEED = 100
+
 class Enemy < GameObject
   #start with a path the enemy should follow
-  def initialize(sceneref, path = [Vector[0, 0], Vector[100, 0]],weaponID = "Pistol")
+  def initialize(sceneref, path = [Vector[0, 0], Vector[100, 0]], weaponID = "Pistol")
     @path = path
     @center = @path[0]
-    super sceneref, @center 
+    super sceneref, @center
     #starting position is the first point in the path
     @image = Gosu::Image.new("img/aSimpleSquare.png")
 
     #we'll do textures later,
     #they're just rectangles for now
     # hitPoly = BoundingPolygon.new(self, [Vector[-@width / 2, -@height / 2], Vector[@width / 2, -@height / 2], Vector[@width / 2, @height / 2], Vector[-@width / 2, @height / 2]])
-    hitPoly = BoundingPolygon.new(self, Vector[0,0],@width,@height)
+    hitPoly = BoundingPolygon.new(self, Vector[0, 0], @width, @height)
 
     @boundPolys["hit"] = hitPoly
 
@@ -60,12 +61,20 @@ class Enemy < GameObject
     elsif (@state == 2)
       target = playerCenter + playerVelocity * PURSUIT_CONST
       if (@attackTimer == ATTACK_SPEED)
-        @attackTimer = 0 
-        case @weapon.type 
+        @attackTimer = 0
+        case @weapon.type
         when "ranged"
           # projectile = Projectile.new(@sceneref, @weapon.projectile,@center,(playerCenter-@center).normalize * BULLET_SPEED)
           # @sceneref.objects["projectiles"].push(projectile)
           # @weapon.hitscan(@center,playerCenter,@sceneref.objects,[self])
+
+          collisionPoint = hitscan(@center, playerCenter, [self])
+          if (!collisionPoint.nil?)
+            @sceneref.hitscans.push([@center, collisionPoint])
+          else
+            p2 = ((playerCenter - @center).normalize() * @weapon.range)
+            @sceneref.hitscans.push([@center, p2])
+          end
         when "melee"
           #still don't know how to do melee...
         end
@@ -116,7 +125,7 @@ class Enemy < GameObject
         if (obj2.center[0] > @center[0])
           # puts("touch right")
           @velocity[0] = @velocity[0] > 0 ? 0 : @velocity[0]
-        else 
+        else
           # puts("touch left")
           @velocity[0] = @velocity[0] < 0 ? 0 : @velocity[0]
         end
@@ -124,13 +133,13 @@ class Enemy < GameObject
         if (obj2.center[1] > @center[1])
           # puts("touch down")
           @velocity[1] = @velocity[1] > 0 ? 0 : @velocity[1]
-        else 
+        else
           # puts("touch up")
           @velocity[1] = @velocity[1] < 0 ? 0 : @velocity[1]
         end
-      elsif (overlap[0]).abs <= (overlap[1]).abs 
+      elsif (overlap[0]).abs <= (overlap[1]).abs
         @center[0] += overlap[0]
-        if(overlap[0] < 0)
+        if (overlap[0] < 0)
           # puts("overlap right")
           @velocity[0] = @velocity[0] > 0 ? 0 : @velocity[0]
         else
