@@ -2,5 +2,6 @@
   "type": "cutscene",
   "parallax": "img/space.png",
   "bg": "img/tempbg.png",
-  "player": { "id": "scia", "x": 120, "y": 120 }
+  "player": { "id": "scia", "x": 120, "y": 120 },
+  "scale": 1
 }

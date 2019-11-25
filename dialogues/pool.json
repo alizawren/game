@@ -4,13 +4,19 @@
       "id": 0,
       "bubbles": [
         {
+          "icon": "img/icons/info_icon.png",
           "type": "normal",
           "text": "Play some pool?"
-        },
-        {
+        }, {
           "type": "options",
           "source": "player",
-          "choices": [{ "text": "No" }, { "text": "Definitely no" }]
+          "choices": [
+            {
+              "text": "No"
+            }, {
+              "text": "Definitely no"
+            }
+          ]
         }
       ]
     }

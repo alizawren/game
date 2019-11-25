@@ -2,6 +2,8 @@ require_relative "./menuGui.rb"
 require_relative "./aboutGui.rb"
 require_relative "../gameScene.rb"
 
+# NOTE: we want to be able to specify GUIs with data files as well
+
 class MainMenuGui < MenuGui
   def initialize
     super
@@ -15,20 +17,9 @@ class MainMenuGui < MenuGui
     @selector.height = FONT_HEIGHT
   end
 
-  def draw
-    super
-    for i in 0..@choices.length - 1
-      @font.draw_text(@choices[i], CANVAS_WIDTH / 2 - @font.text_width(@choices[i]) / 2, TEXT_Y + i * (FONT_HEIGHT + MARGIN), @z)
-    end
-    # @selector.draw
-  end
-
   def button_down(id, close_callback)
+    super
     case id
-    when Gosu::KB_UP
-      @select = (@select + @choices.length - 1) % @choices.length
-    when Gosu::KB_DOWN
-      @select = (@select + 1) % @choices.length
     when Gosu::KB_RETURN, Gosu::KB_Z
       case @select
       when 0

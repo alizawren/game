@@ -34,4 +34,8 @@ class Animation
       #   @img_array[@frame].draw(x, y, 1, -1)
     end
   end
+
+  def draw_as_quad(x1, y1, color1, x2, y2, color2, x3, y3, color3, x4, y4, color4, z)
+    @img_array[@frame].draw_as_quad(x1, y1, color1, x2, y2, color2, x3, y3, color3, x4, y4, color4, z)
+  end
 end

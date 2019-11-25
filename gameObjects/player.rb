@@ -5,16 +5,15 @@ require_relative "./gameObject.rb"
 require_relative "../animation.rb"
 require_relative "../sceneManager.rb"
 require_relative "./weapons/weapon.rb"
-PLAYER_SCALE = 2
-# MAX_SPEED = 5
+
 ARM_RIGHT_ANCHOR = Vector[0.125, 0.45]
 ARM_LEFT_ANCHOR = Vector[0.9, 0.5]
 ARM_UP_ANCHOR = Vector[0.5, 0.9]
 ARM_DOWN_ANCHOR = Vector[0.55, 0.125]
-ARM_RIGHT_TRANSF = Matrix[[1, 0, (64 - 72) * PLAYER_SCALE], [0, 1, (38 - 64) * PLAYER_SCALE], [0, 0, 1]]
-ARM_LEFT_TRANSF = Matrix[[1, 0, (53 - 64) * PLAYER_SCALE], [0, 1, (42 - 64) * PLAYER_SCALE], [0, 0, 1]]
-ARM_UP_TRANSF = Matrix[[1, 0, (76 - 64) * PLAYER_SCALE], [0, 1, (36 - 64) * PLAYER_SCALE], [0, 0, 1]]
-ARM_DOWN_TRANSF = Matrix[[1, 0, (48 - 64) * PLAYER_SCALE], [0, 1, (34 - 64) * PLAYER_SCALE], [0, 0, 1]]
+ARM_RIGHT_TRANSF = Vector[64 - 72, 38 - 64]
+ARM_LEFT_TRANSF = Vector[53 - 64, 42 - 64]
+ARM_UP_TRANSF = Vector[76 - 64, 36 - 64]
+ARM_DOWN_TRANSF = Vector[48 - 64, 34 - 64]
 
 class Player < GameObject
   attr_reader :currentWeapon
@@ -26,18 +25,15 @@ class Player < GameObject
 
   def initialize(sceneref, center = Vector[0, 0], sceneType = "gamescene", primary = "./weapons.json")
     super sceneref, center
-    @width = 128 * PLAYER_SCALE
-    @height = 128 * PLAYER_SCALE
+    @width = 128
+    @height = 128
 
     @id = "player"
 
     # @boundPoly = Rectangle.new(@x, @y, @width, @height)
-    hitPoly = BoundingPolygon.new(self, Vector[0,6*PLAYER_SCALE],24*PLAYER_SCALE,78*PLAYER_SCALE)
-    #Vector[[Vector[-12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, -30 * PLAYER_SCALE], Vector[12 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-12 * PLAYER_SCALE, 48 * PLAYER_SCALE]])
-    # walkPoly = BoundingPolygon.new(self, [Vector[-@width / 4, @height / 4], Vector[@width / 4, @height / 4], Vector[@width / 4, @height / 2], Vector[-@width / 4, @height / 2]])
-    #[Vector[-16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 36 * PLAYER_SCALE], Vector[16 * PLAYER_SCALE, 48 * PLAYER_SCALE], Vector[-16 * PLAYER_SCALE, 48 * PLAYER_SCALE]]
-    walkPoly = BoundingPolygon.new(self, Vector[0,42*PLAYER_SCALE],32*PLAYER_SCALE,12*PLAYER_SCALE)
-    
+    hitPoly = BoundingPolygon.new(self, Vector[0, 6], 24, 78)
+    walkPoly = BoundingPolygon.new(self, Vector[0, 42], 32, 12)
+
     @boundPolys["hit"] = hitPoly
     @boundPolys["walk"] = walkPoly
 
@@ -48,10 +44,12 @@ class Player < GameObject
     @armup = Gosu::Image.new("img/scia/armup.bmp")
     @armdown = Gosu::Image.new("img/scia/armdown.bmp")
     @armangle = 0
-    @arm_transform = ARM_RIGHT_TRANSF
+    @armpos = ARM_RIGHT_TRANSF
     @armanchor = ARM_RIGHT_ANCHOR
 
     @shadow = Gosu::Image.new("img/scia/scia_shadow.bmp", :retro => true)
+
+    @z = PLAYER_LAYER
 
     @state = 0 # 0 for idle, 1 for walking, 2 for shooting (tentative)
     # @flip = 0 # 0 for facing right, 1 for facing left
@@ -60,7 +58,7 @@ class Player < GameObject
     @arm = nil
 
     #physics stuff
-    @maxSpeed = 5
+    @maxSpeed = 3
     #weapon stuff
     @primaryWeapon = Weapon.new("Pistol") #id of primary weapon
     @secondaryWeapon = Weapon.new("Knife") #id of secondary weapon
@@ -94,36 +92,34 @@ class Player < GameObject
   end
 
   def go_up
-    newvel = Vector[@velocity[0], @velocity[1] - 2]
-    if (newvel[1] > -@maxSpeed)
-      @velocity = newvel
+    if (@velocity[1] - 2 > -@maxSpeed)
+      @velocity[1] -= 2
     end
   end
 
   def go_down
-    newvel = Vector[@velocity[0], @velocity[1] + 2]
-    if (newvel[1] < @maxSpeed)
-      @velocity = newvel
+    if (@velocity[1] + 2 < @maxSpeed)
+      @velocity[1] += 2
     end
   end
 
   def go_left
-    newvel = Vector[@velocity[0] - 2, @velocity[1]]
-    if (newvel[0] > -@maxSpeed)
-      @velocity = newvel
+    if (@velocity[0] - 2 > -@maxSpeed)
+      @velocity[0] -= 2
     end
   end
 
   def go_right
-    newvel = Vector[@velocity[0] + 2, @velocity[1]]
-    if (newvel[0] < @maxSpeed)
-      @velocity = newvel
+    if (@velocity[0] + 2 < @maxSpeed)
+      @velocity[0] += 2
     end
   end
 
   def update
     @center = @center + @velocity
-    @velocity = @velocity * 0.8
+    if (@state != 1) # need more states to distinguish horizontal from vertical movement
+      @velocity = @velocity * 0.8
+    end
     @boundPolys.each_value do |value|
       value.update
     end
@@ -190,20 +186,25 @@ class Player < GameObject
     @curr_anim.update
   end
 
-  def draw(transf = Matrix.I(3))
+  def draw(translate, scale)
     # note: in the future, make things more consistent so we don't have to recalculate this and can just call super
-    curr = Vector[@center[0], @center[1], 1]
-    newpos = transf * @transform * curr
+    pos = @center * scale + translate
+    x = pos[0]
+    y = pos[1]
+    w = @width * scale
+    h = @height * scale
 
-    armpos = @arm_transform * newpos
+    color = OPAQUE
+    shadowColor = SHADOW_COLOR
+    @shadow.draw_as_quad(x - w / 2, y - h / 2, shadowColor, x + w / 2, y - h / 2, shadowColor, x + w / 2, y + h / 2, shadowColor, x - w / 2, y + h / 2, shadowColor, SHADOW_LAYER)
+    @curr_anim.draw_as_quad(x - w / 2, y - h / 2, color, x + w / 2, y - h / 2, color, x + w / 2, y + h / 2, color, x - w / 2, y + h / 2, color, @z)
 
-    @curr_anim.draw(newpos[0] - @width / 2, newpos[1] - @height / 2, PLAYER_LAYER)
+    # TODO: arm logic
+    # armpos = pos + @armpos
 
-    @shadow.draw(newpos[0] - @width / 2, newpos[1] - @height / 2, SHADOW_LAYER, 2, 2, Gosu::Color.new(128, 255, 255, 255))
-
-    if (!@arm.nil?)
-      @arm.draw_rot(armpos[0], armpos[1], 1, @armangle, @armanchor[0], @armanchor[1], PLAYER_ARM_LAYER)
-    end
+    # if (!@arm.nil?)
+    #   @arm.draw_rot(armpos[0], armpos[1], 1, @armangle, @armanchor[0], @armanchor[1], PLAYER_ARM_LAYER)
+    # end
   end
 
   def overlap(obj2, poly, overlap = Vector[0, 0])
@@ -223,7 +224,7 @@ class Player < GameObject
           if (obj2.center[0] > @center[0])
             # puts("touch right")
             @velocity[0] = @velocity[0] > 0 ? 0 : @velocity[0]
-          else 
+          else
             # puts("touch left")
             @velocity[0] = @velocity[0] < 0 ? 0 : @velocity[0]
           end
@@ -231,13 +232,13 @@ class Player < GameObject
           if (obj2.center[1] > @center[1])
             # puts("touch down")
             @velocity[1] = @velocity[1] > 0 ? 0 : @velocity[1]
-          else 
+          else
             # puts("touch up")
             @velocity[1] = @velocity[1] < 0 ? 0 : @velocity[1]
           end
-        elsif (overlap[0]).abs <= (overlap[1]).abs 
+        elsif (overlap[0]).abs <= (overlap[1]).abs
           @center[0] += overlap[0]
-          if(overlap[0] < 0)
+          if (overlap[0] < 0)
             # puts("overlap right")
             @velocity[0] = @velocity[0] > 0 ? 0 : @velocity[0]
           else

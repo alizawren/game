@@ -1,13 +1,13 @@
 require "gosu"
-require_relative "./sceneManager.rb"
-require_relative "./scenes/mainMenu.rb"
+require_relative "./SceneManager.rb"
+require_relative "./scenes/TitleScene.rb"
 
 class Main < Gosu::Window
   def initialize
     super 1280, 720
     self.caption = "Game?"
 
-    SceneManager.changeScene(MainMenu.new)
+    SceneManager.run
   end
 
   def update
@@ -22,7 +22,7 @@ class Main < Gosu::Window
     SceneManager.button_down(id, method(:close))
 
     if id == Gosu::KB_ESCAPE
-      SceneManager.changeScene(MainMenu.new)
+      SceneManager.run
     else
       super
     end

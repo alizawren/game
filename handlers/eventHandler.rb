@@ -1,5 +1,6 @@
 require_relative "./dialogueHandler.rb"
 require_relative "./cameraHandler.rb"
+require_relative "./guiHandler.rb"
 
 # an Event listener class. Should be inherited to define methods
 class EventHandler
@@ -38,6 +39,8 @@ class EventHandler
       @handlers.push(DialogueHandler.new(@sceneRef))
     when "camera"
       @handlers.push(CameraHandler.new(@sceneRef))
+    when "gui"
+      @handlers.push(GuiHandler.new(@sceneRef))
     end
   end
 

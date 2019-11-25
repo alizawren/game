@@ -1,0 +1,22 @@
+{
+  "gamescene": {
+    "idle": {
+      "up": "img/soldier/soldier_left_stand.bmp",
+      "left": "img/soldier/soldier_left_stand.bmp",
+      "down": "img/soldier/soldier_left_stand.bmp",
+      "right": "img/soldier/soldier_left_stand.bmp"
+    },
+    "walking": {
+      "up": "img/soldier/soldier_left_walk.bmp",
+      "left": "img/soldier/soldier_left_walk.bmp",
+      "down": "img/soldier/soldier_left_walk.bmp",
+      "right": "img/soldier/soldier_left_walk.bmp"
+    },
+    "shoot": {
+      "up": "img/soldier/soldier_left_stand.bmp",
+      "left": "img/soldier/soldier_left_stand.bmp",
+      "down": "img/soldier/soldier_left_stand.bmp",
+      "right": "img/soldier/soldier_left_stand.bmp"
+    }
+  }
+}

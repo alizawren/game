@@ -16,6 +16,8 @@ class DialogueHandler
     @activeBubbleQueue = []
     @bubbleQueue = []
 
+    @activeIcon = nil
+
     @endFlag
   end
 
@@ -68,8 +70,13 @@ class DialogueHandler
           end
         end
         newBubble = @bubbleQueue.shift
+        if (newBubble.is_a? Bubble)
+          newBubble.active
+        end
         @activeBubbleQueue.push(newBubble)
       end
+    when :changeIcon
+      @activeIcon = Gosu::Image.new(dataObj[:icon], :tileable => true, :retro => true)
     when :deleteFromActive
       deleteBubble(dataObj[:bubble].object_id)
       if @endFlag
@@ -81,6 +88,7 @@ class DialogueHandler
       @dialogueData = nil
       @dialogueId = ""
       @sceneRef.dialogueMode = false
+      @activeIcon = nil
     else
     end
   end
@@ -150,6 +158,8 @@ class DialogueHandler
       @dialogueId = @dialogueData["dialogueId"]
     end
 
+    # icon = !@dialogueData["icon"].nil? ? @dialogueData["icon"] : "img/icons/info_icon.png"
+
     for val in @dialogueData["sequence"]
       if (val["id"] == @id)
         for bubble in val["bubbles"]
@@ -176,7 +186,11 @@ class DialogueHandler
           case bubble["type"]
           when "normal"
             text = !bubble["text"].nil? ? bubble["text"] : ""
-            obj = Bubble.new(@sceneRef, text, source, delay: bubbleDelay)
+            if (bubble["icon"])
+              icon = bubble["icon"]
+            end
+
+            obj = Bubble.new(@sceneRef, text, source, delay: bubbleDelay, icon: icon)
             @bubbleQueue.push(obj)
           when "options"
             optionsArr = []
@@ -199,6 +213,9 @@ class DialogueHandler
 
         firstBubble = @bubbleQueue.shift
         if (!firstBubble.nil?)
+          if (firstBubble.is_a? Bubble)
+            firstBubble.active
+          end
           @activeBubbleQueue.push(firstBubble)
         end
 
@@ -245,6 +262,9 @@ class DialogueHandler
   end
 
   def draw
+    if !@activeIcon.nil?
+      @activeIcon.draw(ICON_OFFSET_X, ICON_OFFSET_Y, TEXT_LAYER, 2, 2, Gosu::Color.new(255, 255, 255, 255))
+    end
     for bubble in @activeBubbleQueue
       if (bubble.is_a?(Bubble))
         bubble.draw

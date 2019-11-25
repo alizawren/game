@@ -1,0 +1,19 @@
+{
+  "widgets": [
+    {
+      "id": 0,
+      "type": "vbox",
+      "children": [1, 2, 3]
+    }, {
+      "id": 1,
+      "type": "vbox"
+    }, {
+      "id": 2,
+      "type": "vbox"
+    }, {
+      "id": 3,
+      "type": "vbox"
+    }
+  ],
+  "buttons": ["yes"]
+}
